@@ -1,0 +1,505 @@
+// Hinweis: Teile dieser Datei wurden mit Claude Code (Anthropic) erstellt.
+// Unterstützung bei der Implementierung des Prototyps im zweiten Zyklus
+// (Frontend, Tests, Auswertungsskripte); Vorschlag der Referenzzeiträume
+// nach dem Annotationsprotokoll (Abschnitt 3.6.1)
+
+import { useState } from "react"
+import { ChevronDown, ChevronRight, ExternalLink, MousePointerClick } from "lucide-react"
+import { Headline, PreviewStatus } from "./CardPreview"
+import { isStrict, selectionText, stageLabel } from "@/lib/explanationText"
+import { fmtPeriod } from "@/lib/anomalySeries"
+import { USER_EVENT_EXPLANATION_NOTE, eventSpanLabel, userEventsInWindow } from "@/lib/userEvents"
+
+export const EXPLANATION_NOTE = "Die Einstufung beruht auf Titeln und Wortbezügen. Sie zeigt mögliche Zusammenhänge, keine Ursachen."
+
+const STAGE_CLASS = "bg-slate-100 text-slate-700 border border-slate-300"
+
+const TYPE_LABELS = { news: "Meldung", adhoc: "EQS-Mitteilung", global: "Allgemeines Ereignis" }
+const typeLabel = (type, eqsCategory = null) =>
+    type === "adhoc" && String(eqsCategory ?? "").trim().toLowerCase() === "ad-hoc" ? "Ad-hoc-Mitteilung (EQS)" : TYPE_LABELS[type] ?? type
+const SENTIMENT_LABELS = { positive: "positiv", neutral: "neutral", negative: "negativ" }
+
+const num = (v, digits = 2) =>
+    v == null ? "–" : Number(v).toLocaleString("de-DE", { minimumFractionDigits: digits, maximumFractionDigits: digits })
+const signed = (v, digits = 1) => (v == null ? "–" : (v > 0 ? "+" : v < 0 ? "−" : "±") + num(Math.abs(v), digits))
+
+const fmtDay = (value) => {
+    if (!value) return "ohne Datum"
+    const d = new Date(value.length === 10 ? `${value}T12:00:00` : value)
+    return Number.isNaN(d.getTime()) ? "ohne Datum" : d.toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" })
+}
+
+export function StageBadge({ stage, signalLabel = null, rules = null, small = false }) {
+    const stageText = stageLabel(stage, rules)
+    const label = signalLabel || stageText
+    const rule = rules?.stages?.[stage]
+    return (
+        <span
+            className={`flex-none inline-flex items-center rounded-full font-medium tracking-wide ${small ? "px-1.5 py-0.5 text-[9.5px]" : "px-2 py-0.5 text-[10px]"} ${STAGE_CLASS}`}
+            title={`Signale: ${label}. Stufe: ${stageText} (Schlüssel: ${stage})${rule ? `; Regel: ${rule}` : ""}`}
+        >
+            {label}
+        </span>
+    )
+}
+
+function Chip({ children, title, strong = false }) {
+    return (
+        <span
+            className={`inline-flex items-center gap-1 rounded-full border border-slate-200 bg-slate-50 px-1.5 py-0.5 text-[10.5px] max-w-full break-words ${strong ? "text-slate-800 font-medium" : "text-slate-600"}`}
+            title={title}
+        >
+            {children}
+        </span>
+    )
+}
+
+function SignalChips({ entry }) {
+    const cat = entry.category
+    const terms = entry.terms ?? []
+    const shifted = cat?.shifted_topics ?? []
+    const sentiment = entry.sentiment
+    return (
+        <div className="mt-1.5 flex flex-wrap gap-1">
+            {terms.map((t) => (
+                <Chip
+                    key={t.term}
+                    strong={t.strong}
+                    title={`Kennzeichnender Begriff der Bewertungen ${t.in === "text" ? "im Text der Meldung" : "im Titel"} („${t.word}“): ${t.after} von ${t.n_after} Bewertungen danach gegenüber ${t.before} von ${t.n_before} davor${t.strong ? "; starker Begriff" : ""}`}
+                >
+                    Begriff ‚{t.term}‘ {t.after} ggü. {t.before}{t.in === "text" ? " · im Text" : ""}
+                </Chip>
+            ))}
+            {entry.has_text && (
+                <Chip title="Zu dieser Meldung liegt der Text vor; der Wortbezug wurde im Titel und im Text gesucht. Ereignisart, Arbeitgeberbezug und die Nennung des Unternehmens kommen aus dem Titel">
+                    Text geprüft
+                </Chip>
+            )}
+            {cat && cat.employer_related && (
+                <Chip
+                    strong={shifted.length > 0}
+                    title={`Ereignisart aus dem Titel (Schlüsselwort: ${(cat.keywords ?? []).join(", ")}); zugeordnete Themen: ${(cat.topics ?? []).join(", ")}`}
+                >
+                    Ereignisart {cat.label}
+                    {shifted.length
+                        ? ` · ${shifted.map((s) => `${s.topic} ${signed(s.share_shift_pp)} Pp.`).join(", ")}`
+                        : " · nur erkannt"}
+                </Chip>
+            )}
+            {cat && !cat.employer_related && (
+                <Chip title={`Schlüsselwort: ${(cat.keywords ?? []).join(", ")}; eine Stufe zurückgestuft`}>
+                    ohne Arbeitgeberbezug · zurückgestuft
+                </Chip>
+            )}
+            <Chip title={`Zeitliche Nähe ${num(entry.time_match)}: am höchsten im Monat vor dem Übergang und im Übergang, abnehmend zum Rand des Fensters, niedriger danach`}>
+                {entry.time_phrase} · {num(entry.time_match, 2)}
+            </Chip>
+            <Chip title={`Quellenart ordnet nur innerhalb einer Stufe; Verlässlichkeit ${entry.reliability ?? "–"}`}>
+                {typeLabel(entry.source_type, entry.eqs_category)}
+                {entry.language === "en" ? " · EN" : ""}
+            </Chip>
+            {entry.company_in_title === false && (
+                <Chip title="Der Titel nennt den Unternehmensnamen nicht; die Meldung kann ein fremder Treffer des Suchbegriffs sein. Nur Hinweis, ohne Einfluss auf die Stufe">
+                    Unternehmen im Titel nicht genannt
+                </Chip>
+            )}
+            {sentiment && (
+                <Chip title="Stimmung des Titels über den Sentiment-Analyzer (an Bewertungen geprüft, nicht an Schlagzeilen); ohne Einfluss auf die Stufe">
+                    Stimmung des Titels {SENTIMENT_LABELS[sentiment.label] ?? sentiment.label} ({signed(sentiment.polarity, 2)})
+                    {sentiment.fits_direction === true ? ", passt zur Richtung" : sentiment.fits_direction === false ? ", passt nicht zur Richtung" : ""}
+                </Chip>
+            )}
+        </div>
+    )
+}
+
+function BundledItems({ items, rules }) {
+    return (
+        <ul className="m-0 mt-2 p-0 list-none border-l-2 border-slate-200 pl-3 space-y-1">
+            {items.map((item) => (
+                <li key={item.id} className="flex flex-col sm:flex-row sm:items-start gap-x-2 gap-y-0.5 text-[11.5px] min-w-0">
+                    <span className="sm:w-[70px] flex-none text-slate-500 tnum">{fmtDay(item.date)}</span>
+                    <span className="min-w-0 flex-1">
+                        <a href={item.url} target="_blank" rel="noopener noreferrer" className="text-slate-800 hover:underline underline-offset-2 inline-flex items-center gap-1 min-w-0 max-w-full">
+                            <span className="truncate">{item.title}</span>
+                            <ExternalLink className="w-3 h-3 flex-none text-slate-400" aria-hidden="true" />
+                        </a>
+                        <span className="block text-[10.5px] text-slate-500 break-words">
+                            {item.publisher || "Herausgeber unbekannt"} · {typeLabel(item.source_type, item.eqs_category)}
+                            {item.issuer ? ` · Mitteilung von ${item.issuer}` : ""} · Zeit {num(item.time_match, 2)}, Thema {num(item.topic_match, 2)}
+                            {item.terms?.some((t) => t.in === "text") ? ` · Begriff im Text: ${item.terms.filter((t) => t.in === "text").map((t) => `‚${t.term}‘`).join(", ")}` : ""}
+                            {item.has_text ? " · Text geprüft" : ""}
+                        </span>
+                    </span>
+                    <span className="flex-none self-start"><StageBadge stage={item.stage} signalLabel={item.signal_label} rules={rules} small /></span>
+                </li>
+            ))}
+        </ul>
+    )
+}
+
+function GroupMembers({ others, rules }) {
+    return (
+        <ul className="m-0 mt-2 p-0 list-none border-l-2 border-slate-200 pl-3 space-y-1.5">
+            {others.map((o) => (
+                <li key={o.id} className="flex flex-col sm:flex-row sm:items-start gap-x-2 gap-y-0.5 text-[11.5px] min-w-0">
+                    <span className="sm:w-[70px] flex-none text-slate-500 tnum">{fmtDay(o.date)}</span>
+                    <span className="min-w-0 flex-1">
+                        <a href={o.url} target="_blank" rel="noopener noreferrer" className="text-slate-800 hover:underline underline-offset-2 inline-flex items-center gap-1 min-w-0 max-w-full">
+                            <span className="truncate">{o.event}</span>
+                            <ExternalLink className="w-3 h-3 flex-none text-slate-400" aria-hidden="true" />
+                        </a>
+                        <span className="block text-[10.5px] text-slate-500 break-words">
+                            {o.source || "Herausgeber unbekannt"} · {typeLabel(o.source_type, o.eqs_category)}
+                            {o.issuer ? ` · Mitteilung von ${o.issuer}` : ""}
+                            {o.n_items > 1 ? ` · ${o.n_items} Meldungen (${(o.publishers ?? []).join(", ")})` : ""}
+                            {" "}· {o.time_phrase} · Zeit {num(o.time_match, 2)}, Thema {num(o.topic_match, 2)}
+                            {o.terms?.length ? ` · Begriff: ${o.terms.map((t) => `‚${t}‘`).join(", ")}` : ""}
+                            {o.has_text ? " · Text geprüft" : ""}
+                        </span>
+                    </span>
+                    <span className="flex-none self-start"><StageBadge stage={o.confidence} signalLabel={o.signal_label} rules={rules} small /></span>
+                </li>
+            ))}
+        </ul>
+    )
+}
+
+function ExplanationEntry({ entry, rules }) {
+    const [open, setOpen] = useState(false)
+    const [groupOpen, setGroupOpen] = useState(false)
+    const bundled = entry.n_items > 1
+    const group = entry.group ?? null
+    const others = group?.others ?? []
+    const groupLabel = group ? (group.kind === "ereignisart" ? `Ereignisart ${group.label}` : group.label) : ""
+    return (
+        <li className="border-t border-slate-100 first:border-t-0 py-3 flex flex-col sm:flex-row sm:items-start gap-x-3 gap-y-1.5 min-w-0">
+            <div className="flex-none pt-0.5 sm:w-[118px]">
+                <StageBadge stage={entry.confidence} signalLabel={entry.signal_label} rules={rules} />
+            </div>
+            <div className="min-w-0 flex-1">
+                <p className="m-0 text-[12.5px] text-slate-800 leading-5 break-words">{entry.text}</p>
+                <p className="m-0 mt-1 text-[11.5px] text-slate-600 flex items-center gap-1.5 flex-wrap min-w-0">
+                    <a
+                        href={entry.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-medium text-slate-900 hover:underline underline-offset-2 inline-flex items-center gap-1 min-w-0 max-w-full"
+                        title="Meldung beim Herausgeber öffnen (neuer Tab)"
+                    >
+                        <span className="truncate">{entry.event}</span>
+                        <ExternalLink className="w-3 h-3 flex-none text-slate-400" aria-hidden="true" />
+                    </a>
+                    <span className="text-slate-500 tnum">
+                        · {fmtDay(entry.date)} · {entry.source || "Herausgeber unbekannt"}
+                        {entry.issuer ? ` · Mitteilung von ${entry.issuer}` : ""}
+                        {bundled ? ` · ${entry.n_items} Meldungen (${(entry.publishers ?? []).join(", ")})` : ""}
+                    </span>
+                </p>
+                <SignalChips entry={entry} />
+                {bundled && (
+                    <button
+                        type="button"
+                        className="mt-1.5 inline-flex items-center gap-1 text-[11px] text-slate-600 hover:text-slate-900 underline-offset-2 hover:underline"
+                        onClick={() => setOpen((v) => !v)}
+                        aria-expanded={open}
+                    >
+                        {open ? <ChevronDown className="w-3 h-3" aria-hidden="true" /> : <ChevronRight className="w-3 h-3" aria-hidden="true" />}
+                        {open ? "Gebündelte Meldungen ausblenden" : `${entry.n_items} gebündelte Meldungen anzeigen`}
+                    </button>
+                )}
+                {bundled && open && <BundledItems items={entry.items ?? []} rules={rules} />}
+                {others.length > 0 && (
+                    <div className="mt-1.5">
+                        <p className="m-0 text-[11px] text-slate-600 flex flex-wrap items-center gap-x-1.5 gap-y-0.5 min-w-0">
+                            <button
+                                type="button"
+                                className="inline-flex items-start gap-1 text-left text-slate-600 hover:text-slate-900 underline-offset-2 hover:underline min-w-0"
+                                onClick={() => setGroupOpen((v) => !v)}
+                                aria-expanded={groupOpen}
+                                title={`In der obersten Liste steht je ${group.kind === "ereignisart" ? "Ereignisart" : "Begriff"} ein Eintrag; die übrigen Bündel der Gruppe stehen hier.`}
+                            >
+                                {groupOpen ? <ChevronDown className="w-3 h-3" aria-hidden="true" /> : <ChevronRight className="w-3 h-3" aria-hidden="true" />}
+                                {groupOpen ? `Weitere Einträge zu ${groupLabel} ausblenden` : `${others.length} ${others.length === 1 ? "weiterer Eintrag" : "weitere Einträge"} zu ${groupLabel} anzeigen`}
+                            </button>
+                            <span className="text-slate-400 break-words min-w-0">
+                                · Gruppe: {group.n_bundles} Bündel, {group.n_items} {group.n_items === 1 ? "Meldung" : "Meldungen"} ({(group.publishers ?? []).join(", ")})
+                            </span>
+                        </p>
+                        {groupOpen && <GroupMembers others={others} rules={rules} />}
+                    </div>
+                )}
+            </div>
+        </li>
+    )
+}
+
+const spanLabel = (g) => (g.from === g.to ? fmtPeriod(g.from) : `${fmtPeriod(g.from)} – ${fmtPeriod(g.to)}`)
+const globalCountText = (n) => `${n} ${n === 1 ? "allgemeines Ereignis" : "allgemeine Ereignisse"}`
+
+function GlobalEventMark() {
+    return <span aria-hidden="true" className="inline-block w-3 h-2.5 rounded-[2px] border border-dashed border-amber-600 bg-amber-100 flex-none" />
+}
+
+export function GlobalEventList({ events, note = null, onSelectPeriod = null }) {
+    if (!events?.length) return null
+    return (
+        <div className="mt-3 pt-3 border-t border-slate-100">
+            <p className="m-0 text-[11px] font-medium text-slate-700 flex items-center gap-1.5">
+                <GlobalEventMark />
+                {events.length === 1 ? "Allgemeines Ereignis im Ereignisfenster" : `${events.length} allgemeine Ereignisse im Ereignisfenster`} · Hypothese
+            </p>
+            <ul className="m-0 mt-1.5 p-0 list-none space-y-2">
+                {events.map((g) => (
+                    <li key={g.id} className="text-[11.5px] min-w-0">
+                        <p className="m-0 text-slate-800 break-words">
+                            <span className="font-medium">{g.title}</span>
+                            <span className="text-slate-500 tnum">
+                                {" "}· {spanLabel(g)}{g.months ? ` · ${g.months} ${g.months === 1 ? "Monat" : "Monate"}` : ""}{g.time_phrase ? ` · ${g.time_phrase}` : ""}
+                                {g.scope ? ` · ${g.scope}` : ""}
+                            </span>
+                        </p>
+                        {g.note && <p className="m-0 mt-0.5 text-[11px] text-slate-500 break-words">{g.note}</p>}
+                        <p className="m-0 mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px]">
+                            {onSelectPeriod && (
+                                <button
+                                    type="button"
+                                    className="inline-flex items-center gap-1 text-slate-700 hover:text-slate-900 underline underline-offset-2"
+                                    onClick={() => onSelectPeriod(g.from, g.to)}
+                                    title="Zeitraum des Ereignisses als Auswahl setzen: Vergleich, Bewertungen, Erklärungsansätze und Berichte dieser Monate"
+                                >
+                                    <MousePointerClick className="w-3 h-3" aria-hidden="true" />
+                                    Zeitraum {spanLabel(g)} wählen
+                                </button>
+                            )}
+                            {g.url && (
+                                <a href={g.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-slate-500 hover:text-slate-800 hover:underline underline-offset-2">
+                                    Quelle (Eurostat) <ExternalLink className="w-3 h-3" aria-hidden="true" />
+                                </a>
+                            )}
+                        </p>
+                    </li>
+                ))}
+            </ul>
+            {note && <p className="m-0 mt-1.5 text-[11px] text-slate-400">{note}</p>}
+        </div>
+    )
+}
+
+function UserEventMark() {
+    return <span aria-hidden="true" className="inline-block w-3 h-2.5 rounded-[2px] border border-violet-600 bg-violet-100 flex-none" />
+}
+
+const userCountText = (n) => `${n} ${n === 1 ? "eigenes Ereignis" : "eigene Ereignisse"}`
+
+export function UserEventExplanationList({ events, onSelectPeriod = null }) {
+    if (!events?.length) return null
+    return (
+        <div className="mt-3 pt-3 border-t border-slate-100" aria-label="Eigene Ereignisse im Ereignisfenster">
+            <p className="m-0 text-[11px] font-medium text-slate-700 flex items-center gap-1.5">
+                <UserEventMark />
+                {events.length === 1 ? "Eigenes Ereignis im Ereignisfenster" : `${events.length} eigene Ereignisse im Ereignisfenster`} · möglicher Zusammenhang
+            </p>
+            <ul className="m-0 mt-1.5 p-0 list-none space-y-2">
+                {events.map((e) => (
+                    <li key={e.id} className="text-[11.5px] min-w-0">
+                        <p className="m-0 text-slate-800 break-words">
+                            {e.number != null && <span className="text-slate-500 tnum">{e.number} · </span>}
+                            <span className="font-medium">{e.title}</span>
+                            <span className="text-slate-500 tnum"> · {eventSpanLabel(e)} · {e.time_phrase}</span>
+                        </p>
+                        {e.note && <p className="m-0 mt-0.5 text-[11px] text-slate-500 break-words">{e.note}</p>}
+                        {onSelectPeriod && (
+                            <p className="m-0 mt-1 text-[11px]">
+                                <button
+                                    type="button"
+                                    className="inline-flex items-center gap-1 text-slate-700 hover:text-slate-900 underline underline-offset-2"
+                                    onClick={() => onSelectPeriod(e.date_from, e.date_to)}
+                                    title="Zeitraum des Ereignisses als Auswahl setzen: Vergleich, Bewertungen, Erklärungsansätze und Berichte dieser Monate"
+                                >
+                                    <MousePointerClick className="w-3 h-3" aria-hidden="true" />
+                                    Zeitraum {eventSpanLabel(e)} wählen
+                                </button>
+                            </p>
+                        )}
+                    </li>
+                ))}
+            </ul>
+            <p className="m-0 mt-1.5 text-[11px] text-slate-400">{USER_EVENT_EXPLANATION_NOTE}</p>
+        </div>
+    )
+}
+
+function UserEventPreviewLine({ events }) {
+    if (!events?.length) return null
+    const first = events[0]
+    return (
+        <p className="m-0 mt-2 pt-1.5 border-t border-slate-100 text-[11px] text-slate-600 flex items-start gap-1.5 min-w-0" title={events.map((e) => `${e.title} (${eventSpanLabel(e)})`).join("; ")}>
+            <UserEventMark />
+            <span className="min-w-0 truncate">
+                {userCountText(events.length)}, möglicher Zusammenhang: {first.title} ({eventSpanLabel(first)}){events.length > 1 ? " …" : ""}
+            </span>
+        </p>
+    )
+}
+
+function GlobalEventPreviewLine({ events }) {
+    if (!events?.length) return null
+    const first = events[0]
+    return (
+        <p className="m-0 mt-2 pt-1.5 border-t border-slate-100 text-[11px] text-slate-600 flex items-start gap-1.5 min-w-0" title={events.map((g) => `${g.title} (${spanLabel(g)})`).join("; ")}>
+            <GlobalEventMark />
+            <span className="min-w-0 truncate">
+                {globalCountText(events.length)}, Hypothese: {first.title} ({spanLabel(first)}){events.length > 1 ? " …" : ""}
+            </span>
+        </p>
+    )
+}
+
+export function ExplanationPreview({ data, loading, error, max = 2, userEvents = null }) {
+    const summary = data?.explanation_summary ?? null
+    const entries = data?.explanations ?? []
+    const rules = summary?.rules ?? null
+    if (loading) return <PreviewStatus spinner>Erklärungsansätze werden berechnet…</PreviewStatus>
+    if (error) return <PreviewStatus>Erklärungsansätze konnten nicht geladen werden: {error}</PreviewStatus>
+    if (!summary) return null
+    if (summary.error) return <PreviewStatus>Erklärungsansätze konnten nicht berechnet werden: {summary.error}</PreviewStatus>
+    const belege = `${summary.n_items} ${summary.n_items === 1 ? "Beleg" : "Belege"}`
+    const globals = summary.global_events ?? []
+    const own = userEventsInWindow(userEvents, summary.window)
+    const strict = isStrict(summary)
+    if (summary.state === "offen") {
+        return (
+            <div>
+                <Headline value="Offen" sub={`${belege} im Ereignisfenster · ${strict ? "keiner erfüllt die strengen Auswahlregeln" : "keiner erreicht die Stufe niedrig"}`} />
+                <UserEventPreviewLine events={own} />
+                <GlobalEventPreviewLine events={globals} />
+            </div>
+        )
+    }
+    const shown = entries.slice(0, max)
+    const rest = entries.length - shown.length
+    return (
+        <div>
+            <Headline value={entries.length} unit={entries.length === 1 ? "Ansatz" : "Ansätze"} sub={`aus ${belege}${strict ? ` · ${summary.n_selected} geeignet` : ""} · ${summary.n_bundles} Bündel`} />
+            <ul className="m-0 mt-2 p-0 list-none">
+                {shown.map((entry) => (
+                    <li key={entry.id ?? entry.rank} className="border-t border-slate-100 py-1.5 min-w-0">
+                        <span className="block text-[12px] leading-4 text-slate-800 truncate" title={entry.event}>
+                            {entry.category?.label ? `Ereignisart ${entry.category.label}` : entry.event}
+                        </span>
+                        <span className="mt-0.5 flex items-center gap-1.5 min-w-0">
+                            <StageBadge stage={entry.confidence} signalLabel={entry.signal_label} rules={rules} small />
+                            <span className="flex-none text-[11px] text-slate-500 tnum">{fmtDay(entry.date)}</span>
+                        </span>
+                    </li>
+                ))}
+            </ul>
+            {rest > 0 && <p className="m-0 text-[11px] text-slate-500">+ {rest} {rest === 1 ? "weiterer" : "weitere"}</p>}
+            <UserEventPreviewLine events={own} />
+            <GlobalEventPreviewLine events={globals} />
+        </div>
+    )
+}
+
+export function ExplanationContent({ data, loading, error, onSelectPeriod = null, userEvents = null }) {
+    const [showRules, setShowRules] = useState(false)
+    const summary = data?.explanation_summary ?? null
+    const own = userEventsInWindow(userEvents, summary?.window)
+    const entries = data?.explanations ?? []
+    const rules = summary?.rules ?? null
+    const open = summary?.state === "offen"
+    const selection = summary?.selection ?? rules?.selection ?? null
+    const strict = isStrict(summary)
+    const selectionNote = summary && !loading && !error && !summary.error ? selectionText(summary) : ""
+    return (
+        <div>
+            {loading ? (
+                <div className="flex items-center gap-2 py-1">
+                    <div className="animate-spin rounded-full h-4 w-4 border-2 border-slate-200 border-t-slate-600"></div>
+                    <p className="m-0 text-slate-600 text-[12px]">Erklärungsansätze werden berechnet; beim ersten Aufruf dauert die Stimmungsanalyse des Vergleichs…</p>
+                </div>
+            ) : error ? (
+                <p className="m-0 text-[12px] text-slate-500">Erklärungsansätze konnten nicht geladen werden: {error}</p>
+            ) : !summary ? null : summary.error ? (
+                <p className="m-0 text-[12px] text-slate-500">Erklärungsansätze konnten nicht berechnet werden: {summary.error}</p>
+            ) : open ? (
+                <div className="space-y-1">
+                    <p className="m-0 text-[12.5px] font-medium text-slate-700">Offen.</p>
+                    <p className="m-0 text-[12px] text-slate-600">{summary.open_note}</p>
+                    {summary.reason && !summary.coverage && <p className="m-0 text-[12px] text-slate-500">{summary.reason}</p>}
+                </div>
+            ) : (
+                <ul className="m-0 p-0 list-none">
+                    {entries.map((entry) => <ExplanationEntry key={entry.id ?? entry.rank} entry={entry} rules={rules} />)}
+                </ul>
+            )}
+            {selectionNote && (
+                <p className="m-0 mt-2 text-[11px] text-slate-500" title={selection?.note ?? ""}>{selectionNote}</p>
+            )}
+            {summary && !loading && !error && !summary.error && (
+                <>
+                    <UserEventExplanationList events={own} onSelectPeriod={onSelectPeriod} />
+                    <GlobalEventList events={summary.global_events} note={summary.global_event_note} onSelectPeriod={onSelectPeriod} />
+                </>
+            )}
+            {rules && !loading && !error && (
+                <div className="mt-3">
+                    <button
+                        type="button"
+                        className="inline-flex items-center gap-1 text-[11px] text-slate-500 hover:text-slate-800 underline-offset-2 hover:underline"
+                        onClick={() => setShowRules((v) => !v)}
+                        aria-expanded={showRules}
+                    >
+                        {showRules ? <ChevronDown className="w-3 h-3" aria-hidden="true" /> : <ChevronRight className="w-3 h-3" aria-hidden="true" />}
+                        Wie wird eingestuft?
+                    </button>
+                    {showRules && (
+                        <div className="mt-1.5 text-[11px] text-slate-600 leading-4 space-y-1">
+                            <p className="m-0">
+                                Drei Signale je Beleg, aus dem Titel{rules.text && rules.text.enabled !== false ? ", bei vorliegendem Text auch aus dem Text der Meldung," : ""} und den Bewertungen: <span className="font-medium">Begriff</span> (kennzeichnende
+                                Begriffe, die in den Bewertungen danach deutlich häufiger vorkommen als davor und im Titel{rules.text && rules.text.enabled !== false ? " oder im Text" : ""} stehen; je Begriff
+                                {" "}{num(rules.term_match_per_term, 1)}, ein starker Begriff {num(rules.term_match_strong, 1)}),
+                                {" "}<span className="font-medium">Ereignisart</span> (aus Schlüsselwörtern im Titel; {num(rules.category_match_with_shift, 1)}, wenn sich ein
+                                zugeordnetes Thema im Vergleich um mindestens {num(rules.topic_shift_min_pp, 0)} Prozentpunkte verschoben hat, sonst
+                                {" "}{num(rules.category_match_only, 1)}) und <span className="font-medium">zeitliche Nähe</span> (1 im Monat vor dem Übergang und im Übergang,
+                                abnehmend zum Rand des Fensters, danach {num(rules.time_after_factor, 1)}). Thema = Maximum aus Begriff und Ereignisart
+                                (ordnet nur innerhalb einer Stufe).
+                            </p>
+                            <p className="m-0">
+                                Stufen nach festen Regeln{rules.version ? ` (Fassung ${rules.version}${rules.version_date ? `, ${rules.version_date}` : ""})` : ""}: <span className="font-medium">{stageLabel("hoch", rules)}</span> (Schlüssel hoch) = {rules.stages?.hoch};
+                                {" "}<span className="font-medium">{stageLabel("mittel", rules)}</span> (Schlüssel mittel) = {rules.stages?.mittel};
+                                {" "}<span className="font-medium">{stageLabel("niedrig", rules)}</span> (Schlüssel niedrig) = {rules.stages?.niedrig};
+                                sonst kein Bezug. Meldungen ohne Arbeitgeberbezug (Börsenbericht, Kursziel, Sport, Produkt) {strict ? "sind ausgeschlossen" : "eine Stufe tiefer"}. Die Quellenart ordnet
+                                nur innerhalb einer Stufe. Meldungen zum selben Ereignis (gleiche Ereignisart, höchstens {rules.bundle_max_days} Tage Abstand,
+                                ähnlicher Titel) sind gebündelt. In der obersten Liste steht höchstens ein Eintrag je Ereignisart (ohne Ereignisart je Begriff),
+                                die übrigen Bündel der Gruppe sind darunter aufklappbar. Höchstens {rules.max_explanations} Einträge. Alle Schwellen sind vorläufige Setzungen.
+                            </p>
+                            {rules.text?.note && rules.text.enabled !== false && (
+                                <p className="m-0">
+                                    <span className="font-medium">Text der Meldung</span>{rules.text.version_date ? ` (seit ${rules.text.version_date})` : ""}: {rules.text.note}
+                                    {summary?.texts?.n_texts > 0
+                                        ? ` In diesem Fenster liegt zu ${summary.texts.n_texts} von ${summary.n_items} Belegen der Text vor.`
+                                        : " In diesem Fenster liegt zu keinem Beleg ein Text vor."}
+                                    {summary?.texts?.excluded_terms?.length
+                                        ? ` Im Text nicht gezählt, weil zu häufig: ${summary.texts.excluded_terms.map((e) => `‚${e.term}‘ (${Math.round(e.share * 100)} %)`).join(", ")}.`
+                                        : ""}
+                                </p>
+                            )}
+                            {strict && selection?.rules?.length > 0 && (
+                                <p className="m-0">
+                                    <span className="font-medium">Strenge Auswahl</span>{selection.date ? ` (seit ${selection.date})` : ""}: Vor Bündelung und Rangfolge muss jede Meldung vier Regeln erfüllen, sonst wird sie kein Erklärungsansatz.
+                                    {" "}{selection.rules.map((r, i) => `(${i + 1}) ${r}`).join(" ")} Ausgeschlossene Meldungen stehen in der Belegliste mit der nicht erfüllten Regel.
+                                </p>
+                            )}
+                            <p className="m-0">
+                                {rules.finding_note ?? "In der Auswertung vom 08.10.2026 traten Einträge dieser Art in Zeiträumen ohne Markierung ähnlich häufig auf wie bei Markierungen. Sie sind Kandidaten für die eigene Einordnung."}
+                            </p>
+                        </div>
+                    )}
+                </div>
+            )}
+            <p className="m-0 mt-3 text-[11px] text-slate-400">{summary?.note ?? EXPLANATION_NOTE}</p>
+        </div>
+    )
+}

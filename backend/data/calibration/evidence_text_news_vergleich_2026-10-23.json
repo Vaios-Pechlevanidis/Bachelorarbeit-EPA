@@ -1,0 +1,741 @@
+{
+  "generated_at": "2026-10-24T11:31:58+00:00",
+  "ways": [
+    "news"
+  ],
+  "comparison": true,
+  "window_before": 3,
+  "window_after": 1,
+  "live": true,
+  "dry_run": false,
+  "retry_failed": true,
+  "companies": [
+    {
+      "company_id": 3,
+      "name": "Thyssenkrupp",
+      "ways": {
+        "news": {
+          "candidates": 0,
+          "stored": 0,
+          "fetched_now": 0,
+          "ok": 0,
+          "kurz": 0,
+          "fehlgeschlagen": 0,
+          "skipped": 0,
+          "errors": 0
+        }
+      },
+      "eligible": true,
+      "n_windows": 0
+    },
+    {
+      "company_id": 4,
+      "name": "Open Grid Europe",
+      "ways": {
+        "news": {
+          "candidates": 0,
+          "stored": 0,
+          "fetched_now": 0,
+          "ok": 0,
+          "kurz": 0,
+          "fehlgeschlagen": 0,
+          "skipped": 0,
+          "errors": 0
+        }
+      },
+      "eligible": true,
+      "n_windows": 0
+    },
+    {
+      "company_id": 5,
+      "name": "PLEdoc GmbH",
+      "ways": {
+        "news": {
+          "candidates": 0,
+          "stored": 0,
+          "fetched_now": 0,
+          "ok": 0,
+          "kurz": 0,
+          "fehlgeschlagen": 0,
+          "skipped": 0,
+          "errors": 0
+        }
+      },
+      "eligible": false
+    },
+    {
+      "company_id": 6,
+      "name": "E.ON Digital Technology",
+      "ways": {
+        "news": {
+          "candidates": 0,
+          "stored": 0,
+          "fetched_now": 0,
+          "ok": 0,
+          "kurz": 0,
+          "fehlgeschlagen": 0,
+          "skipped": 0,
+          "errors": 0
+        }
+      },
+      "eligible": false
+    },
+    {
+      "company_id": 7,
+      "name": "E.ON",
+      "ways": {
+        "news": {
+          "candidates": 379,
+          "stored": 349,
+          "fetched_now": 30,
+          "ok": 341,
+          "kurz": 22,
+          "fehlgeschlagen": 16,
+          "skipped": 0,
+          "errors": 16
+        }
+      },
+      "eligible": true,
+      "n_windows": 4
+    },
+    {
+      "company_id": 8,
+      "name": "RWE",
+      "ways": {
+        "news": {
+          "candidates": 998,
+          "stored": 923,
+          "fetched_now": 75,
+          "ok": 754,
+          "kurz": 176,
+          "fehlgeschlagen": 68,
+          "skipped": 0,
+          "errors": 68
+        }
+      },
+      "eligible": true,
+      "n_windows": 8
+    },
+    {
+      "company_id": 9,
+      "name": "Thyssengas GmbH",
+      "ways": {
+        "news": {
+          "candidates": 0,
+          "stored": 0,
+          "fetched_now": 0,
+          "ok": 0,
+          "kurz": 0,
+          "fehlgeschlagen": 0,
+          "skipped": 0,
+          "errors": 0
+        }
+      },
+      "eligible": false
+    },
+    {
+      "company_id": 13,
+      "name": "Universität Duisburg-Essen",
+      "ways": {
+        "news": {
+          "candidates": 0,
+          "stored": 0,
+          "fetched_now": 0,
+          "ok": 0,
+          "kurz": 0,
+          "fehlgeschlagen": 0,
+          "skipped": 0,
+          "errors": 0
+        }
+      },
+      "eligible": false
+    },
+    {
+      "company_id": 14,
+      "name": "Karlsruher Institut für Technologie",
+      "ways": {
+        "news": {
+          "candidates": 0,
+          "stored": 0,
+          "fetched_now": 0,
+          "ok": 0,
+          "kurz": 0,
+          "fehlgeschlagen": 0,
+          "skipped": 0,
+          "errors": 0
+        }
+      },
+      "eligible": true,
+      "n_windows": 0
+    },
+    {
+      "company_id": 15,
+      "name": "Technische Universität München",
+      "ways": {
+        "news": {
+          "candidates": 0,
+          "stored": 0,
+          "fetched_now": 0,
+          "ok": 0,
+          "kurz": 0,
+          "fehlgeschlagen": 0,
+          "skipped": 0,
+          "errors": 0
+        }
+      },
+      "eligible": true,
+      "n_windows": 0
+    },
+    {
+      "company_id": 16,
+      "name": "Universität zu Köln",
+      "ways": {
+        "news": {
+          "candidates": 0,
+          "stored": 0,
+          "fetched_now": 0,
+          "ok": 0,
+          "kurz": 0,
+          "fehlgeschlagen": 0,
+          "skipped": 0,
+          "errors": 0
+        }
+      },
+      "eligible": false
+    },
+    {
+      "company_id": 19,
+      "name": "SAP SE",
+      "ways": {
+        "news": {
+          "candidates": 1261,
+          "stored": 1016,
+          "fetched_now": 245,
+          "ok": 1093,
+          "kurz": 31,
+          "fehlgeschlagen": 137,
+          "skipped": 0,
+          "errors": 137
+        }
+      },
+      "eligible": true,
+      "n_windows": 5
+    },
+    {
+      "company_id": 20,
+      "name": "NTT DATA SE",
+      "ways": {
+        "news": {
+          "candidates": 41,
+          "stored": 0,
+          "fetched_now": 41,
+          "ok": 32,
+          "kurz": 1,
+          "fehlgeschlagen": 8,
+          "skipped": 0,
+          "errors": 8
+        }
+      },
+      "eligible": true,
+      "n_windows": 13
+    },
+    {
+      "company_id": 21,
+      "name": "1&1 AG",
+      "ways": {
+        "news": {
+          "candidates": 19,
+          "stored": 0,
+          "fetched_now": 19,
+          "ok": 15,
+          "kurz": 3,
+          "fehlgeschlagen": 1,
+          "skipped": 0,
+          "errors": 1
+        }
+      },
+      "eligible": true,
+      "n_windows": 4
+    },
+    {
+      "company_id": 22,
+      "name": "Aixtron",
+      "ways": {
+        "news": {
+          "candidates": 0,
+          "stored": 0,
+          "fetched_now": 0,
+          "ok": 0,
+          "kurz": 0,
+          "fehlgeschlagen": 0,
+          "skipped": 0,
+          "errors": 0
+        }
+      },
+      "eligible": false
+    },
+    {
+      "company_id": 23,
+      "name": "Atoss",
+      "ways": {
+        "news": {
+          "candidates": 0,
+          "stored": 0,
+          "fetched_now": 0,
+          "ok": 0,
+          "kurz": 0,
+          "fehlgeschlagen": 0,
+          "skipped": 0,
+          "errors": 0
+        }
+      },
+      "eligible": false
+    },
+    {
+      "company_id": 24,
+      "name": "Bechtle",
+      "ways": {
+        "news": {
+          "candidates": 8,
+          "stored": 0,
+          "fetched_now": 8,
+          "ok": 6,
+          "kurz": 1,
+          "fehlgeschlagen": 1,
+          "skipped": 0,
+          "errors": 1
+        }
+      },
+      "eligible": true,
+      "n_windows": 4
+    },
+    {
+      "company_id": 25,
+      "name": "Cancom",
+      "ways": {
+        "news": {
+          "candidates": 4,
+          "stored": 0,
+          "fetched_now": 4,
+          "ok": 4,
+          "kurz": 0,
+          "fehlgeschlagen": 0,
+          "skipped": 0,
+          "errors": 0
+        }
+      },
+      "eligible": true,
+      "n_windows": 8
+    },
+    {
+      "company_id": 26,
+      "name": "Carl Zeiss",
+      "ways": {
+        "news": {
+          "candidates": 131,
+          "stored": 0,
+          "fetched_now": 131,
+          "ok": 116,
+          "kurz": 4,
+          "fehlgeschlagen": 11,
+          "skipped": 0,
+          "errors": 11
+        }
+      },
+      "eligible": true,
+      "n_windows": 7
+    },
+    {
+      "company_id": 27,
+      "name": "Compugroup Medical Deutschland",
+      "ways": {
+        "news": {
+          "candidates": 19,
+          "stored": 0,
+          "fetched_now": 19,
+          "ok": 17,
+          "kurz": 1,
+          "fehlgeschlagen": 1,
+          "skipped": 0,
+          "errors": 1
+        }
+      },
+      "eligible": true,
+      "n_windows": 4
+    },
+    {
+      "company_id": 28,
+      "name": "Telekom",
+      "ways": {
+        "news": {
+          "candidates": 620,
+          "stored": 0,
+          "fetched_now": 620,
+          "ok": 511,
+          "kurz": 74,
+          "fehlgeschlagen": 35,
+          "skipped": 0,
+          "errors": 35
+        }
+      },
+      "eligible": true,
+      "n_windows": 23
+    },
+    {
+      "company_id": 29,
+      "name": "Eckert Ziegler",
+      "ways": {
+        "news": {
+          "candidates": 0,
+          "stored": 0,
+          "fetched_now": 0,
+          "ok": 0,
+          "kurz": 0,
+          "fehlgeschlagen": 0,
+          "skipped": 0,
+          "errors": 0
+        }
+      },
+      "eligible": false
+    },
+    {
+      "company_id": 30,
+      "name": "Elmos Semiconductor",
+      "ways": {
+        "news": {
+          "candidates": 0,
+          "stored": 0,
+          "fetched_now": 0,
+          "ok": 0,
+          "kurz": 0,
+          "fehlgeschlagen": 0,
+          "skipped": 0,
+          "errors": 0
+        }
+      },
+      "eligible": false
+    },
+    {
+      "company_id": 31,
+      "name": "Evotec",
+      "ways": {
+        "news": {
+          "candidates": 0,
+          "stored": 0,
+          "fetched_now": 0,
+          "ok": 0,
+          "kurz": 0,
+          "fehlgeschlagen": 0,
+          "skipped": 0,
+          "errors": 0
+        }
+      },
+      "eligible": false
+    },
+    {
+      "company_id": 32,
+      "name": "Formycon",
+      "ways": {
+        "news": {
+          "candidates": 0,
+          "stored": 0,
+          "fetched_now": 0,
+          "ok": 0,
+          "kurz": 0,
+          "fehlgeschlagen": 0,
+          "skipped": 0,
+          "errors": 0
+        }
+      },
+      "eligible": false
+    },
+    {
+      "company_id": 33,
+      "name": "Freenet",
+      "ways": {
+        "news": {
+          "candidates": 119,
+          "stored": 0,
+          "fetched_now": 119,
+          "ok": 101,
+          "kurz": 12,
+          "fehlgeschlagen": 6,
+          "skipped": 0,
+          "errors": 6
+        }
+      },
+      "eligible": true,
+      "n_windows": 20
+    }
+  ],
+  "fetches": 1311,
+  "fetch_limit_reached": false,
+  "min_text_chars": 300,
+  "max_text_chars": 40000,
+  "google_interval_s": 3.0,
+  "ways_summary": {
+    "news": {
+      "label": "Meldungen (Google News, Verlagsseiten)",
+      "candidates": 3599,
+      "stored": 2288,
+      "fetched_now": 1311,
+      "ok": 2990,
+      "kurz": 325,
+      "fehlgeschlagen": 284,
+      "skipped": 0,
+      "errors": [
+        {
+          "company_id": 7,
+          "id": "b5670abb8b7074fb",
+          "error": "HTTPError: HTTP Error 403: Forbidden"
+        },
+        {
+          "company_id": 7,
+          "id": "2e4cec4f20c370db",
+          "error": "TimeoutError: The read operation timed out"
+        },
+        {
+          "company_id": 7,
+          "id": "233013e682aa2244",
+          "error": "HTTPError: HTTP Error 403: Forbidden"
+        },
+        {
+          "company_id": 7,
+          "id": "ca9426e813ed97c3",
+          "error": "HTTPError: HTTP Error 403: Forbidden"
+        },
+        {
+          "company_id": 7,
+          "id": "ec031d6a3063675a",
+          "error": "HTTPError: HTTP Error 403: Forbidden"
+        },
+        {
+          "company_id": 7,
+          "id": "b287558174c2f2f9",
+          "error": "kein Text auf der Seite gefunden"
+        },
+        {
+          "company_id": 7,
+          "id": "ff5ec673e2d09370",
+          "error": "HTTPError: HTTP Error 403: Forbidden"
+        },
+        {
+          "company_id": 7,
+          "id": "57bbe9ebed5118ea",
+          "error": "HTTPError: HTTP Error 403: Forbidden"
+        },
+        {
+          "company_id": 7,
+          "id": "019a67b185eb8a76",
+          "error": "TimeoutError: The read operation timed out"
+        },
+        {
+          "company_id": 7,
+          "id": "a4d95755078fcc5e",
+          "error": "HTTPError: HTTP Error 403: Forbidden"
+        },
+        {
+          "company_id": 7,
+          "id": "988c9daf9c5d7d3c",
+          "error": "kein Text auf der Seite gefunden"
+        },
+        {
+          "company_id": 7,
+          "id": "06aa5226cfec0094",
+          "error": "HTTPError: HTTP Error 403: Forbidden"
+        },
+        {
+          "company_id": 7,
+          "id": "274c2599a832f987",
+          "error": "kein Text auf der Seite gefunden"
+        },
+        {
+          "company_id": 7,
+          "id": "3730a555ce64382d",
+          "error": "HTTPError: HTTP Error 403: Forbidden"
+        },
+        {
+          "company_id": 7,
+          "id": "3b8ab06485ae361d",
+          "error": "HTTPError: HTTP Error 403: "
+        },
+        {
+          "company_id": 7,
+          "id": "8c0042b386235b37",
+          "error": "kein Text auf der Seite gefunden"
+        },
+        {
+          "company_id": 8,
+          "id": "821b647bc6eff483",
+          "error": "HTTPError: HTTP Error 403: Forbidden"
+        },
+        {
+          "company_id": 8,
+          "id": "0646938b2c3a1f97",
+          "error": "HTTPError: HTTP Error 403: Forbidden"
+        },
+        {
+          "company_id": 8,
+          "id": "3b9cf7084d3b5ced",
+          "error": "HTTPError: HTTP Error 403: Forbidden"
+        },
+        {
+          "company_id": 8,
+          "id": "4f3f2bf2d3f379f7",
+          "error": "HTTPError: HTTP Error 403: Forbidden"
+        },
+        {
+          "company_id": 8,
+          "id": "77e30d482c3d5d4f",
+          "error": "HTTPError: HTTP Error 403: "
+        },
+        {
+          "company_id": 8,
+          "id": "e21769cabcb85cdc",
+          "error": "HTTPError: HTTP Error 403: Forbidden"
+        },
+        {
+          "company_id": 8,
+          "id": "c8d1069e791bce5e",
+          "error": "HTTPError: HTTP Error 403: Forbidden"
+        },
+        {
+          "company_id": 8,
+          "id": "6647a793cfedc52e",
+          "error": "HTTPError: HTTP Error 403: Forbidden"
+        },
+        {
+          "company_id": 8,
+          "id": "ebea666e29062b8d",
+          "error": "HTTPError: HTTP Error 403: Forbidden"
+        },
+        {
+          "company_id": 8,
+          "id": "a2c472a06f8cce59",
+          "error": "HTTPError: HTTP Error 403: Forbidden"
+        },
+        {
+          "company_id": 8,
+          "id": "003b514dad0d3386",
+          "error": "HTTPError: HTTP Error 403: "
+        },
+        {
+          "company_id": 8,
+          "id": "66d769c2a3633bd7",
+          "error": "kein Text auf der Seite gefunden"
+        },
+        {
+          "company_id": 8,
+          "id": "34989f9de98f02ba",
+          "error": "HTTPError: HTTP Error 403: Forbidden"
+        },
+        {
+          "company_id": 8,
+          "id": "292439df9efc248c",
+          "error": "HTTPError: HTTP Error 403: Forbidden"
+        },
+        {
+          "company_id": 8,
+          "id": "8a1cd52eed7d6a7e",
+          "error": "HTTPError: HTTP Error 403: Forbidden"
+        },
+        {
+          "company_id": 8,
+          "id": "1465523816a2a12b",
+          "error": "kein Text auf der Seite gefunden"
+        },
+        {
+          "company_id": 8,
+          "id": "046e36f1bba42e1d",
+          "error": "HTTPError: HTTP Error 403: Forbidden"
+        },
+        {
+          "company_id": 8,
+          "id": "8124b52a408e3f23",
+          "error": "HTTPError: HTTP Error 403: Forbidden"
+        },
+        {
+          "company_id": 8,
+          "id": "27bfcb43a069dec6",
+          "error": "HTTPError: HTTP Error 403: Forbidden"
+        },
+        {
+          "company_id": 8,
+          "id": "dcff2b4c15516542",
+          "error": "HTTPError: HTTP Error 403: Forbidden"
+        },
+        {
+          "company_id": 8,
+          "id": "d15d49a1fffe848e",
+          "error": "HTTPError: HTTP Error 403: Forbidden"
+        },
+        {
+          "company_id": 8,
+          "id": "c603e3dc69a02c17",
+          "error": "HTTPError: HTTP Error 403: Forbidden"
+        },
+        {
+          "company_id": 8,
+          "id": "4f8dde4d2313cec6",
+          "error": "HTTPError: HTTP Error 403: "
+        },
+        {
+          "company_id": 8,
+          "id": "0a7f932faca9edfb",
+          "error": "HTTPError: HTTP Error 403: Forbidden"
+        },
+        {
+          "company_id": 8,
+          "id": "9bb7c5ad521a7988",
+          "error": "HTTPError: HTTP Error 403: Forbidden"
+        },
+        {
+          "company_id": 8,
+          "id": "9c8f043456bd7eb6",
+          "error": "HTTPError: HTTP Error 403: Forbidden"
+        },
+        {
+          "company_id": 8,
+          "id": "665f29248be49a31",
+          "error": "HTTPError: HTTP Error 403: "
+        },
+        {
+          "company_id": 8,
+          "id": "c2e7e6990b1222a6",
+          "error": "HTTPError: HTTP Error 403: Forbidden"
+        },
+        {
+          "company_id": 8,
+          "id": "6335452162895bb0",
+          "error": "HTTPError: HTTP Error 403: Forbidden"
+        },
+        {
+          "company_id": 8,
+          "id": "866487e4d9a10aa6",
+          "error": "HTTPError: HTTP Error 403: Forbidden"
+        },
+        {
+          "company_id": 8,
+          "id": "9b865f11b1dbfab4",
+          "error": "HTTPError: HTTP Error 403: Forbidden"
+        },
+        {
+          "company_id": 8,
+          "id": "50e79df67c2d1f3f",
+          "error": "HTTPError: HTTP Error 403: Forbidden"
+        },
+        {
+          "company_id": 8,
+          "id": "9099571f180bfc80",
+          "error": "HTTPError: HTTP Error 403: Forbidden"
+        },
+        {
+          "company_id": 8,
+          "id": "7bde289034ebe673",
+          "error": "kein Text auf der Seite gefunden"
+        }
+      ]
+    }
+  },
+  "duration_s": 8707.6
+}

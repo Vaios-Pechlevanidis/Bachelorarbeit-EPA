@@ -1,0 +1,167 @@
+# Operating System Files
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Linux
+*~
+
+# Editor/IDE Files
+# Visual Studio Code
+.vscode/
+*.code-workspace
+
+# JetBrains IDEs (IntelliJ, WebStorm, etc.)
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim
+*.swp
+*.swo
+*~
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+# package-lock.json wird versioniert: frontend/Dockerfile nutzt npm ci
+yarn.lock
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.venv
+pip-log.txt
+pip-delete-this-directory.txt
+*.egg-info/
+dist/
+build/
+
+# Java
+*.class
+*.jar
+*.war
+*.ear
+target/
+.gradle/
+build/
+
+# C/C++
+*.o
+*.a
+*.so
+*.exe
+*.out
+*.dll
+*.dylib
+
+# Environment Variables
+.env
+.env.local
+.env.*.local
+*.env
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage/
+*.lcov
+.nyc_output/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.temp
+
+# Build outputs
+dist/
+build/
+out/
+*.min.js
+*.min.css
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Misc
+.cache/
+.parcel-cache/
+.next/
+.nuxt/
+.vuepress/dist/
+.serverless/
+.fusebox/
+.dynamodb/
+.tern-port
+
+.gg
+
+.cursor/plans
+
+backend/uv.lock/
+
+# Kursdaten (Zwischenspeicher, E15): nicht einchecken
+backend/data/market/
+
+# Claude Code
+.claude/
+
+# Docker
+docker-compose.yml
+# Annotationsbogen (E5, scripts/make_annotation_sheet.py): erzeugte Datei, nicht einchecken
+backend/data/annotationsbogen*.html
+# Schlüssel zum blinden Annotationsbogen (E5, make_annotation_sheet.py --blind): Zuordnung Reihe/Monat ->
+# Unternehmen/Kalendermonat; nur beim Autor, nicht einchecken
+backend/data/annotationsbogen_blind_schluessel*.json
+# Bewertungsbogen der Erklärungsansätze (DZ2, scripts/rate_explanations.py bogen): enthält Titel und Links der
+# Meldungen aus dem Belegspeicher; Bogen, Schlüssel und Vorlage bleiben beim Autor, nicht einchecken
+backend/data/bewertungsbogen/
+
+# Belegspeicher der externen Belege (Inkrement 4, E18): nicht einchecken
+backend/data/context/
+backend/data/context_text/
+backend/data/macro/

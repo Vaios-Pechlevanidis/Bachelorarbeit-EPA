@@ -1,0 +1,264 @@
+// Hinweis: Teile dieser Datei wurden mit Claude Code (Anthropic) erstellt.
+// Unterstützung bei der Implementierung des Prototyps im zweiten Zyklus
+// (Frontend, Tests, Auswertungsskripte); Vorschlag der Referenzzeiträume
+// nach dem Annotationsprotokoll (Abschnitt 3.6.1)
+
+import { ExternalLink } from "lucide-react"
+import { StageBadge } from "./ExplanationPanel"
+import { FigureRow, Headline, PreviewLabel, PreviewStatus } from "./CardPreview"
+import { fmtPeriod } from "@/lib/anomalySeries"
+import { NO_CATEGORY } from "@/lib/evidenceText"
+import { evidenceMatchText, evidenceScopeEmptyText, evidenceScopeText } from "@/lib/dimensionScope"
+import { dimensionLabel } from "@/lib/ratingCategories"
+
+const SORTS = [
+    { key: "date", label: "Datum" },
+    { key: "relevance", label: "Relevanz" },
+]
+const selectClass =
+    "h-7 rounded-md border border-slate-300 bg-white px-2 text-[12px] text-slate-800 focus:outline-none focus:ring-1 focus:ring-slate-400 disabled:opacity-50 max-w-[260px]"
+
+const TYPE_LABELS = {
+    news: { label: "Meldung", className: "bg-slate-100 text-slate-600", title: "Nachrichtenmeldung (Google News RSS), Verlässlichkeit mittel" },
+    adhoc: { label: "EQS", className: "bg-blue-100 text-slate-700", title: "Pflicht- oder Unternehmensmitteilung über EQS News (Ad-hoc, Stimmrechte, Finanzberichte u. a.), Verlässlichkeit hoch" },
+    global: { label: "Allgemeines Ereignis, Hypothese", className: "bg-amber-100 text-slate-700", title: "Allgemeines Ereignis, automatisch aus Wirtschaftsdaten (Eurostat: Wirtschaftsstimmung ESI, Inflationsrate), Verlässlichkeit: Hypothese" },
+}
+
+export function EventsToggle({ checked, onChange }) {
+    return (
+        <label className="inline-flex items-center gap-1.5 text-[12px] text-slate-700 cursor-pointer select-none"
+            onClick={(e) => e.stopPropagation()}>
+            <input
+                type="checkbox"
+                className="accent-amber-600"
+                checked={checked}
+                onChange={(e) => onChange(e.target.checked)}
+            />
+            Allgemeine Ereignisse
+        </label>
+    )
+}
+
+const fmtDay = (value) => {
+    if (!value) return "ohne Datum"
+    const d = new Date(value.length === 10 ? `${value}T12:00:00` : value)
+    return Number.isNaN(d.getTime()) ? "ohne Datum" : d.toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" })
+}
+
+const fmtStamp = (value) => {
+    if (!value) return null
+    const d = new Date(value)
+    return Number.isNaN(d.getTime()) ? null : d.toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" })
+}
+
+function TypeBadge({ type, category = null }) {
+    const base = TYPE_LABELS[type] ?? { label: type, className: "bg-slate-100 text-slate-600", title: "" }
+    const t = type === "adhoc" && String(category ?? "").trim().toLowerCase() === "ad-hoc" ? { ...base, label: "Ad-hoc" } : base
+    return (
+        <span className={`flex-none inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] uppercase tracking-wider ${t.className}`} title={t.title}>
+            {t.label}
+        </span>
+    )
+}
+
+function EvidenceRow({ item, score = null, rules = null }) {
+    return (
+        <li className="border-t border-slate-100 first:border-t-0 py-2 flex items-start gap-3">
+            <span className="w-[76px] flex-none text-[11px] text-slate-500 tnum pt-0.5">{fmtDay(item.date)}</span>
+            <span className="min-w-0 flex-1">
+                <span className="flex items-center gap-2 min-w-0 flex-wrap">
+                    <a
+                        href={item.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[12.5px] font-medium text-slate-900 hover:underline underline-offset-2 inline-flex items-center gap-1 min-w-0"
+                        title="Meldung beim Herausgeber öffnen (neuer Tab)"
+                    >
+                        <span className="truncate">{item.title}</span>
+                        <ExternalLink className="w-3 h-3 flex-none text-slate-400" aria-hidden="true" />
+                    </a>
+                    <TypeBadge type={item.source_type} category={item.category} />
+                    {item.language === "en" && (
+                        <span className="flex-none inline-flex items-center px-1.5 py-0.5 rounded-full border border-slate-300 text-slate-500 text-[10px] uppercase tracking-wider" title="englischsprachige Meldung">
+                            EN
+                        </span>
+                    )}
+                    {score && score.stage !== "keine" && <StageBadge stage={score.stage} signalLabel={score.signal_label} rules={rules} small />}
+                </span>
+                <span className="block mt-0.5 text-[11px] text-slate-500">
+                    {item.event
+                        ? `${fmtPeriod(item.event.from)} – ${fmtPeriod(item.event.to)}${item.event.scope ? ` · ${item.event.scope}` : ""}${item.event.note ? ` · ${item.event.note}` : ""}`
+                        : `${item.publisher || (item.source === "eqs" ? "EQS News" : "Herausgeber unbekannt")}${item.issuer ? ` · Mitteilung von ${item.issuer}` : ""}${item.category ? ` · ${item.category}` : ""}`}
+                    {score?.category_label ? ` · Ereignisart: ${score.category_label}` : ""}
+                    {score?.terms?.length ? ` · Begriff: ${score.terms.map((t) => `‚${t}‘${score.terms_in_text?.includes(t) ? " (im Text)" : ""}`).join(", ")}` : ""}
+                    {score?.has_text ? " · Text geprüft" : ""}
+                    {score?.excluded ? ` · nicht in den Ansätzen: ${score.excluded}` : score?.company_in_title === false ? " · Unternehmen im Titel nicht genannt" : ""}
+                    {item.dimension_match ? ` · ${evidenceMatchText(item.dimension_match)}` : ""}
+                </span>
+            </span>
+        </li>
+    )
+}
+
+export function ListControls({ sort, onSort, category, onCategory, categories, enabled, dimension = null }) {
+    const hint = enabled ? "" : "Relevanz und Ereignisart folgen aus den Erklärungsansätzen oben; sie werden geladen…"
+    const allLabel = dimension ? dimensionLabel(dimension) : "Alle Ereignisarten"
+    const selectTitle = dimension
+        ? `Belege zur Dimension ${dimensionLabel(dimension)}; eine Ereignisart darunter zeigt nur diese (aus Schlüsselwörtern im Titel)`
+        : "Nur Belege dieser Ereignisart (aus Schlüsselwörtern im Titel)"
+    return (
+        <>
+            <div className="ds-time-filter" role="group" aria-label="Sortierung der Belege" title={hint || "Sortierung: Datum (neueste zuerst) oder Relevanz (Rang der Erklärungsansätze)"}>
+                {SORTS.map((s) => (
+                    <button
+                        key={s.key}
+                        type="button"
+                        aria-pressed={sort === s.key}
+                        className={`ds-time-btn${sort === s.key ? " active" : ""}`}
+                        disabled={!enabled && s.key === "relevance"}
+                        onClick={() => onSort(s.key)}
+                    >
+                        {s.label}
+                    </button>
+                ))}
+            </div>
+            <select
+                className={selectClass}
+                value={category}
+                onChange={(e) => onCategory(e.target.value)}
+                disabled={!enabled}
+                aria-label="Filter nach Ereignisart"
+                title={hint || selectTitle}
+            >
+                <option value="">{allLabel}</option>
+                {categories.map((c) => <option key={c.id} value={c.id}>{c.label}</option>)}
+                <option value={NO_CATEGORY}>ohne Ereignisart</option>
+            </select>
+        </>
+    )
+}
+
+function SourcesLine({ sources }) {
+    if (!sources) return null
+    const parts = Object.values(sources).map((s) => {
+        const stored = s.from_store + s.fetched_now
+        const bits = [`${stored} von ${s.months} ${s.months === 1 ? "Monat" : "Monaten"} vorhanden`]
+        if (s.fetched_now) bits.push(`${s.fetched_now} gerade abgerufen`)
+        if (s.fetched_at) bits.push(`Stand ${fmtStamp(s.fetched_at)}`)
+        if (s.errors?.length) bits.push(`${s.errors.length} ${s.errors.length === 1 ? "Monat" : "Monate"} nicht abrufbar`)
+        return `${s.label}: ${bits.join(", ")}`
+    })
+    return <p className="m-0 mt-2 text-[11px] text-slate-400">{parts.join(" · ")}</p>
+}
+
+export function EvidencePreview({ evidence }) {
+    const data = evidence.data
+    if (evidence.loading) {
+        return (
+            <PreviewStatus spinner>
+                Lade Belege…{evidence.slow ? " Die Monate werden zum ersten Mal von den Quellen geladen; das dauert einige Sekunden." : ""}
+            </PreviewStatus>
+        )
+    }
+    if (evidence.error) return <PreviewStatus>Belege konnten nicht geladen werden: {evidence.error}</PreviewStatus>
+    if (!data) return null
+    const w = data.window
+    const span = w ? (w.from === w.to ? fmtPeriod(w.from) : `${fmtPeriod(w.from)} – ${fmtPeriod(w.to)}`) : ""
+    const scopeText = evidenceScopeText(data.scope)
+    const sub = `${w ? `${span} · ${w.months} ${w.months === 1 ? "Monat" : "Monate"}` : ""}${scopeText ? ` · ${scopeText}` : ""}`
+    if (!data.total) {
+        return (
+            <div>
+                <Headline value="0" unit="Belege" sub={sub} />
+                <p className="m-0 mt-2 text-[11.5px] leading-4 text-slate-500">
+                    {data.scope ? evidenceScopeEmptyText(data.scope) : "Ein fehlender Beleg heißt nicht, dass nichts geschehen ist."}
+                </p>
+            </div>
+        )
+    }
+    const counts = data.counts ?? {}
+    const figures = [
+        { value: counts.news ?? 0, label: counts.news === 1 ? "Meldung" : "Meldungen" },
+        { value: counts.adhoc ?? 0, label: "EQS" },
+        { value: counts.global ?? 0, label: counts.global === 1 ? "Allgemeines Ereignis" : "Allgemeine Ereignisse" },
+    ].filter((f) => f.value > 0)
+    return (
+        <div>
+            <Headline value={data.total} unit={data.total === 1 ? "Beleg" : "Belege"} sub={sub} />
+            <PreviewLabel>Nach Quelle</PreviewLabel>
+            <FigureRow items={figures} />
+        </div>
+    )
+}
+
+export function EvidenceContent({ evidence, items, needAll, sort, category, scores = null, rules = null }) {
+    const data = evidence.data
+    return (
+        <div>
+            {evidence.loading ? (
+                <div className="space-y-1">
+                    <p className="m-0 text-[12px] text-slate-500">Lade Belege…</p>
+                    {evidence.slow && (
+                        <p className="m-0 text-[12px] text-slate-500" role="status">
+                            Belege für diesen Zeitraum werden zum ersten Mal von den Quellen geladen; das dauert einige
+                            Sekunden (je Quelle ein Abruf je Monat mit zwei Sekunden Abstand). Beim nächsten Aufruf kommen sie
+                            aus dem Speicher.
+                        </p>
+                    )}
+                </div>
+            ) : evidence.error ? (
+                <p className="m-0 text-[12px] text-slate-500">Belege konnten nicht geladen werden: {evidence.error}</p>
+            ) : evidence.items.length === 0 ? (
+                <div className="space-y-1">
+                    {data?.scope ? (
+                        <p className="m-0 text-[12.5px] font-medium text-slate-700">{evidenceScopeEmptyText(data.scope)}</p>
+                    ) : (
+                        <p className="m-0 text-[12.5px] font-medium text-slate-700">Kein Beleg im Fenster gefunden.</p>
+                    )}
+                    {data?.reason && data.reason !== "Kein Beleg im Fenster gefunden." && !data?.scope?.n_all && (
+                        <p className="m-0 text-[12px] text-slate-500">{data.reason}</p>
+                    )}
+                    {!data?.scope?.n_all && (
+                        <p className="m-0 text-[12px] text-slate-500">
+                            Bekannte Grenzen: Für ältere Zeiträume liefern die Quellen deutlich weniger Meldungen, für kleine
+                            Unternehmen oft keine; mehrdeutige Namen bringen fremde Treffer. Ein fehlender Beleg heißt nicht,
+                            dass nichts geschehen ist.
+                        </p>
+                    )}
+                </div>
+            ) : (
+                <>
+                    {needAll && evidence.loadingAll && (
+                        <p className="m-0 mb-2 text-[12px] text-slate-500" role="status">Lade alle {evidence.total} Belege für Sortierung und Filter…</p>
+                    )}
+                    {items.length === 0 && category ? (
+                        <p className="m-0 text-[12px] text-slate-500">Kein Beleg dieser Ereignisart im Fenster.</p>
+                    ) : (
+                        <div key={`${sort}:${category}`} className="border-y border-slate-100">
+                            <ul className="m-0 p-0 list-none">
+                                {items.map((item) => <EvidenceRow key={item.id} item={item} score={scores?.[item.id] ?? null} rules={rules} />)}
+                            </ul>
+                        </div>
+                    )}
+                    {evidence.hasMore && !needAll && (
+                        <button
+                            type="button"
+                            className="mt-2 text-[12px] underline underline-offset-2 text-slate-700 hover:text-slate-900 disabled:opacity-50"
+                            onClick={evidence.loadMore}
+                            disabled={evidence.loadingMore}
+                        >
+                            {evidence.loadingMore ? "Lade weitere…" : `Weitere Belege laden (${evidence.items.length} von ${evidence.total})`}
+                        </button>
+                    )}
+                </>
+            )}
+            {!evidence.loading && !evidence.error && <SourcesLine sources={data?.sources} />}
+            {data?.scope?.note && (
+                <p className="m-0 mt-2 text-[11px] text-slate-400">Dimension als Filter: {data.scope.note}</p>
+            )}
+            <p className="m-0 mt-3 text-[11px] text-slate-400">
+                {data?.note ?? "Belege sind zeitlich nahe Meldungen aus externen Quellen. Sie sind keine Aussage über Ursachen; interne Auslöser sind von außen nicht sichtbar."}
+            </p>
+        </div>
+    )
+}

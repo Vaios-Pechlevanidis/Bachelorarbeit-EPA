@@ -1,0 +1,494 @@
+{
+  "generated_at": "2026-10-23T22:45:41+00:00",
+  "ways": [
+    "eqs"
+  ],
+  "comparison": false,
+  "window_before": 3,
+  "window_after": 1,
+  "live": true,
+  "dry_run": false,
+  "retry_failed": true,
+  "companies": [
+    {
+      "company_id": 3,
+      "name": "Thyssenkrupp",
+      "ways": {
+        "eqs": {
+          "candidates": 0,
+          "stored": 0,
+          "fetched_now": 0,
+          "ok": 0,
+          "kurz": 0,
+          "fehlgeschlagen": 0,
+          "skipped": 0,
+          "errors": 0
+        }
+      }
+    },
+    {
+      "company_id": 4,
+      "name": "Open Grid Europe",
+      "ways": {
+        "eqs": {
+          "candidates": 0,
+          "stored": 0,
+          "fetched_now": 0,
+          "ok": 0,
+          "kurz": 0,
+          "fehlgeschlagen": 0,
+          "skipped": 0,
+          "errors": 0
+        }
+      }
+    },
+    {
+      "company_id": 5,
+      "name": "PLEdoc GmbH",
+      "ways": {
+        "eqs": {
+          "candidates": 0,
+          "stored": 0,
+          "fetched_now": 0,
+          "ok": 0,
+          "kurz": 0,
+          "fehlgeschlagen": 0,
+          "skipped": 0,
+          "errors": 0
+        }
+      }
+    },
+    {
+      "company_id": 6,
+      "name": "E.ON Digital Technology",
+      "ways": {
+        "eqs": {
+          "candidates": 0,
+          "stored": 0,
+          "fetched_now": 0,
+          "ok": 0,
+          "kurz": 0,
+          "fehlgeschlagen": 0,
+          "skipped": 0,
+          "errors": 0
+        }
+      }
+    },
+    {
+      "company_id": 7,
+      "name": "E.ON",
+      "ways": {
+        "eqs": {
+          "candidates": 135,
+          "stored": 135,
+          "fetched_now": 0,
+          "ok": 135,
+          "kurz": 0,
+          "fehlgeschlagen": 0,
+          "skipped": 0,
+          "errors": 0
+        }
+      }
+    },
+    {
+      "company_id": 8,
+      "name": "RWE",
+      "ways": {
+        "eqs": {
+          "candidates": 352,
+          "stored": 352,
+          "fetched_now": 0,
+          "ok": 352,
+          "kurz": 0,
+          "fehlgeschlagen": 0,
+          "skipped": 0,
+          "errors": 0
+        }
+      }
+    },
+    {
+      "company_id": 9,
+      "name": "Thyssengas GmbH",
+      "ways": {
+        "eqs": {
+          "candidates": 0,
+          "stored": 0,
+          "fetched_now": 0,
+          "ok": 0,
+          "kurz": 0,
+          "fehlgeschlagen": 0,
+          "skipped": 0,
+          "errors": 0
+        }
+      }
+    },
+    {
+      "company_id": 13,
+      "name": "Universität Duisburg-Essen",
+      "ways": {
+        "eqs": {
+          "candidates": 0,
+          "stored": 0,
+          "fetched_now": 0,
+          "ok": 0,
+          "kurz": 0,
+          "fehlgeschlagen": 0,
+          "skipped": 0,
+          "errors": 0
+        }
+      }
+    },
+    {
+      "company_id": 14,
+      "name": "Karlsruher Institut für Technologie",
+      "ways": {
+        "eqs": {
+          "candidates": 0,
+          "stored": 0,
+          "fetched_now": 0,
+          "ok": 0,
+          "kurz": 0,
+          "fehlgeschlagen": 0,
+          "skipped": 0,
+          "errors": 0
+        }
+      }
+    },
+    {
+      "company_id": 15,
+      "name": "Technische Universität München",
+      "ways": {
+        "eqs": {
+          "candidates": 0,
+          "stored": 0,
+          "fetched_now": 0,
+          "ok": 0,
+          "kurz": 0,
+          "fehlgeschlagen": 0,
+          "skipped": 0,
+          "errors": 0
+        }
+      }
+    },
+    {
+      "company_id": 16,
+      "name": "Universität zu Köln",
+      "ways": {
+        "eqs": {
+          "candidates": 0,
+          "stored": 0,
+          "fetched_now": 0,
+          "ok": 0,
+          "kurz": 0,
+          "fehlgeschlagen": 0,
+          "skipped": 0,
+          "errors": 0
+        }
+      }
+    },
+    {
+      "company_id": 19,
+      "name": "SAP SE",
+      "ways": {
+        "eqs": {
+          "candidates": 339,
+          "stored": 286,
+          "fetched_now": 53,
+          "ok": 334,
+          "kurz": 0,
+          "fehlgeschlagen": 5,
+          "skipped": 0,
+          "errors": 5
+        }
+      }
+    },
+    {
+      "company_id": 20,
+      "name": "NTT DATA SE",
+      "ways": {
+        "eqs": {
+          "candidates": 0,
+          "stored": 0,
+          "fetched_now": 0,
+          "ok": 0,
+          "kurz": 0,
+          "fehlgeschlagen": 0,
+          "skipped": 0,
+          "errors": 0
+        }
+      }
+    },
+    {
+      "company_id": 21,
+      "name": "1&1 AG",
+      "ways": {
+        "eqs": {
+          "candidates": 144,
+          "stored": 0,
+          "fetched_now": 144,
+          "ok": 140,
+          "kurz": 0,
+          "fehlgeschlagen": 4,
+          "skipped": 0,
+          "errors": 4
+        }
+      }
+    },
+    {
+      "company_id": 22,
+      "name": "Aixtron",
+      "ways": {
+        "eqs": {
+          "candidates": 0,
+          "stored": 0,
+          "fetched_now": 0,
+          "ok": 0,
+          "kurz": 0,
+          "fehlgeschlagen": 0,
+          "skipped": 0,
+          "errors": 0
+        }
+      }
+    },
+    {
+      "company_id": 23,
+      "name": "Atoss",
+      "ways": {
+        "eqs": {
+          "candidates": 0,
+          "stored": 0,
+          "fetched_now": 0,
+          "ok": 0,
+          "kurz": 0,
+          "fehlgeschlagen": 0,
+          "skipped": 0,
+          "errors": 0
+        }
+      }
+    },
+    {
+      "company_id": 24,
+      "name": "Bechtle",
+      "ways": {
+        "eqs": {
+          "candidates": 5,
+          "stored": 0,
+          "fetched_now": 5,
+          "ok": 5,
+          "kurz": 0,
+          "fehlgeschlagen": 0,
+          "skipped": 0,
+          "errors": 0
+        }
+      }
+    },
+    {
+      "company_id": 25,
+      "name": "Cancom",
+      "ways": {
+        "eqs": {
+          "candidates": 20,
+          "stored": 0,
+          "fetched_now": 20,
+          "ok": 15,
+          "kurz": 5,
+          "fehlgeschlagen": 0,
+          "skipped": 0,
+          "errors": 0
+        }
+      }
+    },
+    {
+      "company_id": 26,
+      "name": "Carl Zeiss",
+      "ways": {
+        "eqs": {
+          "candidates": 81,
+          "stored": 0,
+          "fetched_now": 81,
+          "ok": 81,
+          "kurz": 0,
+          "fehlgeschlagen": 0,
+          "skipped": 0,
+          "errors": 0
+        }
+      }
+    },
+    {
+      "company_id": 27,
+      "name": "Compugroup Medical Deutschland",
+      "ways": {
+        "eqs": {
+          "candidates": 270,
+          "stored": 0,
+          "fetched_now": 270,
+          "ok": 270,
+          "kurz": 0,
+          "fehlgeschlagen": 0,
+          "skipped": 0,
+          "errors": 0
+        }
+      }
+    },
+    {
+      "company_id": 28,
+      "name": "Telekom",
+      "ways": {
+        "eqs": {
+          "candidates": 350,
+          "stored": 0,
+          "fetched_now": 350,
+          "ok": 350,
+          "kurz": 0,
+          "fehlgeschlagen": 0,
+          "skipped": 0,
+          "errors": 0
+        }
+      }
+    },
+    {
+      "company_id": 29,
+      "name": "Eckert Ziegler",
+      "ways": {
+        "eqs": {
+          "candidates": 0,
+          "stored": 0,
+          "fetched_now": 0,
+          "ok": 0,
+          "kurz": 0,
+          "fehlgeschlagen": 0,
+          "skipped": 0,
+          "errors": 0
+        }
+      }
+    },
+    {
+      "company_id": 30,
+      "name": "Elmos Semiconductor",
+      "ways": {
+        "eqs": {
+          "candidates": 0,
+          "stored": 0,
+          "fetched_now": 0,
+          "ok": 0,
+          "kurz": 0,
+          "fehlgeschlagen": 0,
+          "skipped": 0,
+          "errors": 0
+        }
+      }
+    },
+    {
+      "company_id": 31,
+      "name": "Evotec",
+      "ways": {
+        "eqs": {
+          "candidates": 0,
+          "stored": 0,
+          "fetched_now": 0,
+          "ok": 0,
+          "kurz": 0,
+          "fehlgeschlagen": 0,
+          "skipped": 0,
+          "errors": 0
+        }
+      }
+    },
+    {
+      "company_id": 32,
+      "name": "Formycon",
+      "ways": {
+        "eqs": {
+          "candidates": 0,
+          "stored": 0,
+          "fetched_now": 0,
+          "ok": 0,
+          "kurz": 0,
+          "fehlgeschlagen": 0,
+          "skipped": 0,
+          "errors": 0
+        }
+      }
+    },
+    {
+      "company_id": 33,
+      "name": "Freenet",
+      "ways": {
+        "eqs": {
+          "candidates": 193,
+          "stored": 0,
+          "fetched_now": 193,
+          "ok": 193,
+          "kurz": 0,
+          "fehlgeschlagen": 0,
+          "skipped": 0,
+          "errors": 0
+        }
+      }
+    }
+  ],
+  "fetches": 1116,
+  "fetch_limit_reached": false,
+  "min_text_chars": 300,
+  "max_text_chars": 40000,
+  "ways_summary": {
+    "eqs": {
+      "label": "EQS-Mitteilungen (Meldungsseiten)",
+      "candidates": 1889,
+      "stored": 773,
+      "fetched_now": 1116,
+      "ok": 1875,
+      "kurz": 5,
+      "fehlgeschlagen": 9,
+      "skipped": 0,
+      "errors": [
+        {
+          "company_id": 19,
+          "id": "d75673f241a2a1ca",
+          "error": "TimeoutError: The read operation timed out"
+        },
+        {
+          "company_id": 19,
+          "id": "ac6a785a52f744b2",
+          "error": "TimeoutError: The read operation timed out"
+        },
+        {
+          "company_id": 19,
+          "id": "978826d1ac1ea074",
+          "error": "TimeoutError: The read operation timed out"
+        },
+        {
+          "company_id": 19,
+          "id": "ae57890eb4003474",
+          "error": "TimeoutError: The read operation timed out"
+        },
+        {
+          "company_id": 19,
+          "id": "7fbbe0592362748f",
+          "error": "TimeoutError: The read operation timed out"
+        },
+        {
+          "company_id": 21,
+          "id": "019fc995f5d0f8da",
+          "error": "TimeoutError: The read operation timed out"
+        },
+        {
+          "company_id": 21,
+          "id": "fd39746f9f21d0bf",
+          "error": "TimeoutError: [Errno 60] Operation timed out"
+        },
+        {
+          "company_id": 21,
+          "id": "b89a2af00f898fc6",
+          "error": "TimeoutError: The read operation timed out"
+        },
+        {
+          "company_id": 21,
+          "id": "6e4b9e74a8bb88d2",
+          "error": "TimeoutError: The read operation timed out"
+        }
+      ]
+    }
+  },
+  "duration_s": 2399.0
+}

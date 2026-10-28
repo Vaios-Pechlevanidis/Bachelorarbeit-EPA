@@ -1,5 +1,5 @@
 ---
-title: EPA Bachelorprojekt
+title: EPA Bachelorarbeit
 emoji: 📊
 colorFrom: blue
 colorTo: green

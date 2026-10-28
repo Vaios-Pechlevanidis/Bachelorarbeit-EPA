@@ -14,6 +14,7 @@ import { OUTLIER_UNVALIDATED_NOTE, SHOW_FORECAST, SHOW_OUTLIER_MONTHS } from '..
 import { NEGATIVE_TOPIC_LABEL, TIMELINE_LABEL } from '../lib/labels';
 import { CATEGORY_MEAN_NOTE, CATEGORY_MEAN_TITLE, CRITICAL_LABEL, CRITICAL_NOTE, SCORE_HINT, UNCERTAINTY_NOTE, scoreCountText, scoreTrendWindowsText, scoreUncertaintyText } from '../lib/scoreText';
 import { buildReportSummary } from '../lib/reportSummary';
+import { COMPARE_RULES, bestCategory, buildCompareReport, timelineStats as compareTimelineStats, trendText } from '../lib/compareReport';
 const C = {
     s0:   [255, 255, 255],
     s50:  [248, 250, 252],
@@ -128,16 +129,28 @@ const extractChartViaHtml2Canvas = async (el, targetW = 2400) => {
     return { dataUrl: canvas.toDataURL('image/png', 1.0), w, h };
 };
 
-const svgToPng = (svg, targetW = 1200) =>
+const svgToPng = (svg, targetW = 1200, { crop = false } = {}) =>
     new Promise((resolve, reject) => {
         try {
             if (!svg) return reject(new Error('no svg'));
             const clone = svg.cloneNode(true);
             const bbox = svg.getBoundingClientRect();
-            const sw = bbox.width || 600, sh = bbox.height || 300;
+            let sw = bbox.width || 600, sh = bbox.height || 300, vx = 0, vy = 0;
+            if (crop) {
+                try {
+                    const cb = svg.getBBox();
+                    if (cb.width > 0 && cb.height > 0) {
+                        const pad = 8;
+                        vx = Math.max(0, cb.x - pad);
+                        vy = Math.max(0, cb.y - pad);
+                        sw = Math.min(sw - vx, cb.width + 2 * pad);
+                        sh = Math.min(sh - vy, cb.height + 2 * pad);
+                    }
+                } catch {}
+            }
             clone.setAttribute('width', sw);
             clone.setAttribute('height', sh);
-            clone.setAttribute('viewBox', `0 0 ${sw} ${sh}`);
+            clone.setAttribute('viewBox', `${vx} ${vy} ${sw} ${sh}`);
             clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
             const STYLE_PROPS = [
                 'fill', 'stroke', 'stroke-width', 'stroke-dasharray', 'stroke-linecap',
@@ -178,30 +191,25 @@ const svgToPng = (svg, targetW = 1200) =>
         } catch (e) { reject(e); }
     });
 
-const extractChart = async (container, targetW = 2400) => {
-    if (!container) return null;
-    try {
-        const r = await extractChartViaHtml2Canvas(container, targetW);
-        if (r?.dataUrl?.length > 1000) return r;
-    } catch (e) { console.warn('html2canvas fail:', e.message); }
-    try {
-        const svg = container.querySelector('svg.recharts-surface') || container.querySelector('svg');
-        return svg ? await svgToPng(svg, targetW) : null;
-    } catch (e) { console.warn('svg fallback fail:', e.message); }
-    return null;
-};
-
 const prettifyTopic = (key) => {
     if (!key) return '';
     return String(key).replace(/_/g, ' ').replace(/(^|\s)(\p{L})/gu, (m, s, c) => s + c.toUpperCase());
 };
 
-const extractChartSvgFirst = async (container, targetW = 3000) => {
+const svgArea = (el) => {
+    const r = el.getBoundingClientRect();
+    return r.width * r.height;
+};
+
+const extractChartSvgFirst = async (container, targetW = 3000, svgOptions = {}) => {
     if (!container) return null;
     try {
-        const svg = container.querySelector('svg.recharts-surface') || container.querySelector('svg');
+        const surfaces = [...container.querySelectorAll('svg.recharts-surface')];
+        const svg = surfaces.length
+            ? surfaces.reduce((a, b) => (svgArea(b) > svgArea(a) ? b : a))
+            : container.querySelector('svg');
         if (svg) {
-            const r = await svgToPng(svg, targetW);
+            const r = await svgToPng(svg, targetW, svgOptions);
             if (r?.dataUrl?.length > 1000) return r;
         }
     } catch (e) { console.warn('svg extract fail:', e.message); }
@@ -370,20 +378,22 @@ const smallBasisText = (n, min, unit = 'Bewertungen', context = '') =>
 const drawCoverPage = (doc, opts) => {
     const {
         companyName = 'Unbekannte Firma',
+        eyebrow = 'FIRMENANALYSE · BEWERTUNGEN, TOPICS & TRENDS',
+        reportLabel = 'Analytics Report',
         subtitle = 'Übersicht aller Bewertungen, Topics und Trends.',
         dateStr,
         timeStr,
         meta = [],
     } = opts;
 
-    drawCoverBrandBar(doc, PAGE.my);
+    drawCoverBrandBar(doc, PAGE.my, reportLabel);
 
     const heroCenterY = 128;
 
     doc.setFont('courier', 'bold');
     doc.setFontSize(8);
     doc.setTextColor(...C.s500);
-    doc.text('FIRMENANALYSE · BEWERTUNGEN, TOPICS & TRENDS', PAGE.w / 2, heroCenterY - 30, { align: 'center' });
+    doc.text(eyebrow, PAGE.w / 2, heroCenterY - 30, { align: 'center' });
 
     doc.setFont('helvetica', 'bold');
     let fs = 44;
@@ -393,7 +403,7 @@ const drawCoverPage = (doc, opts) => {
         doc.setFontSize(fs);
     }
     doc.setTextColor(...C.s900);
-    doc.text(companyName, PAGE.w / 2, heroCenterY - 14, { align: 'center' });
+    doc.text(fitText(doc, companyName, PAGE.cw - 20), PAGE.w / 2, heroCenterY - 14, { align: 'center' });
 
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(10);
@@ -520,7 +530,7 @@ const kpiCardHeight = (doc, card, w) => {
 };
 
 const drawKPICard = (doc, x, y, w, h, opts) => {
-    const { label, value, badge, tone = 'neutral', basis = null, warning = null } = opts;
+    const { label, value, badge, tone = 'neutral', basis = null, warning = null, dot = null } = opts;
     const t = TONE[tone] || TONE.neutral;
     const ix = x + 5;
     const innerW = w - 8;
@@ -533,12 +543,18 @@ const drawKPICard = (doc, x, y, w, h, opts) => {
     doc.setFillColor(...t.accent);
     doc.rect(x, y, 1.5, h, 'F');
 
+    const lx = dot ? ix + 3 : ix;
+    if (dot) {
+        doc.setFillColor(...dot);
+        doc.circle(ix + 1, y + 5.1, 1, 'F');
+    }
+    const labelW = innerW - (lx - ix);
     doc.setFont('helvetica', 'bold');
     let lfs = 8;
     doc.setFontSize(lfs);
-    while (lfs > 6.5 && doc.getTextWidth(String(label)) > innerW) { lfs -= 0.5; doc.setFontSize(lfs); }
+    while (lfs > 6.5 && doc.getTextWidth(String(label)) > labelW) { lfs -= 0.5; doc.setFontSize(lfs); }
     doc.setTextColor(...t.text);
-    doc.text(fitText(doc, String(label), innerW), ix, y + 6);
+    doc.text(fitText(doc, String(label), labelW), lx, y + 6);
 
     if (basis) drawBasisPill(doc, x + w - 3, y + 19.4, basis, { align: 'right', small: true });
 
@@ -693,10 +709,16 @@ const drawStatsFooter = (doc, x, y, w, cells) => {
             doc.line(cx + cellW, y + 2, cx + cellW, y + h - 2);
         }
 
+        let lx = cx + 4;
+        if (cell.color) {
+            doc.setFillColor(...cell.color);
+            doc.circle(lx + 0.9, y + 4.1, 0.9, 'F');
+            lx += 2.8;
+        }
         doc.setFont('courier', 'bold');
         doc.setFontSize(7);
         doc.setTextColor(...C.s500);
-        doc.text(String(cell.label).toUpperCase(), cx + 4, y + 5);
+        doc.text(fitText(doc, String(cell.label).toUpperCase(), cx + cellW - 2 - lx), lx, y + 5);
 
         const valStr = String(cell.value);
         const isText = valStr.length > 6 || /[a-zäöü]/i.test(valStr.replace(/\s/g, ''));
@@ -1315,16 +1337,24 @@ const drawMiniTable = (doc, y, { cols, rows, rowH = 6, newPage, limit }) => {
     let acc = x + 2;
     cols.forEach((c) => { colX.push(acc); acc += c.w; });
 
+    const withDot = (text, dot, i, yy, maxW) => {
+        const right = cols[i].align === 'right';
+        const t = fitText(doc, text, maxW - (dot ? 2.6 : 0));
+        const tx = right ? colX[i] + cols[i].w - 2 : colX[i] + (dot ? 2.6 : 0);
+        if (dot) {
+            doc.setFillColor(...dot);
+            doc.circle(right ? tx - doc.getTextWidth(t) - 1.7 : colX[i] + 0.9, yy - 0.9, 0.85, 'F');
+        }
+        doc.text(t, tx, yy, { align: right ? 'right' : 'left' });
+    };
+
     const head = (yy) => {
         doc.setFillColor(...C.s50);
         doc.rect(x, yy - 4, PAGE.cw, 6, 'F');
         doc.setFont('courier', 'bold');
         doc.setFontSize(6.5);
         doc.setTextColor(...C.s600);
-        cols.forEach((c, i) => {
-            if (c.align === 'right') doc.text(c.label.toUpperCase(), colX[i] + c.w - 2, yy, { align: 'right' });
-            else doc.text(c.label.toUpperCase(), colX[i], yy);
-        });
+        cols.forEach((c, i) => withDot(c.label.toUpperCase(), c.dot, i, yy, c.w - 1));
         return yy + 6;
     };
 
@@ -1344,9 +1374,7 @@ const drawMiniTable = (doc, y, { cols, rows, rowH = 6, newPage, limit }) => {
             doc.setFont('helvetica', c.bold ? 'bold' : 'normal');
             doc.setFontSize(7);
             doc.setTextColor(...(c.color || C.s700));
-            const text = fitText(doc, String(c.text ?? '–'), cols[i].w - 3);
-            if (cols[i].align === 'right') doc.text(text, colX[i] + cols[i].w - 2, curY, { align: 'right' });
-            else doc.text(text, colX[i], curY);
+            withDot(String(c.text ?? '–'), c.dot, i, curY, cols[i].w - 3);
         });
         if (noteLines.length) {
             doc.setFont('helvetica', 'italic');
@@ -2112,367 +2140,607 @@ export const exportKPIsAsPDF = async (kpiData) => {
     console.log(`✅ PDF gespeichert: ${fileName} (${total} Seiten)`);
 };
 
-const _cmpAddChart = (doc, imgResult, yPos, maxAvailableHeight = null) => {
-    if (!imgResult?.dataUrl) return yPos;
-    const availW = PAGE.cw;
-    const availH = maxAvailableHeight || (PAGE.h - PAGE.my - 10 - yPos);
-    const aspect = imgResult.w / imgResult.h;
-    let imgW = availW;
-    let imgH = imgW / aspect;
-    if (imgH > availH) { imgH = availH; imgW = imgH * aspect; }
-    const xPos = PAGE.mx + (availW - imgW) / 2;
-    doc.addImage(imgResult.dataUrl, 'PNG', xPos, yPos, imgW, imgH, undefined, 'FAST');
-    return yPos + imgH + 4;
+const hexToRgb = (hex) => {
+    const m = /^#?([0-9a-f]{6})$/i.exec(String(hex ?? ''));
+    if (!m) return null;
+    const v = parseInt(m[1], 16);
+    return [(v >> 16) & 255, (v >> 8) & 255, v & 255];
 };
 
-const _cmpAddTitle = (doc, title, yPos, subtitle = null) => {
-    doc.setFontSize(14);
+const CMP_FALLBACK_COLORS = [C.blue500, C.amber500, C.emerald500];
+
+const negativeTopicStats = (nt) => {
+    const mentions = Number(nt?.mention_count ?? nt?.frequency);
+    const rating = Number(nt?.avg_rating ?? nt?.avgRating);
+    return {
+        mentions: nt && Number.isFinite(mentions) ? mentions : null,
+        rating: nt && Number.isFinite(rating) ? rating : null,
+    };
+};
+
+const buildCompareKpiGroups = (companies, colors) => {
+    const months = companies.find((c) => c.trend?.windowMonths)?.trend.windowMonths ?? null;
+    const card = (c, i, opts) => ({ label: c.name, dot: colors[i], basis: 'stars', warning: null, ...opts });
+    return [
+        {
+            title: 'Ø Score',
+            sub: 'Gesamtnote, Mitarbeitende, gesamter Datensatz',
+            cards: companies.map((c, i) => {
+                const s = c.score != null ? Number(c.score) : NaN;
+                return card(c, i, {
+                    value: Number.isFinite(s) ? fmtNum(s, 2) : '–',
+                    badge: '/ 5',
+                    tone: Number.isFinite(s) ? scoreTone(s) : 'neutral',
+                    footer: [scoreCountText(c.scoreN), ...(c.scoreCi95 != null ? [scoreUncertaintyText(c.scoreCi95)] : [])],
+                    warning: smallBasisText(c.scoreN, MIN_REVIEWS_PER_WINDOW),
+                });
+            }),
+        },
+        {
+            title: months ? `Trend ${months} M` : 'Trend',
+            sub: months ? `Gesamtnote, ${months} volle Monate gegen die ${months} Monate davor` : 'Gesamtnote, Mitarbeitende',
+            cards: companies.map((c, i) => {
+                const tr = c.trend;
+                const tv = tr?.avgDelta != null ? parseFloat(tr.avgDelta) : NaN;
+                const nCur = tr?.nReviews?.current, nPrev = tr?.nReviews?.previous;
+                const hasN = nCur != null && nPrev != null;
+                return card(c, i, {
+                    value: Number.isFinite(tv) ? `${tv > 0 ? '+' : ''}${fmtNum(tv, 2)}` : '–',
+                    badge: tr?.sign ? (tr.sign === 'up' ? 'steigend' : tr.sign === 'down' ? 'sinkend' : 'stabil') : null,
+                    tone: tr?.sign === 'up' ? 'good' : tr?.sign === 'down' ? 'bad' : 'neutral',
+                    footer: hasN
+                        ? [`n = ${fmtInt(nCur)} vs. ${fmtInt(nPrev)}${tr?.raw?.difference_ci95 != null ? ` · Differenz ±${fmtNum(tr.raw.difference_ci95, 2)} (95 %)` : ''}`]
+                        : ['kein Trend berechenbar'],
+                    warning: hasN ? smallBasisText(Math.min(nCur, nPrev), MIN_REVIEWS_PER_WINDOW, 'Bewertungen', 'in einem Fenster') : null,
+                });
+            }),
+        },
+        {
+            title: CRITICAL_LABEL,
+            sub: CRITICAL_NOTE,
+            cards: companies.map((c, i) => {
+                const mc = c.mostCritical?.topicName ? c.mostCritical : null;
+                const s = mc ? Number(mc.score) : NaN;
+                return card(c, i, {
+                    value: mc ? mc.topicName : '–',
+                    badge: mc ? `${fmtNum(s, 2)} / 5` : null,
+                    tone: mc ? scoreTone(s) : 'neutral',
+                    footer: mc?.n != null ? [`n = ${fmtInt(mc.n)} Bewertungen in dieser Kategorie`] : ['Kategorienmittel, Mitarbeitende'],
+                    warning: mc?.n != null ? smallBasisText(mc.n, MIN_REVIEWS_PER_WINDOW) : null,
+                });
+            }),
+        },
+        {
+            title: NEGATIVE_TOPIC_LABEL,
+            sub: 'Freitexte: negativ eingestuftes Topic mit der größten Wirkung',
+            cards: companies.map((c, i) => {
+                const name = c.negativeTopicName && c.negativeTopicName !== '–' ? c.negativeTopicName : null;
+                const { mentions, rating } = negativeTopicStats(c.negativeTopic);
+                return card(c, i, {
+                    value: name ?? '–',
+                    badge: name && mentions != null ? `n = ${fmtInt(mentions)}` : null,
+                    tone: name ? 'bad' : 'neutral',
+                    basis: 'text',
+                    footer: name
+                        ? [`${mentions != null ? `${fmtInt(mentions)} Nennungen` : 'Nennungen unbekannt'}${rating != null ? ` · Ø ${fmtNum(rating, 2)} Sterne` : ''}`]
+                        : ['kein negatives Topic gefunden'],
+                });
+            }),
+        },
+    ];
+};
+
+const drawCompareStatusCard = (doc, y, company, color) => {
+    const cardX = PAGE.mx, cardW = PAGE.cw, pad = 4, labelW = 30;
+    const textX = cardX + pad + labelW;
+    const textW = cardW - pad * 2 - labelW;
+    let curY = y + 6;
+
+    doc.setFillColor(...color);
+    doc.circle(cardX + pad + 1, curY - 1.1, 1.1, 'F');
     doc.setFont('helvetica', 'bold');
+    doc.setFontSize(8.5);
     doc.setTextColor(...C.s900);
-    doc.text(title, PAGE.mx, yPos);
-    let y = yPos + 7;
-    if (subtitle) {
-        doc.setFontSize(9);
+    const name = fitText(doc, String(company.name), cardW / 2);
+    const nameW = doc.getTextWidth(name);
+    doc.text(name, cardX + pad + 3.5, curY);
+    const meta = [company.sector, company.peerGroup].filter(Boolean).join(' · ');
+    if (meta) {
         doc.setFont('helvetica', 'normal');
+        doc.setFontSize(7);
         doc.setTextColor(...C.s500);
-        doc.text(subtitle, PAGE.mx, y);
-        y += 5;
+        doc.text(fitText(doc, meta, cardW - pad * 2 - nameW - 10), cardX + cardW - pad, curY, { align: 'right' });
     }
-    doc.setDrawColor(...C.s200);
-    doc.setLineWidth(0.3);
-    doc.line(PAGE.mx, y, PAGE.cr, y);
-    return y + 6;
-};
+    curY += 5;
 
-const _cmpAddFooter = (doc, pageNum, totalPages, label) => {
-    const y = PAGE.h - PAGE.my + 6;
+    const row = (label, text) => {
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(7.5);
+        doc.setTextColor(...C.s700);
+        doc.text(label, cardX + pad, curY);
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(...C.s600);
+        curY = drawWrapped(doc, text, textX, curY, textW, { lineH: 3.3 }) + 1.2;
+    };
+
+    const status = company.dataStatus;
+    if (!status) {
+        row('Datenstand', 'konnte nicht geladen werden (GET /companies/{id}/data-status); die Leiste im Dashboard zeigt den Stand nach dem nächsten Abruf.');
+    } else {
+        row('Mitarbeitende', sourceLine(status.sources?.employee));
+        row('Bewerbende', sourceLine(status.sources?.candidates));
+        row('Letzter Import', lastImportText(status));
+        row('Plattform', platformText(status.platform));
+    }
+
+    const cardH = curY - y + 0.5;
     doc.setDrawColor(...C.s200);
     doc.setLineWidth(0.3);
-    doc.line(PAGE.mx, y - 4, PAGE.cr, y - 4);
-    doc.setFontSize(7.5);
-    doc.setFont('helvetica', 'normal');
-    doc.setTextColor(...C.s400);
-    doc.text(label, PAGE.mx, y);
-    doc.text(`Seite ${pageNum} / ${totalPages}`, PAGE.cr, y, { align: 'right' });
+    doc.roundedRect(cardX, y, cardW, cardH, 2.5, 2.5, 'S');
+    return y + cardH;
 };
 
 export const exportCompareAsPDF = async (compareData) => {
     const {
         companies = [],
-        radarChartElement = null,
-        barChartElement = null,
+        categories = [],
+        categoryChartElement = null,
+        categoryChartView = 'radar',
         timelineChartElement = null,
-        categoryData = [],
-        companyColors = null,
+        timelineHasGaps = false,
     } = compareData;
 
-    const hexToRgb = (hex) => [
-        parseInt(hex.slice(1, 3), 16),
-        parseInt(hex.slice(3, 5), 16),
-        parseInt(hex.slice(5, 7), 16),
-    ];
-    const CMP_COLORS_DEFAULT = [C.blue500, C.emerald500, C.orange500, C.rose500, [139, 92, 246]];
-    const CMP_COLORS = companyColors
-        ? companyColors.map(hexToRgb)
-        : CMP_COLORS_DEFAULT;
+    const colors = companies.map((c, i) => hexToRgb(c.color) || CMP_FALLBACK_COLORS[i % CMP_FALLBACK_COLORS.length]);
+    const names = companies.map((c) => c.name || 'Unbekannt');
+    const report = buildCompareReport({ companies, categories });
+    const rows = report.rows;
+    const isRadar = categoryChartView !== 'bar';
+    const viewLabel = isRadar ? 'Radar' : 'Balken';
+    const weakLabel = fmtNum(COMPARE_RULES.sharedWeakness, 1);
 
-    const companyNames = companies.map(c => c.name || 'Unbekannt');
-    const titleLabel = companyNames.join(' vs. ');
+    console.log('📸 Extrahiere Charts…');
+    let categoryImg = null, timelineImg = null;
+    try { categoryImg = await extractChartSvgFirst(categoryChartElement, 3000, { crop: isRadar }); }
+    catch (e) { console.warn('Kategorie-Chart:', e); }
+    try { timelineImg = await extractChartSvgFirst(timelineChartElement); }
+    catch (e) { console.warn('Verlaufs-Chart:', e); }
 
     const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
 
-    let radarImg = null, barImg = null, timelineImg = null;
-    try { radarImg    = await extractChart(radarChartElement); }    catch (e) { console.warn('Radar-Chart Extraktion fehlgeschlagen:', e); }
-    try { barImg      = await extractChart(barChartElement); }      catch (e) { console.warn('Bar-Chart Extraktion fehlgeschlagen:', e); }
-    try { timelineImg = await extractChart(timelineChartElement); } catch (e) { console.warn('Timeline-Chart Extraktion fehlgeschlagen:', e); }
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('de-DE', { day: '2-digit', month: 'long', year: 'numeric' });
+    const timeStr = now.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }) + ' Uhr';
+    const dateShort = now.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' });
 
-    const headerH = 125;
-    doc.setFillColor(...C.navy);
-    doc.rect(0, 0, PAGE.w, headerH, 'F');
-    doc.setFillColor(...C.s800);
-    doc.rect(0, headerH - 25, PAGE.w, 25, 'F');
+    const joined = names.join(' vs. ');
+    const headerLabel = `WorkPulse · ${joined} — Vergleichsreport`;
+    const footerLeft  = 'WorkPulse · Firmenvergleich';
+    const limit = PAGE.h - 19;
+    const TECH_PAGE_REF = '„Technische Hinweise“ (letzte Seite)';
 
-    doc.setFillColor(...C.blue600);
-    doc.rect(0, 0, PAGE.w, 2.5, 'F');
+    const ctx = { page: 1 };
+    const toc = [];
+    const newPage = () => {
+        doc.addPage();
+        ctx.page += 1;
+        drawPageHeader(doc, headerLabel, dateShort);
+        return 30;
+    };
+    const startSection = (title, meta) => {
+        const y = newPage();
+        toc.push({ title, page: ctx.page, meta });
+        return y;
+    };
+    const ensureSpace = (y, needed) => (y + needed > limit ? newPage() : y);
 
-    const logoX = PAGE.w / 2;
-    const logoY = 38;
-    [[logoX - 16, 18], [logoX - 8, 14], [logoX, 10], [logoX + 8, 16]].forEach(([x, h], i) => {
-        doc.setFillColor(...(i % 2 === 0 ? C.blue600 : C.blue200));
-        doc.roundedRect(x, logoY + (18 - h), 5, h, 1, 1, 'F');
+    const dataMonths = companies
+        .flatMap((c) => (c.timeline ?? []).filter((p) => p?.date && !p.is_forecast).map((p) => p.date))
+        .sort();
+    const scores = companies.map((c) => (c.score != null ? Number(c.score) : NaN)).filter(Number.isFinite);
+    const totalN = companies.reduce((s, c) => s + (Number(c.scoreN) || 0), 0);
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(22);
+    const heroTitle = doc.getTextWidth(joined) <= PAGE.cw - 20 ? joined : 'Firmenvergleich';
+
+    const metaBottom = drawCoverPage(doc, {
+        companyName: heroTitle,
+        eyebrow: 'FIRMENVERGLEICH · BEWERTUNGEN, KATEGORIEN & VERLAUF',
+        reportLabel: 'Vergleichsreport',
+        subtitle: `Gegenüberstellung von ${companies.length} Firmen: Ø Score, Trend, Kategorien und Bewertungsverlauf. Mitarbeiterperspektive, gesamter Datensatz je Firma.`,
+        dateStr,
+        timeStr,
+        meta: [
+            { label: 'Firmen', value: String(companies.length), sub: 'im Vergleich' },
+            {
+                label: 'Zeitraum der Daten',
+                value: dataMonths.length ? fmtSpan(dataMonths[0], dataMonths[dataMonths.length - 1]) : '–',
+                sub: 'Bewertungsverlauf, letzte 5 Jahre',
+            },
+            {
+                label: 'Bewertungen',
+                value: companies.some((c) => c.scoreN != null) ? fmtInt(totalN) : '–',
+                sub: 'mit Gesamtnote, Mitarbeitende',
+            },
+            { label: 'Kategorien', value: String(rows.length || '–'), sub: 'Sterne je Kategorie' },
+            {
+                label: 'Spanne Ø Score',
+                value: scores.length >= 2 ? fmtNum(Math.max(...scores) - Math.min(...scores), 2) : '–',
+                sub: 'höchster minus niedrigster',
+            },
+        ],
     });
 
-    doc.setFontSize(26);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(...C.s0);
-    doc.text('Firmenvergleich', PAGE.w / 2, 78, { align: 'center' });
+    let listY = metaBottom + 11;
+    doc.setFont('courier', 'bold');
+    doc.setFontSize(7.5);
+    doc.setTextColor(...C.s500);
+    doc.text('FIRMEN IM VERGLEICH', PAGE.mx, listY);
+    listY += 7;
+    companies.forEach((c, i) => {
+        doc.setFillColor(...colors[i]);
+        doc.circle(PAGE.mx + 1.5, listY - 1.3, 1.5, 'F');
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(10);
+        doc.setTextColor(...C.s800);
+        const name = fitText(doc, names[i], PAGE.cw * 0.55);
+        const nameW = doc.getTextWidth(name);
+        doc.text(name, PAGE.mx + 5, listY);
+        const meta = [c.sector, c.peerGroup, c.scoreN != null ? `${fmtInt(c.scoreN)} Bewertungen mit Gesamtnote` : null].filter(Boolean).join(' · ');
+        if (meta) {
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(8);
+            doc.setTextColor(...C.s500);
+            doc.text(fitText(doc, meta, PAGE.cw - 5 - nameW - 6), PAGE.cr, listY, { align: 'right' });
+        }
+        listY += 6.5;
+    });
+    const tocY = listY + 8;
 
-    doc.setFontSize(12);
-    doc.setFont('helvetica', 'normal');
-    doc.setTextColor(...C.blue200);
-    const coverSubtitle = companyNames.length <= 3
-        ? companyNames.join('  ·  ')
-        : companyNames.slice(0, 3).join('  ·  ');
-    doc.text(coverSubtitle, PAGE.w / 2, 90, { align: 'center' });
+    const valueCell = (row, i, withN = false) => {
+        const v = row.values[i];
+        if (v == null) return { text: '–', color: C.s400 };
+        const marked = row.values.filter((x) => x != null).length >= 2 && row.max !== row.min;
+        const color = marked && v === row.max ? C.emerald600 : marked && v === row.min ? C.rose600 : C.s800;
+        const n = row.counts?.[i];
+        return { text: withN && n != null ? `${fmtNum(v)} (${fmtInt(n)})` : fmtNum(v), color, bold: true };
+    };
+    const categoryCols = () => {
+        const compW = (PAGE.cw - 2 - 52 - 22) / Math.max(1, companies.length);
+        return [
+            { label: 'Kategorie', w: 52 },
+            ...companies.map((c, i) => ({ label: names[i], w: compW, align: 'right', dot: colors[i] })),
+            { label: 'Spanne', w: 22, align: 'right' },
+        ];
+    };
+    const categoryCells = (row, withN) => [
+        { text: row.label, bold: true, color: C.s800 },
+        ...companies.map((_, i) => valueCell(row, i, withN)),
+        row.spread != null ? { text: fmtNum(row.spread), color: C.s500 } : '–',
+    ];
 
-    doc.setDrawColor(...C.s300);
+    let y = startSection('Kurzbericht', 'Lage, Stärken und Schwächen, größte Unterschiede');
+    y = drawSectionTitle(doc, y, 1, 'Kurzbericht', 'Zusammenfassung · nach festen Regeln');
+
+    doc.setFont('helvetica', 'italic');
+    doc.setFontSize(7.5);
+    doc.setTextColor(...C.s500);
+    y = drawWrapped(
+        doc,
+        `Nach festen Regeln aus den Bewertungen, wie die Zusammenfassung der Vergleichsseite · keine Aussage über Ursachen · Regeln und Datengrundlage: ${TECH_PAGE_REF}.`,
+        PAGE.mx, y, PAGE.cw, { lineH: 3.3 },
+    ) + 4;
+
+    y = drawListTitle(doc, y, 'Lage der Bewertung', 'Ø Score je Firma · Gesamtnote, Mitarbeitende');
+    y = drawStatsFooter(doc, PAGE.mx, y - 2, PAGE.cw, report.cells.map((cell, i) => ({ ...cell, color: colors[i] })));
+    doc.setDrawColor(...C.s100);
     doc.setLineWidth(0.3);
-    doc.line(PAGE.w / 2 - 40, 96, PAGE.w / 2 + 40, 96);
+    doc.line(PAGE.mx, y, PAGE.cr, y);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(7);
+    doc.setTextColor(...C.s600);
+    y = drawWrapped(doc, report.ranking.text, PAGE.mx, y + 4, PAGE.cw, { lineH: 3.1 });
 
-    doc.setFontSize(10);
-    doc.setTextColor(...C.s400);
-    doc.text(
-        new Date().toLocaleDateString('de-DE', { day: '2-digit', month: 'long', year: 'numeric' }),
-        PAGE.w / 2, 103, { align: 'center' }
+    y = ensureSpace(y + 6, 30);
+    y = drawListTitle(doc, y, 'Gegenüberstellung', 'je Firma · Einzelheiten unter „Kennzahlen“ und „Detailvergleich“');
+    y = drawMiniTable(doc, y, {
+        cols: [
+            { label: 'Firma', w: 36 },
+            { label: 'Ø Score (n)', w: 26 },
+            { label: 'Trend', w: 22 },
+            { label: 'Beste Kategorie', w: 46 },
+            { label: CRITICAL_LABEL, w: 46 },
+        ],
+        rows: companies.map((c, i) => {
+            const best = bestCategory(rows, i);
+            const mc = c.mostCritical?.topicName ? c.mostCritical : null;
+            const tr = c.trend;
+            return {
+                cells: [
+                    { text: names[i], bold: true, color: C.s900, dot: colors[i] },
+                    `${c.score != null ? fmtNum(c.score) : '–'}${c.scoreN != null ? ` (${fmtInt(c.scoreN)})` : ''}`,
+                    { text: trendText(tr), bold: true, color: tr?.sign === 'up' ? C.emerald600 : tr?.sign === 'down' ? C.rose600 : C.s700 },
+                    best ? `${fmtNum(best.value)} · ${best.label}` : '–',
+                    mc ? `${fmtNum(mc.score)} · ${mc.topicName}` : '–',
+                ],
+            };
+        }),
+        newPage,
+        limit,
+    });
+
+    const colGap = 6;
+    const colW = (PAGE.cw - colGap) / 2;
+    const colH = Math.max(reportColumnHeight(doc, colW, report.strengths), reportColumnHeight(doc, colW, report.issues));
+    y = ensureSpace(y + 6, colH + 4);
+    drawReportColumn(doc, PAGE.mx, y, colW, colH, {
+        title: 'Stärken je Firma', sub: 'höchste Kategorie · steigender Trend', tone: 'good', items: report.strengths,
+        emptyText: 'Keine Kategorienwerte vorhanden.',
+    });
+    drawReportColumn(doc, PAGE.mx + colW + colGap, y, colW, colH, {
+        title: 'Schwächen je Firma', sub: 'gemeinsam · niedrigste Kategorie · sinkender Trend', tone: 'bad', items: report.issues,
+        emptyText: 'Keine Kategorienwerte vorhanden.',
+    });
+    y += colH + 5;
+
+    if (report.gaps.length) {
+        y = ensureSpace(y, 16 + 6 * report.gaps.length);
+        y = drawListTitle(doc, y, 'Größte Unterschiede', `${report.gaps.length} Kategorien mit der größten Spanne · Grün = höchster, Rot = niedrigster Wert`);
+        y = drawMiniTable(doc, y, { cols: categoryCols(), rows: report.gaps.map((g) => ({ cells: categoryCells(g, false) })), newPage, limit });
+    }
+    y = ensureSpace(y + 3, 8);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(7);
+    doc.setTextColor(...C.s600);
+    y = drawWrapped(
+        doc,
+        report.shared.length
+            ? `Gemeinsame ${report.shared.length === 1 ? 'Schwäche' : 'Schwächen'} (bei allen Firmen unter ${weakLabel}): ${report.shared.map((r) => r.label).join(', ')}.`
+            : `Keine Kategorie liegt bei allen Firmen unter ${weakLabel}.`,
+        PAGE.mx, y, PAGE.cw, { lineH: 3.1 },
+    ) + 3;
+
+    if (report.warnings.length) {
+        y = ensureSpace(y + 2, 20);
+        y = drawListTitle(doc, y, 'Warnungen', 'Datenqualität und Aussagekraft');
+        y = drawNoteList(doc, y, report.warnings, { tone: 'warn', ensureSpace });
+    }
+    if (report.nextSteps.length) {
+        y = ensureSpace(y + 2, 20);
+        y = drawListTitle(doc, y, 'Nächste Analyseschritte', 'Vorschläge für Untersuchungsfragen, keine Maßnahmen');
+        y = drawNoteList(doc, y, report.nextSteps, { numbered: true, ensureSpace });
+    }
+
+    y = startSection('Kennzahlen', 'vier Kennzahlen je Firma mit n, Warnung bei kleiner Basis und Datenbasis');
+    y = drawSectionTitle(doc, y, 2, 'Kennzahlen', 'Skala 1 – 5 · gesamter Datensatz');
+
+    const perRow = Math.max(1, companies.length);
+    const kpiCardW = (PAGE.cw - (perRow - 1) * 3) / perRow;
+    buildCompareKpiGroups(companies, colors).forEach((group, gi) => {
+        const h = Math.max(...group.cards.map((card) => kpiCardHeight(doc, card, kpiCardW)));
+        y = ensureSpace(y + (gi ? 5 : 0), h + 7);
+        y = drawListTitle(doc, y, group.title, group.sub);
+        y = drawKPIGrid(doc, y - 1.5, group.cards, { perRow });
+    });
+
+    y = ensureSpace(y + 5, 8);
+    doc.setFont('helvetica', 'italic');
+    doc.setFontSize(7);
+    doc.setTextColor(...C.s500);
+    y = drawWrapped(
+        doc,
+        `Die Vergleichsseite hat keinen Zeitfilter: alle Kennzahlen beziehen sich auf den gesamten Datensatz je Firma. Berechnung, Zeitfenster und Datenstand: ${TECH_PAGE_REF}.`,
+        PAGE.mx, y, PAGE.cw, { lineH: 3.1 },
     );
 
-    const execY = headerH + 15;
-    doc.setFillColor(...C.s0);
-    doc.setDrawColor(...C.s200);
-    doc.setLineWidth(0.4);
-    doc.roundedRect(PAGE.mx, execY, PAGE.cw, 40 + companies.length * 8, 3, 3, 'FD');
-    doc.setFillColor(...C.blue600);
-    doc.roundedRect(PAGE.mx, execY, PAGE.cw, 3, 3, 3, 'F');
-    doc.setFillColor(...C.s0);
-    doc.rect(PAGE.mx, execY + 2, PAGE.cw, 2, 'F');
+    y = startSection('Kategorievergleich & Detailvergleich', `${rows.length} Kategorien je Firma, Diagramm und Tabelle mit n`);
+    y = drawSectionTitle(doc, y, 3, 'Kategorievergleich', 'Kategorien · Sternebewertung');
 
-    doc.setFontSize(11);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(...C.s800);
-    doc.text('Zusammenfassung', PAGE.mx + 8, execY + 12);
+    const catLegend = companies.map((c, i) => ({ label: names[i], color: colors[i] }));
+    catLegend.push({ label: 'Quelle: Kategorienmittel je Firma · Mitarbeitende', sourceNote: true });
+    const spreadRows = rows.filter((r) => r.spread != null);
+    const widest = spreadRows.length ? spreadRows.reduce((a, b) => (b.spread > a.spread ? b : a)) : null;
+    const narrowest = spreadRows.length ? spreadRows.reduce((a, b) => (b.spread < a.spread ? b : a)) : null;
+    const complete = rows.filter((r) => r.values.every((v) => v != null)).length;
 
-    doc.setFontSize(9);
-    doc.setFont('helvetica', 'normal');
-    doc.setTextColor(...C.s500);
-    doc.text(`Vergleich von ${companies.length} Unternehmen anhand von Bewertungen,`, PAGE.mx + 8, execY + 20);
-    doc.text('Kategorien, Trends und Themenbereichen.', PAGE.mx + 8, execY + 26);
-
-    let summaryY = execY + 34;
-    companies.forEach((comp, i) => {
-        const col = CMP_COLORS[i] || C.s400;
-        doc.setFillColor(...col);
-        doc.circle(PAGE.mx + 12, summaryY + 3, 2, 'F');
-        doc.setFont('helvetica', 'bold');
-        doc.setTextColor(...C.s800);
-        doc.text(comp.name || 'Unbekannt', PAGE.mx + 18, summaryY + 4);
-        summaryY += 8;
+    y = drawDashboardCard(doc, y, {
+        header: {
+            eyebrow: 'Kategorien · Sternebewertung',
+            title: 'Kategorievergleich',
+            subtitle: `${companies.length} Firmen · ${rows.length} Kategorien · ${viewLabel}-Ansicht`,
+            iconTone: 'info',
+            controlsText: viewLabel,
+            basis: 'stars',
+        },
+        chart: categoryImg,
+        chartH: 78,
+        emptyText: 'Diagramm nicht verfügbar',
+        legend: catLegend,
+        stats: [
+            { label: 'Kategorien', value: String(rows.length), sub: `${complete} mit Werten bei allen Firmen` },
+            { label: 'Größte Spanne', value: widest ? fmtNum(widest.spread) : '–', sub: widest?.label ?? 'keine', tone: widest ? 'warn' : null },
+            { label: 'Kleinste Spanne', value: narrowest ? fmtNum(narrowest.spread) : '–', sub: narrowest?.label ?? 'keine' },
+            { label: `Alle unter ${weakLabel}`, value: String(report.shared.length), sub: 'gemeinsame Schwächen', tone: report.shared.length ? 'bad' : null },
+        ],
+        caption: `Abb. 1 · Kategorienmittel je Firma, Sterne 1 – 5 · ${viewLabel}-Ansicht wie auf der Vergleichsseite gewählt`,
     });
 
-    let tocY = summaryY + 14;
-    doc.setFontSize(12);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(...C.s800);
-    doc.text('Inhalt', PAGE.mx, tocY);
-    tocY += 8;
-
-    const tocItems = [];
-    let pgCounter = 1;
-    pgCounter++; tocItems.push(['KPI-Vergleich', pgCounter]);
-    if (radarImg || barImg) { pgCounter++; tocItems.push(['Kategorievergleich', pgCounter]); }
-    if (timelineImg)        { pgCounter++; tocItems.push(['Bewertungsverlauf', pgCounter]); }
-    if (categoryData.length > 0) { pgCounter++; tocItems.push(['Detailvergleich', pgCounter]); }
-
-    tocItems.forEach(([label, pg]) => {
-        doc.setFontSize(9.5);
-        doc.setFont('helvetica', 'normal');
-        doc.setTextColor(...C.s800);
-        doc.text(label, PAGE.mx + 4, tocY);
-        const dotX = PAGE.mx + 4 + doc.getTextWidth(label) + 2;
-        const pageX = PAGE.cr - 4;
-        doc.setTextColor(...C.s300);
-        doc.text('.'.repeat(Math.max(1, Math.floor((pageX - dotX - 10) / 1.5))), dotX, tocY);
-        doc.setFont('helvetica', 'bold');
-        doc.setTextColor(...C.blue600);
-        doc.text(String(pg), pageX, tocY, { align: 'right' });
-        tocY += 6;
-    });
-
-    doc.addPage();
-    doc.setFillColor(...C.s100);
-    doc.rect(0, 0, PAGE.w, PAGE.h, 'F');
-
-    let y = _cmpAddTitle(doc, 'KPI-Vergleich', PAGE.my + 5, 'Gegenüberstellung der wichtigsten Kennzahlen');
-
-    companies.forEach((comp, i) => {
-        const col = CMP_COLORS[i] || C.s400;
-        doc.setFillColor(...col);
-        doc.circle(PAGE.mx + 4 + i * 60, y, 2, 'F');
-        doc.setFontSize(8);
-        doc.setFont('helvetica', 'bold');
-        doc.setTextColor(...col);
-        doc.text(comp.name.length > 18 ? comp.name.substring(0, 18) + '…' : comp.name, PAGE.mx + 9 + i * 60, y + 0.5);
-    });
-    y += 10;
-
-    const drawKPIBlock = (title, yPos, getValue) => {
-        const rowH = 8;
-        const boxH = 10 + companies.length * rowH + 4;
-        doc.setFillColor(...C.s0);
-        doc.setDrawColor(...C.s200);
-        doc.setLineWidth(0.3);
-        doc.roundedRect(PAGE.mx, yPos, PAGE.cw, boxH, 2, 2, 'FD');
-        doc.setFontSize(9);
-        doc.setFont('helvetica', 'bold');
-        doc.setTextColor(...C.s800);
-        doc.text(title, PAGE.mx + 6, yPos + 7);
-        let rowY = yPos + 14;
-        companies.forEach((comp, i) => {
-            const col = CMP_COLORS[i] || C.s400;
-            const { value, valueColor } = getValue(comp);
-            doc.setFillColor(...col);
-            doc.circle(PAGE.mx + 10, rowY - 1, 1.5, 'F');
-            doc.setFontSize(8.5);
-            doc.setFont('helvetica', 'normal');
-            doc.setTextColor(...C.s800);
-            doc.text(comp.name.length > 30 ? comp.name.substring(0, 30) + '…' : comp.name, PAGE.mx + 15, rowY);
-            doc.setFont('helvetica', 'bold');
-            doc.setTextColor(...(valueColor || C.s800));
-            doc.text(String(value), PAGE.cr - 6, rowY, { align: 'right' });
-            rowY += rowH;
-        });
-        return yPos + boxH + 6;
+    const meanValues = companies.map((c) => (c.categoryMean != null && Number.isFinite(Number(c.categoryMean)) ? Number(c.categoryMean) : null));
+    const meanValid = meanValues.filter((v) => v != null);
+    const meanRow = {
+        label: `${CATEGORY_MEAN_TITLE} (ungewichtet)`,
+        values: meanValues,
+        counts: [],
+        max: meanValid.length ? Math.max(...meanValid) : null,
+        min: meanValid.length ? Math.min(...meanValid) : null,
+        spread: meanValid.length >= 2 ? Math.max(...meanValid) - Math.min(...meanValid) : null,
     };
 
-    y = drawKPIBlock('Ø Score (Gesamtnote)', y, (comp) => {
-        const s = comp.score;
-        return {
-            value: s != null ? `${fmtNum(s, 2)}${comp.scoreN != null ? ` (n = ${fmtInt(comp.scoreN)})` : ''}` : '–',
-            valueColor: s > 3 ? C.emerald500 : s >= 2 ? C.s800 : s != null ? C.rose500 : C.s300,
-        };
+    y = ensureSpace(y + 5, 40);
+    y = drawSectionTitle(doc, y, 4, 'Detailvergleich', 'Kategorien · Wert (n) je Firma');
+    y = drawMiniTable(doc, y + 1, {
+        cols: categoryCols(),
+        rows: [...rows.map((r) => ({ cells: categoryCells(r, true) })), { cells: categoryCells(meanRow, false) }],
+        newPage,
+        limit,
+    });
+    y = ensureSpace(y + 2, 8);
+    doc.setFont('helvetica', 'italic');
+    doc.setFontSize(7);
+    doc.setTextColor(...C.s500);
+    y = drawWrapped(
+        doc,
+        'Wert (n) = Kategorienmittel und Zahl der Bewertungen mit Wert in der Kategorie · Grün = höchster, Rot = niedrigster Wert der Zeile · Spanne = höchster minus niedrigster Wert, ohne Signifikanzprüfung.',
+        PAGE.mx, y, PAGE.cw, { lineH: 3.1 },
+    );
+
+    y = startSection('Bewertungsverlauf', 'Monatsmittel der Gesamtnote je Firma, letzte 5 Jahre');
+    y = drawSectionTitle(doc, y, 5, 'Bewertungsverlauf', 'Zeitreihe · Historie');
+
+    const tStats = companies.map((c) => compareTimelineStats(c.timeline));
+    const tlLegend = companies.map((c, i) => ({ label: names[i], color: colors[i] }));
+    if (timelineHasGaps) tlLegend.push({ label: 'Interpoliert (gestrichelt)', color: C.s400, dashed: true });
+    tlLegend.push({ label: 'Quelle: Mitarbeitende · Ø Score je Monat', sourceNote: true });
+
+    y = drawDashboardCard(doc, y, {
+        header: {
+            eyebrow: 'Zeitreihe · Historie',
+            title: 'Bewertungsverlauf im Vergleich',
+            subtitle: 'Mitarbeitende · Ø Score je Monat · letzte 5 Jahre',
+            iconTone: 'info',
+            controlsText: 'Mitarbeitende',
+            basis: 'stars',
+        },
+        chart: timelineImg,
+        chartH: 70,
+        emptyText: 'Keine Verlaufsdaten verfügbar',
+        legend: tlLegend,
+        stats: companies.map((c, i) => ({
+            label: names[i],
+            color: colors[i],
+            value: tStats[i] ? fmtNum(tStats[i].mean, 2) : '–',
+            sub: tStats[i] ? `Ø Monatsmittel · ${tStats[i].months} Monate` : 'keine Daten',
+        })),
+        caption: `Abb. 2 · Monatsmittel der Gesamtnote je Firma${timelineHasGaps ? ' · gestrichelte Linien = interpolierte Monate ohne Bewertung' : ''}`,
     });
 
-    y = drawKPIBlock('Trend', y, (comp) => {
-        if (!comp.trend) return { value: '–', valueColor: C.s300 };
-        const tv = parseFloat(comp.trend.avgDelta);
-        return {
-            value: `${tv > 0 ? '+' : ''}${comp.trend.avgDelta}`,
-            valueColor: tv > 0.05 ? C.emerald500 : tv < -0.05 ? C.rose500 : C.s500,
-        };
+    y = ensureSpace(y + 5, 30);
+    y = drawListTitle(doc, y, 'Kennzahlen des Verlaufs', 'je Firma · Monate mit Bewertungen, Spanne der Monatsmittel');
+    y = drawMiniTable(doc, y, {
+        cols: [
+            { label: 'Firma', w: 34 },
+            { label: 'Zeitraum', w: 36 },
+            { label: 'Monate (Lücken)', w: 24, align: 'right' },
+            { label: 'Ø Monatsmittel', w: 22, align: 'right' },
+            { label: 'Niedrigster Monat', w: 30, align: 'right' },
+            { label: 'Höchster Monat', w: 30, align: 'right' },
+        ],
+        rows: companies.map((c, i) => {
+            const s = tStats[i];
+            return {
+                cells: [
+                    { text: names[i], bold: true, color: C.s900, dot: colors[i] },
+                    s ? fmtSpan(s.first, s.last) : '–',
+                    s ? `${s.months} (${s.gaps})` : '–',
+                    s ? { text: fmtNum(s.mean), bold: true } : '–',
+                    s ? `${fmtNum(s.low.score)} (${fmtPeriod(s.low.date)})` : '–',
+                    s ? `${fmtNum(s.high.score)} (${fmtPeriod(s.high.date)})` : '–',
+                ],
+                note: s?.thin
+                    ? `${s.thin} von ${s.months} Monaten mit weniger als ${s.minReviews} Bewertungen; sie zählen im Monatsmittel voll.`
+                    : null,
+            };
+        }),
+        newPage,
+        limit,
     });
 
-    y = drawKPIBlock(CRITICAL_LABEL, y, (comp) => {
-        if (!comp.mostCritical) return { value: '–', valueColor: C.s300 };
-        return { value: `${comp.mostCritical.topicName} (${comp.mostCritical.score})`, valueColor: C.rose500 };
-    });
+    y = startSection('Technische Hinweise', 'Datenstand je Firma, Berechnung, Regeln, Grenzen');
+    y = drawSectionTitle(doc, y, 6, 'Technische Hinweise', 'Datengrundlage · Berechnung · Regeln');
 
-    drawKPIBlock(NEGATIVE_TOPIC_LABEL, y, (comp) => {
-        const nt = comp.negativeTopic;
-        if (!nt) return { value: '–', valueColor: C.s300 };
-        const lbl = (nt.topic_label || nt.topic_text || nt.topic || '–');
-        return { value: lbl.length > 30 ? lbl.substring(0, 30) + '…' : lbl, valueColor: C.orange500 };
-    });
-
-    if (radarImg || barImg) {
-        doc.addPage();
-        doc.setFillColor(...C.s100);
-        doc.rect(0, 0, PAGE.w, PAGE.h, 'F');
-        let y3 = _cmpAddTitle(doc, 'Kategorievergleich', PAGE.my + 5, 'Bewertung der Firmen in den einzelnen Kategorien');
-
-        if (radarImg) {
-            doc.setFontSize(10); doc.setFont('helvetica', 'bold'); doc.setTextColor(...C.s800);
-            doc.text('Radar-Ansicht', PAGE.mx + 8, y3);
-            y3 += 4;
-            y3 = _cmpAddChart(doc, radarImg, y3, barImg ? 110 : PAGE.h - PAGE.my - 10 - y3);
-            y3 += 4;
-        }
-        if (barImg) {
-            doc.setFontSize(10); doc.setFont('helvetica', 'bold'); doc.setTextColor(...C.s800);
-            doc.text('Balken-Ansicht', PAGE.mx + 8, y3);
-            y3 += 4;
-            _cmpAddChart(doc, barImg, y3, PAGE.h - PAGE.my - 10 - y3);
-        }
-    }
-
-    if (timelineImg) {
-        doc.addPage();
-        doc.setFillColor(...C.s100);
-        doc.rect(0, 0, PAGE.w, PAGE.h, 'F');
-        const y4 = _cmpAddTitle(doc, 'Bewertungsverlauf', PAGE.my + 5, 'Historische Entwicklung der Bewertungen im Vergleich');
-        _cmpAddChart(doc, timelineImg, y4, PAGE.h - PAGE.my - 10 - y4);
-    }
-
-    if (categoryData.length > 0) {
-        doc.addPage();
-        doc.setFillColor(...C.s100);
-        doc.rect(0, 0, PAGE.w, PAGE.h, 'F');
-        let yT = _cmpAddTitle(doc, 'Detailvergleich', PAGE.my + 5, 'Bewertungen nach Kategorien mit Differenzanalyse');
-
-        const catColW = 55;
-        const compColW = companies.length >= 3 ? 30 : 38;
-        const rowH = 7;
-
-        const drawTableHeader = (atY) => {
-            doc.setFillColor(...C.s800);
-            doc.roundedRect(PAGE.mx, atY - 5, PAGE.cw, rowH + 3, 1, 1, 'F');
-            doc.setFontSize(7.5); doc.setFont('helvetica', 'bold'); doc.setTextColor(...C.s0);
-            doc.text('Kategorie', PAGE.mx + 4, atY);
-            companies.forEach((comp, i) => {
-                doc.text(
-                    comp.name.length > 12 ? comp.name.substring(0, 12) + '…' : comp.name,
-                    PAGE.mx + catColW + i * compColW, atY
-                );
-            });
-            doc.text('Diff.', PAGE.cr - 4, atY, { align: 'right' });
-            return atY + rowH + 2;
-        };
-
-        yT = drawTableHeader(yT);
-
-        categoryData.forEach((row, idx) => {
-            if (yT > PAGE.h - PAGE.my - 10) {
-                doc.addPage();
-                doc.setFillColor(...C.s100);
-                doc.rect(0, 0, PAGE.w, PAGE.h, 'F');
-                yT = PAGE.my;
-                yT = drawTableHeader(yT);
-            }
-            doc.setFillColor(...(idx % 2 === 0 ? C.s0 : C.s50));
-            doc.rect(PAGE.mx, yT - 4.5, PAGE.cw, rowH, 'F');
-
-            doc.setFontSize(7.5); doc.setFont('helvetica', 'bold'); doc.setTextColor(...C.s800);
-            doc.text(row.category.length > 28 ? row.category.substring(0, 28) + '…' : row.category, PAGE.mx + 4, yT);
-
-            const values = companies.map(comp => {
-                const v = row[comp.name];
-                return v != null ? Number(v) : null;
-            });
-            const valid = values.filter(v => v != null);
-            const maxVal = valid.length ? Math.max(...valid) : null;
-            const minVal = valid.length ? Math.min(...valid) : null;
-
-            companies.forEach((comp, i) => {
-                const x = PAGE.mx + catColW + i * compColW;
-                const val = values[i];
-                if (val == null) {
-                    doc.setFont('helvetica', 'normal'); doc.setTextColor(...C.s300);
-                    doc.text('–', x, yT);
-                } else {
-                    const isBest  = valid.length >= 2 && val === maxVal;
-                    const isWorst = valid.length >= 2 && val === minVal && maxVal !== minVal;
-                    doc.setFont('helvetica', 'bold');
-                    doc.setTextColor(...(isBest ? C.emerald500 : isWorst ? C.rose500 : C.s800));
-                    doc.text(val.toFixed(2), x, yT);
-                }
-            });
-
-            if (valid.length >= 2) {
-                doc.setFont('helvetica', 'normal'); doc.setTextColor(...C.s500);
-                doc.text(`±${(maxVal - minVal).toFixed(2)}`, PAGE.cr - 4, yT, { align: 'right' });
-            }
-            yT += rowH;
+    const TECH_LH = 3;
+    const techLines = (p) => {
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(7);
+        return doc.splitTextToSize(String(p), PAGE.cw).length;
+    };
+    const techBlock = (title, sub, paragraphs) => {
+        const items = paragraphs.filter(Boolean);
+        if (!items.length) return;
+        const height = 6 + items.reduce((sum, p) => sum + techLines(p) * TECH_LH + 1.5, 0);
+        y = ensureSpace(y + 4, Math.min(height, limit - 30));
+        y = drawListTitle(doc, y, title, sub);
+        items.forEach((p) => {
+            y = ensureSpace(y, techLines(p) * TECH_LH + 2);
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(7);
+            doc.setTextColor(...C.s600);
+            y = drawWrapped(doc, p, PAGE.mx, y, PAGE.cw, { lineH: TECH_LH }) + 1.5;
         });
+    };
 
-        doc.setDrawColor(...C.s200); doc.setLineWidth(0.3);
-        doc.line(PAGE.mx, yT - 3, PAGE.cr, yT - 3);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(7);
+    doc.setTextColor(...C.s600);
+    y = drawWrapped(
+        doc,
+        `Kennzeichen der Datenbasis an Karten und Kacheln: ${BASIS.stars.label} = ${BASIS.stars.title.replace(/^Datenbasis: /, '')}; ${BASIS.text.label} = ${BASIS.text.title.replace(/^Datenbasis: /, '')}.`,
+        PAGE.mx, y, PAGE.cw, { lineH: TECH_LH },
+    ) + 4;
+
+    y = drawListTitle(doc, y, 'Datenstand', 'je Firma · Datensatz, Abdeckung und Import, wie die Leiste im Dashboard');
+    companies.forEach((c, i) => {
+        y = ensureSpace(y, 30);
+        y = drawCompareStatusCard(doc, y, c, colors[i]) + 3;
+    });
+    y = ensureSpace(y, 6);
+    doc.setFont('helvetica', 'italic');
+    doc.setFontSize(6.8);
+    doc.setTextColor(...C.s500);
+    y = drawWrapped(doc, thresholdsNote(companies.find((c) => c.dataStatus?.thresholds)?.dataStatus.thresholds), PAGE.mx, y + 1, PAGE.cw, { lineH: 3.1 });
+
+    const trendMonths = companies.find((c) => c.trend?.windowMonths)?.trend.windowMonths;
+    const ciList = (get) => companies.map((c) => `${c.name} ${get(c) != null ? `±${fmtNum(get(c), 2)}` : 'ohne Intervall'}`).join(', ');
+    techBlock('Kennzahlen', 'Berechnung und Zeitfenster der Kennzahlen je Firma', [
+        SCORE_HINT,
+        trendMonths
+            ? `Trend ${trendMonths} M: Gesamtnote, ${trendMonths} volle Monate bis zum letzten vollen Monat mit Daten gegen die ${trendMonths} Monate davor. Fenster: ${companies.map((c) => `${c.name} ${scoreTrendWindowsText(c.trend?.raw)}`).join('; ')}.`
+            : 'Trend: für keine Firma berechenbar (keine datierten Bewertungen mit Gesamtnote).',
+        `${CRITICAL_LABEL}: ${CRITICAL_NOTE}; n = Bewertungen mit Wert in dieser Kategorie.`,
+        `${NEGATIVE_TOPIC_LABEL}: unter den negativ eingestuften Topics der Freitexte das mit der größten Wirkung (Nennungen × (5 − Ø Sterne)), bei Gleichstand das mit dem niedrigeren Ø; ohne negatives Topic aus der Topic-Übersicht nach derselben Regel.`,
+        `${CATEGORY_MEAN_TITLE}: ${companies.map((c) => `${c.name} ${fmtNum(c.categoryMean, 2)}`).join(' · ')} (von 5). ${CATEGORY_MEAN_NOTE}`,
+        `Unsicherheit (95 %): Ø Score ${ciList((c) => c.scoreCi95)}; Trend-Differenz ${ciList((c) => c.trend?.raw?.difference_ci95)}. ${UNCERTAINTY_NOTE}`,
+        'Zeitraum: Die Vergleichsseite hat keinen Zeitfilter. Ø Score, Trend, Kategorien und Topics beziehen sich auf den gesamten Datensatz je Firma, der Bewertungsverlauf auf die letzten fünf Jahre (1.825 Tage, nur Mitarbeitende).',
+        `Warnung „kleine Basis“: unter ${MIN_REVIEWS_PER_WINDOW} Bewertungen in einem Fenster oder einer Kategorie.`,
+    ]);
+
+    const hasMissing = rows.some((r) => r.values.some((v) => v == null));
+    techBlock('Kategorievergleich', 'Kategorienmittel, Spanne, Diagramm', [
+        'Kategorienmittel je Firma: Mittel der Sterne je Kategorie über alle Bewertungen von Mitarbeitenden mit Wert in dieser Kategorie; n steht in der Tabelle „Detailvergleich“. Nicht jede Bewertung enthält jede Kategorie, deshalb unterscheidet sich n je Kategorie.',
+        'Spanne: höchster minus niedrigster Wert der Firmen je Kategorie. Grün markiert den höchsten, Rot den niedrigsten Wert der Zeile. Die Spannen sind nicht auf Signifikanz geprüft; bei kleinem n ist ein Unterschied unsicher.',
+        `Diagramm: ${viewLabel}-Ansicht, wie auf der Vergleichsseite gewählt; dieselben Werte stehen in der Tabelle.${hasMissing ? ' Fehlende Kategorienwerte erscheinen im Diagramm als 0, in der Tabelle als „–“.' : ''}`,
+    ]);
+
+    techBlock('Bewertungsverlauf', 'Monatsmittel, Lücken', [
+        'Monatsmittel der Gesamtnote je Firma (Mitarbeitende), jeder Monat gleich gewichtet, auch Monate mit wenigen Bewertungen; letzte fünf Jahre ab dem Abruf. „Ø Monatsmittel“ ist das ungewichtete Mittel der Monatsmittel, nicht der Ø Score (Mittel aller Bewertungen).',
+        'Monate ohne Bewertung zwischen zwei Monaten mit Daten sind im Diagramm gestrichelt linear interpoliert; sie gehen in keine Kennzahl ein. „Lücken“ zählt die Monate ohne Bewertung zwischen dem ersten und dem letzten Monat mit Daten. Der Vergleich zeigt keine Prognose.',
+    ]);
+
+    techBlock('Grenzen', 'was der Vergleich nicht leistet', report.limits);
+
+    techBlock('Kurzbericht', 'Regeln der Seite 2', [report.rules]);
+
+    const total = doc.getNumberOfPages();
+    const pageNo = (p) => `${String(p).padStart(2, '0')} / ${String(total).padStart(2, '0')}`;
+    doc.setPage(1);
+    drawCoverToc(doc, tocY, toc);
+    drawPageFooter(doc, 'WorkPulse · Vergleichsreport', `${companies.length} Firmen`, pageNo(1));
+    for (let p = 2; p <= total; p++) {
+        doc.setPage(p);
+        drawPageFooter(doc, footerLeft, pageNo(p), dateShort);
     }
 
-    const totalPages = doc.internal.pages.length - 1;
-    for (let i = 2; i <= totalPages; i++) {
-        doc.setPage(i);
-        _cmpAddFooter(doc, i, totalPages, titleLabel);
-    }
-
-    const fileName = `Firmenvergleich_${companyNames.map(n => n.replace(/\s+/g, '_')).join('_vs_')}_${new Date().toISOString().split('T')[0]}.pdf`;
+    const fileName = `Firmenvergleich_${names.map((n) => n.replace(/\s+/g, '_')).join('_vs_')}_${now.toISOString().split('T')[0]}.pdf`;
     doc.save(fileName);
-    console.log(`✅ Firmenvergleich PDF gespeichert: ${fileName} (${totalPages} Seiten)`);
+    console.log(`✅ Firmenvergleich PDF gespeichert: ${fileName} (${total} Seiten)`);
 };

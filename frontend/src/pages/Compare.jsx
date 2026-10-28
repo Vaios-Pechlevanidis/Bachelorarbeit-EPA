@@ -27,6 +27,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { CompanySearchSelect } from "@/components/CompanySearchSelect"
 import { loadCompanies, sameSectorCompanies, sectorOf } from "@/lib/companies"
+import { loadDataStatus } from "@/hooks/useDataStatus"
 import { exportCompareAsPDF } from "@/utils/pdfExport"
 import { Compare as CompareIcon, Star as StarIcon, Tag, TrendUp as TrendUpIcon } from "../icons"
 import { API_URL } from "../config"
@@ -405,6 +406,7 @@ const ComparePage = () => {
                         sign: trendJson.sign ?? "flat",
                         windowMonths: trendJson.months ?? null,
                         nReviews: trendJson.n_reviews ?? null,
+                        raw: trendJson,
                     }
                 }
             }
@@ -422,7 +424,7 @@ const ComparePage = () => {
                     const min = entries.reduce((best, cur) =>
                         cur.score < best.score ? cur : best, entries[0]
                     )
-                    mostCritical = { topicName: min.title, score: min.score.toFixed(2) }
+                    mostCritical = { topicName: min.title, score: min.score.toFixed(2), n: categoryCountsJson?.[min.key] ?? null }
                 }
             }
 
@@ -659,31 +661,41 @@ const ComparePage = () => {
         try {
             await new Promise(r => setTimeout(r, 300))
 
-            const companies = activeSlots.map((slot) => {
+            const statuses = await Promise.all(activeSlots.map((slot) => loadDataStatus(slot.id).catch(() => null)))
+
+            const companies = activeSlots.map((slot, i) => {
                 const data = companyData[slot.id]
+                const meta = companyById[slot.id]
                 return {
                     name: slot.name,
                     id: slot.id,
+                    color: COLOR_PALETTE[slot.colorIndex]?.hex || '#3b82f6',
+                    sector: sectorOf(meta),
+                    peerGroup: meta?.peer_group ?? null,
+                    dataStatus: statuses[i],
                     score: data?.ratings?.score ?? null,
                     scoreN: data?.ratings?.score_n ?? null,
+                    scoreCi95: data?.ratings?.score_ci95 ?? null,
+                    categoryMean: data?.ratings?.avg_overall ?? null,
                     trend: data?.trend ?? null,
                     mostCritical: data?.mostCritical ?? null,
                     negativeTopic: data?.negativeTopic ?? null,
+                    negativeTopicName: getNegativeTopicName(data?.negativeTopic),
                     categoryRatings: data?.categoryRatings ?? {},
+                    categoryCounts: data?.categoryCounts ?? {},
+                    timeline: data?.timeline ?? [],
                 }
             })
 
-            const companyColors = activeSlots.map(slot => COLOR_PALETTE[slot.colorIndex]?.hex || '#3b82f6')
-
             await exportCompareAsPDF({
                 companies,
-                companyColors,
-                radarChartElement: document.getElementById('compare-radar-chart-export'),
-                barChartElement: document.getElementById('compare-bar-chart-export'),
-                timelineChartElement: document.getElementById('compare-timeline-chart-export'),
-                categoryData: radarData,
-                summaryData,
+                categories: Object.entries(CATEGORY_LABELS).map(([key, label]) => ({ key, label })),
                 categoryChartView,
+                categoryChartElement: document.getElementById(
+                    categoryChartView === 'bar' ? 'compare-bar-chart-export' : 'compare-radar-chart-export'
+                ),
+                timelineChartElement: document.getElementById('compare-timeline-chart-export'),
+                timelineHasGaps: Object.values(slotHasGaps).some(Boolean),
             })
         } catch (err) {
             console.error('PDF-Export fehlgeschlagen:', err)

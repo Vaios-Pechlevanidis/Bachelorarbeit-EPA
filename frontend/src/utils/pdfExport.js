@@ -14,7 +14,7 @@ import { OUTLIER_UNVALIDATED_NOTE, SHOW_FORECAST, SHOW_OUTLIER_MONTHS } from '..
 import { NEGATIVE_TOPIC_LABEL, TIMELINE_LABEL } from '../lib/labels';
 import { CATEGORY_MEAN_NOTE, CATEGORY_MEAN_TITLE, CRITICAL_LABEL, CRITICAL_NOTE, SCORE_HINT, UNCERTAINTY_NOTE, scoreCountText, scoreTrendWindowsText, scoreUncertaintyText } from '../lib/scoreText';
 import { buildReportSummary } from '../lib/reportSummary';
-import { COMPARE_RULES, bestCategory, buildCompareReport, timelineStats as compareTimelineStats, trendText } from '../lib/compareReport';
+import { COMPARE_RULES, buildCompareReport, timelineStats as compareTimelineStats } from '../lib/compareReport';
 const C = {
     s0:   [255, 255, 255],
     s50:  [248, 250, 252],
@@ -2440,34 +2440,7 @@ export const exportCompareAsPDF = async (compareData) => {
     doc.setFontSize(7);
     doc.setTextColor(...C.s600);
     y = drawWrapped(doc, report.ranking.text, PAGE.mx, y + 4, PAGE.cw, { lineH: 3.1 });
-
-    y = ensureSpace(y + 6, 30);
-    y = drawListTitle(doc, y, 'Gegenüberstellung', 'je Firma · Einzelheiten unter „Kennzahlen“ und „Detailvergleich“');
-    y = drawMiniTable(doc, y, {
-        cols: [
-            { label: 'Firma', w: 36 },
-            { label: 'Ø Score (n)', w: 26 },
-            { label: 'Trend', w: 22 },
-            { label: 'Beste Kategorie', w: 46 },
-            { label: CRITICAL_LABEL, w: 46 },
-        ],
-        rows: companies.map((c, i) => {
-            const best = bestCategory(rows, i);
-            const mc = c.mostCritical?.topicName ? c.mostCritical : null;
-            const tr = c.trend;
-            return {
-                cells: [
-                    { text: names[i], bold: true, color: C.s900, dot: colors[i] },
-                    `${c.score != null ? fmtNum(c.score) : '–'}${c.scoreN != null ? ` (${fmtInt(c.scoreN)})` : ''}`,
-                    { text: trendText(tr), bold: true, color: tr?.sign === 'up' ? C.emerald600 : tr?.sign === 'down' ? C.rose600 : C.s700 },
-                    best ? `${fmtNum(best.value)} · ${best.label}` : '–',
-                    mc ? `${fmtNum(mc.score)} · ${mc.topicName}` : '–',
-                ],
-            };
-        }),
-        newPage,
-        limit,
-    });
+    y = drawWrapped(doc, report.trends, PAGE.mx, y + 0.5, PAGE.cw, { lineH: 3.1 });
 
     const colGap = 6;
     const colW = (PAGE.cw - colGap) / 2;
@@ -2484,7 +2457,7 @@ export const exportCompareAsPDF = async (compareData) => {
     y += colH + 5;
 
     if (report.gaps.length) {
-        y = ensureSpace(y, 16 + 6 * report.gaps.length);
+        y = ensureSpace(y + 3, 16 + 6 * report.gaps.length);
         y = drawListTitle(doc, y, 'Größte Unterschiede', `${report.gaps.length} Kategorien mit der größten Spanne · Grün = höchster, Rot = niedrigster Wert`);
         y = drawMiniTable(doc, y, { cols: categoryCols(), rows: report.gaps.map((g) => ({ cells: categoryCells(g, false) })), newPage, limit });
     }
@@ -2577,22 +2550,13 @@ export const exportCompareAsPDF = async (compareData) => {
     };
 
     y = ensureSpace(y + 5, 40);
-    y = drawSectionTitle(doc, y, 4, 'Detailvergleich', 'Kategorien · Wert (n) je Firma');
-    y = drawMiniTable(doc, y + 1, {
+    y = drawSectionTitle(doc, y, 4, 'Detailvergleich', 'Wert (n) · grün höchster · rot niedrigster');
+    drawMiniTable(doc, y + 1, {
         cols: categoryCols(),
         rows: [...rows.map((r) => ({ cells: categoryCells(r, true) })), { cells: categoryCells(meanRow, false) }],
         newPage,
         limit,
     });
-    y = ensureSpace(y + 2, 8);
-    doc.setFont('helvetica', 'italic');
-    doc.setFontSize(7);
-    doc.setTextColor(...C.s500);
-    y = drawWrapped(
-        doc,
-        'Wert (n) = Kategorienmittel und Zahl der Bewertungen mit Wert in der Kategorie · Grün = höchster, Rot = niedrigster Wert der Zeile · Spanne = höchster minus niedrigster Wert, ohne Signifikanzprüfung.',
-        PAGE.mx, y, PAGE.cw, { lineH: 3.1 },
-    );
 
     y = startSection('Bewertungsverlauf', 'Monatsmittel der Gesamtnote je Firma, letzte 5 Jahre');
     y = drawSectionTitle(doc, y, 5, 'Bewertungsverlauf', 'Zeitreihe · Historie');

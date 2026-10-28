@@ -29,6 +29,7 @@ import { CompanySearchSelect } from "@/components/CompanySearchSelect"
 import { loadCompanies, sameSectorCompanies, sectorOf } from "@/lib/companies"
 import { loadDataStatus } from "@/hooks/useDataStatus"
 import { exportCompareAsPDF } from "@/utils/pdfExport"
+import { waitForMultipleCharts } from "@/utils/chartValidator"
 import { Compare as CompareIcon, Star as StarIcon, Tag, TrendUp as TrendUpIcon } from "../icons"
 import { API_URL } from "../config"
 import { SCORE_HINT } from "@/lib/scoreText"
@@ -661,6 +662,11 @@ const ComparePage = () => {
         try {
             await new Promise(r => setTimeout(r, 300))
 
+            const categoryChartId = categoryChartView === 'bar' ? 'compare-bar-chart-export' : 'compare-radar-chart-export'
+            const chartIds = [categoryChartId, ...(timelineOverlay.length ? ['compare-timeline-chart-export'] : [])]
+            const charts = await waitForMultipleCharts(chartIds, 8000)
+            if (!charts.allReady) console.warn('PDF-Export: nicht alle Diagramme bereit', charts.results.map((r) => r.message))
+
             const statuses = await Promise.all(activeSlots.map((slot) => loadDataStatus(slot.id).catch(() => null)))
 
             const companies = activeSlots.map((slot, i) => {
@@ -691,9 +697,7 @@ const ComparePage = () => {
                 companies,
                 categories: Object.entries(CATEGORY_LABELS).map(([key, label]) => ({ key, label })),
                 categoryChartView,
-                categoryChartElement: document.getElementById(
-                    categoryChartView === 'bar' ? 'compare-bar-chart-export' : 'compare-radar-chart-export'
-                ),
+                categoryChartElement: document.getElementById(categoryChartId),
                 timelineChartElement: document.getElementById('compare-timeline-chart-export'),
                 timelineHasGaps: Object.values(slotHasGaps).some(Boolean),
             })
@@ -1283,6 +1287,7 @@ const ComparePage = () => {
                                                     fill={COLOR_PALETTE[slot.colorIndex]?.hex}
                                                     fillOpacity={0.15}
                                                     strokeWidth={2}
+                                                    isAnimationActive={!exporting}
                                                 />
                                             ))}
                                             <Legend />
@@ -1329,6 +1334,7 @@ const ComparePage = () => {
                                                     fill={COLOR_PALETTE[slot.colorIndex]?.hex}
                                                     radius={[0, 4, 4, 0]}
                                                     barSize={activeSlots.length > 2 ? 8 : 12}
+                                                    isAnimationActive={!exporting}
                                                 />
                                             ))}
                                         </BarChart>
@@ -1423,6 +1429,7 @@ const ComparePage = () => {
                                                     dot={{ r: 3 }}
                                                     activeDot={{ r: 5 }}
                                                     connectNulls={false}
+                                                    isAnimationActive={!exporting}
                                                 />
                                             ))}
                                             {activeSlots.map((slot) =>
@@ -1440,6 +1447,7 @@ const ComparePage = () => {
                                                         activeDot={false}
                                                         connectNulls={false}
                                                         legendType="none"
+                                                        isAnimationActive={!exporting}
                                                     />
                                                 ) : null
                                             )}

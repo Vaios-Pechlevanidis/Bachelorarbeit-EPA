@@ -6,7 +6,7 @@
 import { describe, expect, it } from "vitest"
 import {
   bestCategory, biggestGaps, buildCompareReport, categoryRows, compareColumns, compareNextSteps, compareWarnings,
-  scoreRanking, sharedWeaknesses, timelineStats, trendText,
+  scoreRanking, sharedWeaknesses, timelineStats,
 } from "../compareReport"
 
 const categories = [
@@ -74,7 +74,7 @@ describe("compareColumns", () => {
     expect(issues[0].detail).toBe("Gehalt/Sozialleistungen: Alpha 2,80 · Beta 2,50")
     expect(issues.find((i) => i.title === "Beta: Gehalt/Sozialleistungen").warning).toBe("kleine Basis (8 Bewertungen, unter 10)")
     const down = issues.find((i) => i.title === "Beta: Gesamtnote sinkt")
-    expect(down.warning).toBe("kleine Basis (6 Bewertungen in einem Fenster, unter 10) · statistisch nicht von 0 unterscheidbar (95 %)")
+    expect(down.warning).toBe("kleine Basis (6 Bewertungen in einem Fenster, unter 10)")
   })
 })
 
@@ -125,7 +125,7 @@ describe("buildCompareReport", () => {
     expect(r.cells[0].sub).toBe("von 5 · n = 400 · ±0,08 (95 %)")
     expect(r.limits.length).toBeGreaterThan(0)
     expect(r.rules).toContain("keine Aussage über Ursachen")
-    expect(trendText(alpha.trend)).toBe("+0,20 (12 M)")
-    expect(trendText(null)).toBe("–")
+    expect(r.trends).toBe("Trend der Gesamtnote (12 volle Monate gegen die 12 davor): Alpha +0,20 (steigend) · Beta -0,10 (sinkend).")
+    expect(buildCompareReport({ companies: [{ ...alpha, trend: null }, beta], categories }).trends).toContain("Alpha –")
   })
 })

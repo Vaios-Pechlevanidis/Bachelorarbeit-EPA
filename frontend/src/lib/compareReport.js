@@ -29,12 +29,6 @@ const trendDelta = (trend) => (trend?.avgDelta != null ? parseFloat(trend.avgDel
 const smallBasis = (n, context = "") =>
   n != null && n < MIN_REVIEWS_PER_WINDOW ? `kleine Basis (${fmtN(n)} Bewertungen${context ? ` ${context}` : ""}, unter ${MIN_REVIEWS_PER_WINDOW})` : null
 
-export function trendText(trend) {
-  const tv = trendDelta(trend)
-  if (!Number.isFinite(tv)) return "–"
-  return `${signed(tv)}${trend.windowMonths ? ` (${trend.windowMonths} M)` : ""}`
-}
-
 export function categoryRows(companies, categories) {
   return (categories ?? []).map(({ key, label }) => {
     const values = companies.map((c) => (finite(c.categoryRatings?.[key]) ? Number(c.categoryRatings[key]) : null))
@@ -82,6 +76,17 @@ export function scoreRanking(companies, rules = COMPARE_RULES) {
   }
 }
 
+export function trendSentence(companies) {
+  const months = companies.find((c) => c.trend?.windowMonths)?.trend.windowMonths
+  const parts = companies.map((c) => {
+    const tv = trendDelta(c.trend)
+    if (!Number.isFinite(tv)) return `${c.name} –`
+    const word = c.trend.sign === "up" ? "steigend" : c.trend.sign === "down" ? "sinkend" : "stabil"
+    return `${c.name} ${signed(tv)} (${word})`
+  })
+  return `Trend der Gesamtnote${months ? ` (${months} volle Monate gegen die ${months} davor)` : ""}: ${parts.join(" · ")}.`
+}
+
 export function compareCells(companies, rules = COMPARE_RULES) {
   return companies.map((c) => {
     const score = finite(c.score) ? Number(c.score) : NaN
@@ -112,7 +117,7 @@ function trendItem(company) {
   return {
     title: `${company.name}: Gesamtnote ${trend.sign === "up" ? "steigt" : "sinkt"}`,
     detail: `${signed(tv)} Sterne${ci != null ? ` (±${num(ci)}, 95 %)` : ""}${months ? `, ${months} volle Monate gegenüber den ${months} Monaten davor` : ""}`,
-    warning: warnings.length ? warnings.join(" · ") : null,
+    warning: warnings[0] ?? null,
     basis: "stars",
     up: trend.sign === "up",
   }
@@ -277,6 +282,7 @@ export function buildCompareReport({ companies = [], categories = [] }, rules = 
     rows,
     cells: compareCells(companies, rules),
     ranking: scoreRanking(companies, rules),
+    trends: trendSentence(companies),
     gaps: biggestGaps(rows, rules),
     shared: sharedWeaknesses(rows, rules),
     ...compareColumns(companies, rows, rules),

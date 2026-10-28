@@ -165,3 +165,4 @@ backend/data/bewertungsbogen/
 backend/data/context/
 backend/data/context_text/
 backend/data/macro/
+.vercel

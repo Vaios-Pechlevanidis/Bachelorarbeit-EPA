@@ -490,14 +490,6 @@ export default function Dashboard() {
             </button>
             <button
               className="ds-nav-link"
-              onClick={handleExportPDF}
-              disabled={exportingPDF || !effectiveCompanyId}
-            >
-              {exportingPDF ? <Loader /> : <Download />}
-              {exportingPDF ? "Exportiere…" : "PDF Export"}
-            </button>
-            <button
-              className="ds-nav-link"
               onClick={toggleTheme}
               title={isDark ? "Zu Hell wechseln" : "Zu Dunkel wechseln"}
             >
@@ -546,6 +538,16 @@ export default function Dashboard() {
                   {error}
                 </span>
               )}
+              <button
+                className="ds-btn ds-btn-primary"
+                style={{ height: 32, padding: "0 12px" }}
+                onClick={handleExportPDF}
+                disabled={exportingPDF || !effectiveCompanyId}
+                title={effectiveCompanyId ? "Kennzahlen und Diagramme als PDF speichern" : "Erst eine Firma auswählen"}
+              >
+                {exportingPDF ? <Loader /> : <Download />}
+                {exportingPDF ? "Exportiere…" : "PDF Export"}
+              </button>
             </div>
           </div>
 

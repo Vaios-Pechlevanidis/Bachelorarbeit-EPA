@@ -732,23 +732,22 @@ const ComparePage = () => {
                         </p>
                     </div>
                 </div>
-                {activeSlots.length >= 2 && (
-                    <button
-                        onClick={handleExportPDF}
-                        disabled={exporting}
-                        className={[
-                            "h-8 px-3 inline-flex items-center gap-1.5 rounded-md text-[12px] font-medium border",
-                            "[&_svg]:flex-none [&_svg]:w-3.5 [&_svg]:h-3.5",
-                            "transition-colors",
-                            exporting
-                                ? "bg-slate-200 text-slate-400 border-slate-200 cursor-not-allowed"
-                                : "bg-slate-900 text-white border-slate-900 hover:bg-slate-800"
-                        ].join(" ")}
-                    >
-                        {exporting ? <Loader2 className="animate-spin" /> : <Download />}
-                        {exporting ? "Exportiere…" : "PDF Export"}
-                    </button>
-                )}
+                <button
+                    onClick={handleExportPDF}
+                    disabled={exporting || activeSlots.length < 2}
+                    title={activeSlots.length < 2 ? "Erst mindestens 2 Firmen auswählen" : "Vergleich als PDF speichern"}
+                    className={[
+                        "h-8 px-3 inline-flex items-center gap-1.5 rounded-md text-[12px] font-medium border flex-none",
+                        "[&_svg]:flex-none [&_svg]:w-3.5 [&_svg]:h-3.5",
+                        "transition-colors",
+                        exporting || activeSlots.length < 2
+                            ? "bg-slate-200 text-slate-400 border-slate-200 cursor-not-allowed"
+                            : "bg-slate-900 text-white border-slate-900 hover:bg-slate-800"
+                    ].join(" ")}
+                >
+                    {exporting ? <Loader2 className="animate-spin" /> : <Download />}
+                    {exporting ? "Exportiere…" : "PDF Export"}
+                </button>
             </div>
 
             <div className="flex-1 px-5 py-5 max-w-[1400px] w-full mx-auto space-y-4">

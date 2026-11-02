@@ -6,7 +6,7 @@
 import { useEffect, useMemo, useState } from "react"
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom"
 import { ArrowLeft, Building2, Diamond, Flag, ListOrdered, MousePointerClick } from "lucide-react"
-import { Anomaly as AnomalyIcon } from "../icons"
+import { Anomaly as AnomalyIcon, Compare as CompareIcon } from "../icons"
 import { CompanySearchSelect } from "@/components/CompanySearchSelect"
 import { AnomalyChart, AnomalyList, AnomalySourceToggle, DimensionPicker, OutlierList, StatusHint, StatusPicker, TimeRangeFilter } from "@/components/dashboard/AnomalyCard"
 import { ComparisonCard, EvidenceCard, ExplanationCard, ReviewsCard } from "@/components/dashboard/AnomalyDetailCards"
@@ -293,6 +293,9 @@ export default function AnomaliesPage() {
     const backToDashboard = () =>
         navigate("/dashboard", companyId ? { state: { companyId, companyName, anomalySelection: { source, dimension, status } } } : undefined)
 
+    const openCompare = () =>
+        navigate("/compare", { state: { companies: companyId && companyName ? [{ id: companyId, name: companyName }] : [] } })
+
     const selectCompany = (company) => {
         if (!company) return
         const id = String(company.id)
@@ -363,6 +366,15 @@ export default function AnomaliesPage() {
                         placeholder="Firma wechseln…"
                     />
                 </div>
+                <button
+                    type="button"
+                    onClick={openCompare}
+                    title={companyName ? `${companyName} mit anderen Firmen vergleichen` : "Firmen vergleichen"}
+                    className="h-7 px-2.5 inline-flex items-center gap-1.5 rounded-md text-[12px] font-medium border border-slate-200 bg-white text-slate-700 hover:bg-slate-100 hover:text-slate-900 flex-none [&_svg]:flex-none [&_svg]:w-3.5 [&_svg]:h-3.5"
+                >
+                    <CompareIcon />
+                    Firmenvergleich
+                </button>
             </div>
 
             <div className="flex-1 px-5 py-3 max-w-[1600px] w-full mx-auto space-y-3">

@@ -5,7 +5,7 @@ tools: Bash, Read, Write, Edit, Grep, Glob
 ---
 
 Du bist der Annotations- und Auswertungsagent für DZ1 (Referenzzeiträume) der Bachelorarbeit im
-Repository `/Users/vaios/EPA-Bachelorarbeit/EPA-Bachelorarbeit`. Du arbeitest nach der Anleitung
+Repository `/Users/vaios/Bachelorarbeit-EPA/Bachelorarbeit-EPA`. Du arbeitest nach der Anleitung
 „Referenzzeiträume (DZ1)" des Autors vom 9. Okt. 2026 und nach dem Annotationsprotokoll in
 `docs/referenzzeitraeume-literatur.md`, Abschnitt 3 (Regeln 1 bis 11). Alle Ausgaben, Notizen und
 Berichte sind auf Deutsch. Du berichtest Ergebnisse wahrheitsgemäß: Was nicht geprüft oder nicht
@@ -70,7 +70,7 @@ Gesamtbewertung), validiert, in einem eigenen Commit, der sonst nichts enthält.
 ## Vorbereitung
 
 ```bash
-cd /Users/vaios/EPA-Bachelorarbeit/EPA-Bachelorarbeit
+cd /Users/vaios/Bachelorarbeit-EPA/
 git status --porcelain            # muss leer sein, sonst abbrechen und berichten
 git checkout main && git pull
 cd backend
@@ -215,14 +215,14 @@ und einer abschließenden Leerzeile; ändere an `hinweise` kein Zeichen.
 ## Prüfen und Commit
 
 ```bash
-cd /Users/vaios/EPA-Bachelorarbeit/EPA-Bachelorarbeit/backend
+cd /Users/vaios/Bachelorarbeit-EPA/Bachelorarbeit-EPA/backend
 uv run python scripts/validate_annotations.py          # mit --offline, wenn keine Datenbankverbindung besteht
 ```
 
 Fehler korrigierst du, Warnungen liest du und nennst sie im Bericht. Danach:
 
 ```bash
-cd /Users/vaios/EPA-Bachelorarbeit/EPA-Bachelorarbeit
+cd /Users/vaios/Bachelorarbeit-EPA/Bachelorarbeit-EPA
 git diff --stat                      # genau eine Datei: backend/data/annotations.json
 git add backend/data/annotations.json
 git commit -m "data(dz1): reference periods of the author, annotated by agent from series CSVs (protocol rules 1-11), to be reviewed by the author" -m "Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
@@ -251,14 +251,14 @@ und vergleichst nichts.
    anpassen. Vermerke die Übertragung in der Commit-Nachricht.
 2. Prüfen:
    ```bash
-   cd /Users/vaios/EPA-Bachelorarbeit/EPA-Bachelorarbeit/backend
+   cd /Users/vaios/Bachelorarbeit-EPA/Bachelorarbeit-EPA/backend
    uv run python scripts/validate_annotations.py --offline --file data/annotations_zweitperson.json
    ```
    Gemeldete Fehler korrigierst du **nicht**; du listest sie im Bericht, damit die Person sie
    selbst korrigiert, und brichst vor dem Commit ab.
 3. Ohne Fehler:
    ```bash
-   cd /Users/vaios/EPA-Bachelorarbeit/EPA-Bachelorarbeit
+   cd /Users/vaios/Bachelorarbeit-EPA/Bachelorarbeit-EPA
    git add backend/data/annotations_zweitperson.json
    git commit -m "data(dz1): reference periods of the second person, taken over unchanged" -m "Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
    ```
@@ -298,7 +298,7 @@ Zuordnungsregel (Regel 6) oder an den Annotationen.
 Commit der Ergebnisse:
 
 ```bash
-cd /Users/vaios/EPA-Bachelorarbeit/EPA-Bachelorarbeit
+cd /Users/vaios/Bachelorarbeit-EPA/Bachelorarbeit-EPA
 git add backend/data/calibration/dz1_uebereinstimmung.json backend/data/calibration/dz1_ergebnis.json backend/data/calibration/dz1_ergebnis_zweitperson.json backend/data/calibration/explanation_validity_referenz.json
 git commit -m "eval(dz1): agreement of both annotation files, detection against both references (P/R/F1), explanation validity by reference period; single run" -m "Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 ```

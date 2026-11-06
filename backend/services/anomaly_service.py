@@ -8,7 +8,10 @@ from models.changepoint_detector import (
     DEFAULT_MIN_SIZE,
     DEFAULT_MODEL,
     DEFAULT_PENALTY_FACTOR,
+    DEFAULT_WEIGHTING,
+    WEIGHTING_COUNT,
     PeltDetector,
+    check_weighting,
     detect_changepoints,
     level_shifts,
     noise_sigma,
@@ -22,6 +25,7 @@ from services.rating_series_service import (
     is_eligible,
     monthly_series,
     monthly_series_by_dimension,
+    review_sd as within_month_sd,
 )
 
 DEFAULT_MIN_DELTA = 0.3
@@ -37,8 +41,14 @@ def _severity(delta: float) -> str:
 
 
 def _detector(penalty: Optional[float], penalty_factor: float,
-              model: str = DEFAULT_MODEL, min_size: int = DEFAULT_MIN_SIZE) -> PeltDetector:
-    return PeltDetector(model=model, min_size=min_size, penalty=penalty, penalty_factor=penalty_factor)
+              model: str = DEFAULT_MODEL, min_size: int = DEFAULT_MIN_SIZE,
+              weighting: str = DEFAULT_WEIGHTING, review_sd: Optional[float] = None) -> PeltDetector:
+    return PeltDetector(model=model, min_size=min_size, penalty=penalty, penalty_factor=penalty_factor,
+                        weighting=check_weighting(weighting), review_sd=review_sd)
+
+
+def _counts_of(evaluated: List[Dict[str, Any]]) -> List[int]:
+    return [int(m.get("n_values", m.get("count", 0))) for m in evaluated]
 
 
 def detection_params(
@@ -46,10 +56,18 @@ def detection_params(
     penalty: Optional[float] = None,
     penalty_factor: float = DEFAULT_PENALTY_FACTOR,
     min_delta: float = DEFAULT_MIN_DELTA,
+    weighting: str = DEFAULT_WEIGHTING,
+    review_sd: Optional[float] = None,
 ) -> Dict[str, Any]:
-    values = [float(m["mean"]) for m in series if m.get("evaluated") and m.get("mean") is not None]
-    det = _detector(penalty, penalty_factor)
-    resolved = det.for_series(values) if values else det
+    evaluated = [m for m in series if m.get("evaluated") and m.get("mean") is not None]
+    values = [float(m["mean"]) for m in evaluated]
+    det = _detector(penalty, penalty_factor, weighting=weighting, review_sd=review_sd)
+    if not values:
+        resolved = det
+    elif det.weighted:
+        resolved = det.for_series(values, _counts_of(evaluated))
+    else:
+        resolved = det.for_series(values)
     return {
         "method": "pelt",
         **{k: v for k, v in resolved.params().items() if k != "jump"},
@@ -105,14 +123,18 @@ def detect_anomalies(
     penalty_factor: float = DEFAULT_PENALTY_FACTOR,
     model: str = DEFAULT_MODEL,
     min_size: int = DEFAULT_MIN_SIZE,
+    weighting: str = DEFAULT_WEIGHTING,
+    review_sd: Optional[float] = None,
 ) -> List[Dict[str, Any]]:
     evaluated = [m for m in series if m.get("evaluated") and m.get("mean") is not None]
     values = [float(m["mean"]) for m in evaluated]
-    result = detect_changepoints(values, _detector(penalty, penalty_factor, model, min_size))
+    weighted = check_weighting(weighting) == WEIGHTING_COUNT
+    result = detect_changepoints(values, _detector(penalty, penalty_factor, model, min_size, weighting, review_sd),
+                                 counts=_counts_of(evaluated) if weighted else None)
     params = {**result.params, "min_delta": min_delta}
 
     anomalies: List[Dict[str, Any]] = []
-    for shift in level_shifts(values, result.indices):
+    for shift in level_shifts(values, result.indices, result.weights):
         delta = shift["delta"]
         if abs(delta) < min_delta:
             continue
@@ -173,6 +195,8 @@ def stability_of_anomalies(
     min_delta: float = DEFAULT_MIN_DELTA,
     grid: Optional[Dict[str, tuple]] = None,
     tolerance: int = STABILITY_TOLERANCE_MONTHS,
+    weighting: str = DEFAULT_WEIGHTING,
+    review_sd: Optional[float] = None,
 ) -> List[Dict[str, Any]]:
     grid = grid or STABILITY_GRID
     if not anomalies:
@@ -188,6 +212,7 @@ def stability_of_anomalies(
                 variants.append(detect_anomalies(
                     series, company_id=company_id, source=source, dimension=dimension,
                     min_delta=min_delta, penalty_factor=factor, min_size=min_size,
+                    weighting=weighting, review_sd=review_sd,
                 ))
     out: List[Dict[str, Any]] = []
     for a in anomalies:
@@ -263,25 +288,30 @@ def company_anomalies(
     min_delta: float = DEFAULT_MIN_DELTA,
     penalty_factor: float = DEFAULT_PENALTY_FACTOR,
     status: Optional[str] = None,
+    weighting: str = DEFAULT_WEIGHTING,
 ) -> Dict[str, Any]:
     from services.rating_series_service import _fetch_group_rows, validate_status, value_column
 
     column = value_column(source, dimension)
     validate_status(source, status)
+    check_weighting(weighting)
     rows = _fetch_group_rows(source, company_id, column, status)
     series = build_monthly_series(rows, column, MIN_REVIEWS_PER_MONTH)
     data = {"min_reviews": MIN_REVIEWS_PER_MONTH}
     elig = eligibility(series)
+    sd = within_month_sd(rows, column) if weighting == WEIGHTING_COUNT else None
     anomalies = (
         detect_anomalies(
             series, company_id=company_id, source=source, dimension=dimension,
             penalty=penalty, min_delta=min_delta, penalty_factor=penalty_factor,
+            weighting=weighting, review_sd=sd,
         )
         if elig["eligible"] else []
     )
     if anomalies and penalty is None:
         anomalies = stability_of_anomalies(
             anomalies, rows, column, company_id=company_id, source=source, dimension=dimension, min_delta=min_delta,
+            weighting=weighting, review_sd=sd,
         )
     outliers = (
         detect_outlier_months(series, company_id=company_id, source=source, dimension=dimension)
@@ -301,7 +331,7 @@ def company_anomalies(
         "anomalies": anomalies,
         "outlier_months": outliers,
         "params": {
-            **detection_params(series, penalty, penalty_factor, min_delta),
+            **detection_params(series, penalty, penalty_factor, min_delta, weighting, sd),
             "min_reviews_per_month": data["min_reviews"],
         },
         "eligibility": elig,

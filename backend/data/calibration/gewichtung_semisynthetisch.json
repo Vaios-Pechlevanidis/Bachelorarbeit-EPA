@@ -1,0 +1,2323 @@
+{
+  "generated_at": "2026-11-06T19:14:55+00:00",
+  "duration_s": 225.4,
+  "argv": [
+    "--rows",
+    "/private/tmp/claude-501/-Users-vaios--claude-spares-spare-nc6ALi/97a1d9ab-6480-4594-be31-9ca98dc5fa9a/scratchpad/rows.json",
+    "--reps",
+    "200",
+    "--workers",
+    "8",
+    "--json",
+    "data/calibration/gewichtung_semisynthetisch_2026-11-06.json",
+    "--md",
+    "data/calibration/gewichtung_semisynthetisch_2026-11-06.md"
+  ],
+  "git": {
+    "commit": "4859a4a056d917f4632f20f50a8094ac95a6a384",
+    "dirty": true,
+    "dirty_paths": [
+      "backend/models/changepoint_detector.py",
+      "backend/services/anomaly_service.py",
+      "backend/services/rating_series_service.py",
+      "backend/scripts/compare_weighting.py",
+      "backend/scripts/dz1_posthoc.py",
+      "backend/tests/anomaly/test_weighted_detection.py"
+    ],
+    "script_sha256": "296b8512cfb4828cba4c20df40acf638881b70a7e9bf15a99d1fd33bb22af390"
+  },
+  "versions": {
+    "python": "3.13.3",
+    "numpy": "2.4.0",
+    "ruptures": "v1.1.10",
+    "platform": "macOS-27.0.1-arm64-arm-64bit-Mach-O"
+  },
+  "params": {
+    "reps": 200,
+    "deltas": [
+      0.0,
+      0.3,
+      0.5,
+      0.75,
+      1.0
+    ],
+    "seed": 20261013,
+    "margin": 6,
+    "design": [
+      [
+        "bewertungen",
+        "mitte"
+      ],
+      [
+        "bewertungen",
+        "ende"
+      ],
+      [
+        "monate",
+        "mitte"
+      ]
+    ],
+    "variants": [
+      "none",
+      "count"
+    ],
+    "bootstrap": 2000,
+    "rows_source": "cache"
+  },
+  "series": [
+    {
+      "company_id": 3,
+      "company": "Thyssenkrupp",
+      "evaluated_months": 32,
+      "review_sd": 1.0212,
+      "fingerprint": "be795925b6b76996c307fba226317aa1d60c7924652c91ea112596123c70039d"
+    },
+    {
+      "company_id": 4,
+      "company": "Open Grid Europe",
+      "evaluated_months": 22,
+      "review_sd": 0.6888,
+      "fingerprint": "aa5615f641c218fa2d059a883173e45310b422595ad4cc4d3ecf08f3ef5c1643"
+    },
+    {
+      "company_id": 7,
+      "company": "E.ON",
+      "evaluated_months": 38,
+      "review_sd": 0.9137,
+      "fingerprint": "8a53626c04deae36dcbe7342c4252e3abe0c30e52df89be3873ec7107523c904"
+    },
+    {
+      "company_id": 8,
+      "company": "RWE",
+      "evaluated_months": 34,
+      "review_sd": 0.9104,
+      "fingerprint": "3cfdce9b6f8628002a9acb82c70ea49b1e8285677dc1e62beb9692aafeab0d9d"
+    },
+    {
+      "company_id": 14,
+      "company": "Karlsruher Institut für Technologie",
+      "evaluated_months": 27,
+      "review_sd": 0.8845,
+      "fingerprint": "f1f83cd4f918a7ef7620e3915d1889f897ba4dbee3619d2dc886df6b31885d17"
+    },
+    {
+      "company_id": 15,
+      "company": "Technische Universität München",
+      "evaluated_months": 13,
+      "review_sd": 0.8635,
+      "fingerprint": "e5092c0959d06281f0933af732ef557bfd6c8a85d86a3ad5eea41129cd70dd3b"
+    },
+    {
+      "company_id": 19,
+      "company": "SAP SE",
+      "evaluated_months": 26,
+      "review_sd": 0.8916,
+      "fingerprint": "3ff44cae33c1a6394946899b01a74f0ab60471d6f1e7fc15dbe1cdb6413c5f19"
+    },
+    {
+      "company_id": 20,
+      "company": "NTT DATA SE",
+      "evaluated_months": 40,
+      "review_sd": 1.1883,
+      "fingerprint": "88e1da14d4a48f86f1339607bdfb80a3282a203fbc7398ad50662e420ce676e2"
+    },
+    {
+      "company_id": 21,
+      "company": "1&1 AG",
+      "evaluated_months": 107,
+      "review_sd": 1.0893,
+      "fingerprint": "5c40aa3fb15ce90ee862aebc28243590310c075d56f31ad7275f9d2bf2cd143e"
+    },
+    {
+      "company_id": 24,
+      "company": "Bechtle",
+      "evaluated_months": 139,
+      "review_sd": 1.1461,
+      "fingerprint": "7f150e0a5d5868217fa1ca800b73c748173d3d32b895647077098d32a4d36c26"
+    },
+    {
+      "company_id": 25,
+      "company": "Cancom",
+      "evaluated_months": 115,
+      "review_sd": 1.1403,
+      "fingerprint": "51b879ca2c74be3c172eb00c5390c9cc916fd5887e9b8c7878af4ac49ebc78f4"
+    },
+    {
+      "company_id": 26,
+      "company": "Carl Zeiss",
+      "evaluated_months": 99,
+      "review_sd": 0.8715,
+      "fingerprint": "c5d36a86f316c04e862e9cf1a580763b0640432a13fd1867651defa0ee4125f9"
+    },
+    {
+      "company_id": 27,
+      "company": "Compugroup Medical Deutschland",
+      "evaluated_months": 76,
+      "review_sd": 1.1049,
+      "fingerprint": "75e9eba3528694727d7c118b1be53abb56433318af435af19184962a233f5208"
+    },
+    {
+      "company_id": 28,
+      "company": "Telekom",
+      "evaluated_months": 165,
+      "review_sd": 0.9502,
+      "fingerprint": "3884508b881eeaa44656140d483a8428028c4b345363ca4802e5ceaf67446251"
+    },
+    {
+      "company_id": 33,
+      "company": "Freenet",
+      "evaluated_months": 86,
+      "review_sd": 0.99,
+      "fingerprint": "9aa3ad5681b7d8d9ac9eac61016b791eef4df7f7c1d3bbb4feacce8ef47ac54c"
+    }
+  ],
+  "paired": [
+    {
+      "condition": "bewertungen",
+      "placement": "mitte",
+      "delta": 0.0,
+      "measure": "Anteil Reihen mit Fehlalarm",
+      "n": 3000,
+      "ungewichtet": 0.1917,
+      "gewichtet": 0.0367,
+      "differenz": -0.155,
+      "differenz_bootstrap95": [
+        -0.2127,
+        -0.1163
+      ],
+      "nur_ungewichtet": 476,
+      "nur_gewichtet": 11,
+      "p_vorzeichen": 4.185921671475953e-125,
+      "extras_ungewichtet": 0.348,
+      "extras_gewichtet": 0.0433,
+      "extras_differenz_bootstrap95": [
+        -0.457,
+        -0.208
+      ]
+    },
+    {
+      "condition": "bewertungen",
+      "placement": "mitte",
+      "delta": 0.3,
+      "measure": "Trefferquote",
+      "n": 3000,
+      "ungewichtet": 0.235,
+      "gewichtet": 0.223,
+      "differenz": -0.012,
+      "differenz_bootstrap95": [
+        -0.0307,
+        0.0047
+      ],
+      "nur_ungewichtet": 182,
+      "nur_gewichtet": 146,
+      "p_vorzeichen": 0.05312560717784825,
+      "extras_ungewichtet": 0.5803,
+      "extras_gewichtet": 0.292,
+      "extras_differenz_bootstrap95": [
+        -0.425,
+        -0.2047
+      ]
+    },
+    {
+      "condition": "bewertungen",
+      "placement": "mitte",
+      "delta": 0.5,
+      "measure": "Trefferquote",
+      "n": 3000,
+      "ungewichtet": 0.5807,
+      "gewichtet": 0.6043,
+      "differenz": 0.0237,
+      "differenz_bootstrap95": [
+        0.0027,
+        0.043
+      ],
+      "nur_ungewichtet": 117,
+      "nur_gewichtet": 188,
+      "p_vorzeichen": 5.697306113876262e-05,
+      "extras_ungewichtet": 0.595,
+      "extras_gewichtet": 0.324,
+      "extras_differenz_bootstrap95": [
+        -0.416,
+        -0.1843
+      ]
+    },
+    {
+      "condition": "bewertungen",
+      "placement": "mitte",
+      "delta": 0.75,
+      "measure": "Trefferquote",
+      "n": 3000,
+      "ungewichtet": 0.8107,
+      "gewichtet": 0.8287,
+      "differenz": 0.018,
+      "differenz_bootstrap95": [
+        0.009,
+        0.028
+      ],
+      "nur_ungewichtet": 49,
+      "nur_gewichtet": 103,
+      "p_vorzeichen": 1.411945905048805e-05,
+      "extras_ungewichtet": 0.4657,
+      "extras_gewichtet": 0.195,
+      "extras_differenz_bootstrap95": [
+        -0.409,
+        -0.181
+      ]
+    },
+    {
+      "condition": "bewertungen",
+      "placement": "mitte",
+      "delta": 1.0,
+      "measure": "Trefferquote",
+      "n": 3000,
+      "ungewichtet": 0.9157,
+      "gewichtet": 0.9237,
+      "differenz": 0.008,
+      "differenz_bootstrap95": [
+        0.0047,
+        0.0117
+      ],
+      "nur_ungewichtet": 26,
+      "nur_gewichtet": 50,
+      "p_vorzeichen": 0.007905180027859778,
+      "extras_ungewichtet": 0.383,
+      "extras_gewichtet": 0.119,
+      "extras_differenz_bootstrap95": [
+        -0.4057,
+        -0.1763
+      ]
+    },
+    {
+      "condition": "bewertungen",
+      "placement": "ende",
+      "delta": 0.0,
+      "measure": "Anteil Reihen mit Fehlalarm",
+      "n": 3000,
+      "ungewichtet": 0.1917,
+      "gewichtet": 0.0367,
+      "differenz": -0.155,
+      "differenz_bootstrap95": [
+        -0.212,
+        -0.1163
+      ],
+      "nur_ungewichtet": 476,
+      "nur_gewichtet": 11,
+      "p_vorzeichen": 4.185921671475953e-125,
+      "extras_ungewichtet": 0.344,
+      "extras_gewichtet": 0.043,
+      "extras_differenz_bootstrap95": [
+        -0.4503,
+        -0.206
+      ]
+    },
+    {
+      "condition": "bewertungen",
+      "placement": "ende",
+      "delta": 0.3,
+      "measure": "Trefferquote",
+      "n": 3000,
+      "ungewichtet": 0.1547,
+      "gewichtet": 0.128,
+      "differenz": -0.0267,
+      "differenz_bootstrap95": [
+        -0.053,
+        0.0007
+      ],
+      "nur_ungewichtet": 162,
+      "nur_gewichtet": 82,
+      "p_vorzeichen": 3.3677820494144443e-07,
+      "extras_ungewichtet": 0.381,
+      "extras_gewichtet": 0.0827,
+      "extras_differenz_bootstrap95": [
+        -0.441,
+        -0.2137
+      ]
+    },
+    {
+      "condition": "bewertungen",
+      "placement": "ende",
+      "delta": 0.5,
+      "measure": "Trefferquote",
+      "n": 3000,
+      "ungewichtet": 0.423,
+      "gewichtet": 0.389,
+      "differenz": -0.034,
+      "differenz_bootstrap95": [
+        -0.072,
+        0.0063
+      ],
+      "nur_ungewichtet": 227,
+      "nur_gewichtet": 125,
+      "p_vorzeichen": 5.957079912220926e-08,
+      "extras_ungewichtet": 0.4137,
+      "extras_gewichtet": 0.1277,
+      "extras_differenz_bootstrap95": [
+        -0.431,
+        -0.1957
+      ]
+    },
+    {
+      "condition": "bewertungen",
+      "placement": "ende",
+      "delta": 0.75,
+      "measure": "Trefferquote",
+      "n": 3000,
+      "ungewichtet": 0.74,
+      "gewichtet": 0.7283,
+      "differenz": -0.0117,
+      "differenz_bootstrap95": [
+        -0.0377,
+        0.0143
+      ],
+      "nur_ungewichtet": 122,
+      "nur_gewichtet": 87,
+      "p_vorzeichen": 0.01846717178429805,
+      "extras_ungewichtet": 0.3907,
+      "extras_gewichtet": 0.127,
+      "extras_differenz_bootstrap95": [
+        -0.412,
+        -0.1763
+      ]
+    },
+    {
+      "condition": "bewertungen",
+      "placement": "ende",
+      "delta": 1.0,
+      "measure": "Trefferquote",
+      "n": 3000,
+      "ungewichtet": 0.8963,
+      "gewichtet": 0.892,
+      "differenz": -0.0043,
+      "differenz_bootstrap95": [
+        -0.0163,
+        0.0073
+      ],
+      "nur_ungewichtet": 50,
+      "nur_gewichtet": 37,
+      "p_vorzeichen": 0.1979791406725175,
+      "extras_ungewichtet": 0.3463,
+      "extras_gewichtet": 0.0943,
+      "extras_differenz_bootstrap95": [
+        -0.4077,
+        -0.16
+      ]
+    },
+    {
+      "condition": "monate",
+      "placement": "mitte",
+      "delta": 0.0,
+      "measure": "Anteil Reihen mit Fehlalarm",
+      "n": 3000,
+      "ungewichtet": 0.1413,
+      "gewichtet": 0.1123,
+      "differenz": -0.029,
+      "differenz_bootstrap95": [
+        -0.062,
+        0.0017
+      ],
+      "nur_ungewichtet": 153,
+      "nur_gewichtet": 66,
+      "p_vorzeichen": 3.904349520741399e-09,
+      "extras_ungewichtet": 0.2333,
+      "extras_gewichtet": 0.187,
+      "extras_differenz_bootstrap95": [
+        -0.108,
+        0.0143
+      ]
+    },
+    {
+      "condition": "monate",
+      "placement": "mitte",
+      "delta": 0.3,
+      "measure": "Trefferquote",
+      "n": 3000,
+      "ungewichtet": 0.147,
+      "gewichtet": 0.144,
+      "differenz": -0.003,
+      "differenz_bootstrap95": [
+        -0.0157,
+        0.0087
+      ],
+      "nur_ungewichtet": 84,
+      "nur_gewichtet": 75,
+      "p_vorzeichen": 0.5259245063255021,
+      "extras_ungewichtet": 0.473,
+      "extras_gewichtet": 0.418,
+      "extras_differenz_bootstrap95": [
+        -0.1213,
+        0.0053
+      ]
+    },
+    {
+      "condition": "monate",
+      "placement": "mitte",
+      "delta": 0.5,
+      "measure": "Trefferquote",
+      "n": 3000,
+      "ungewichtet": 0.4053,
+      "gewichtet": 0.4207,
+      "differenz": 0.0153,
+      "differenz_bootstrap95": [
+        -0.0007,
+        0.0343
+      ],
+      "nur_ungewichtet": 114,
+      "nur_gewichtet": 160,
+      "p_vorzeichen": 0.006451928990872362,
+      "extras_ungewichtet": 0.566,
+      "extras_gewichtet": 0.5013,
+      "extras_differenz_bootstrap95": [
+        -0.13,
+        -0.0093
+      ]
+    },
+    {
+      "condition": "monate",
+      "placement": "mitte",
+      "delta": 0.75,
+      "measure": "Trefferquote",
+      "n": 3000,
+      "ungewichtet": 0.708,
+      "gewichtet": 0.7133,
+      "differenz": 0.0053,
+      "differenz_bootstrap95": [
+        -0.0063,
+        0.017
+      ],
+      "nur_ungewichtet": 77,
+      "nur_gewichtet": 93,
+      "p_vorzeichen": 0.2498860318454369,
+      "extras_ungewichtet": 0.4437,
+      "extras_gewichtet": 0.3927,
+      "extras_differenz_bootstrap95": [
+        -0.1077,
+        0.002
+      ]
+    },
+    {
+      "condition": "monate",
+      "placement": "mitte",
+      "delta": 1.0,
+      "measure": "Trefferquote",
+      "n": 3000,
+      "ungewichtet": 0.868,
+      "gewichtet": 0.8677,
+      "differenz": -0.0003,
+      "differenz_bootstrap95": [
+        -0.0077,
+        0.0063
+      ],
+      "nur_ungewichtet": 48,
+      "nur_gewichtet": 47,
+      "p_vorzeichen": 1.0,
+      "extras_ungewichtet": 0.322,
+      "extras_gewichtet": 0.284,
+      "extras_differenz_bootstrap95": [
+        -0.094,
+        0.0143
+      ]
+    }
+  ],
+  "strata_wechselmonat": [
+    {
+      "condition": "bewertungen",
+      "placement": "ende",
+      "delta": 0.3,
+      "wechselmonat": "n<10",
+      "variant": "count",
+      "reps": 1459,
+      "recall": 0.0843
+    },
+    {
+      "condition": "bewertungen",
+      "placement": "ende",
+      "delta": 0.3,
+      "wechselmonat": "n<10",
+      "variant": "none",
+      "reps": 1459,
+      "recall": 0.1494
+    },
+    {
+      "condition": "bewertungen",
+      "placement": "ende",
+      "delta": 0.3,
+      "wechselmonat": "n>=10",
+      "variant": "count",
+      "reps": 1541,
+      "recall": 0.1694
+    },
+    {
+      "condition": "bewertungen",
+      "placement": "ende",
+      "delta": 0.3,
+      "wechselmonat": "n>=10",
+      "variant": "none",
+      "reps": 1541,
+      "recall": 0.1596
+    },
+    {
+      "condition": "bewertungen",
+      "placement": "ende",
+      "delta": 0.5,
+      "wechselmonat": "n<10",
+      "variant": "count",
+      "reps": 1459,
+      "recall": 0.2817
+    },
+    {
+      "condition": "bewertungen",
+      "placement": "ende",
+      "delta": 0.5,
+      "wechselmonat": "n<10",
+      "variant": "none",
+      "reps": 1459,
+      "recall": 0.377
+    },
+    {
+      "condition": "bewertungen",
+      "placement": "ende",
+      "delta": 0.5,
+      "wechselmonat": "n>=10",
+      "variant": "count",
+      "reps": 1541,
+      "recall": 0.4906
+    },
+    {
+      "condition": "bewertungen",
+      "placement": "ende",
+      "delta": 0.5,
+      "wechselmonat": "n>=10",
+      "variant": "none",
+      "reps": 1541,
+      "recall": 0.4666
+    },
+    {
+      "condition": "bewertungen",
+      "placement": "ende",
+      "delta": 0.75,
+      "wechselmonat": "n<10",
+      "variant": "count",
+      "reps": 1459,
+      "recall": 0.6354
+    },
+    {
+      "condition": "bewertungen",
+      "placement": "ende",
+      "delta": 0.75,
+      "wechselmonat": "n<10",
+      "variant": "none",
+      "reps": 1459,
+      "recall": 0.6785
+    },
+    {
+      "condition": "bewertungen",
+      "placement": "ende",
+      "delta": 0.75,
+      "wechselmonat": "n>=10",
+      "variant": "count",
+      "reps": 1541,
+      "recall": 0.8164
+    },
+    {
+      "condition": "bewertungen",
+      "placement": "ende",
+      "delta": 0.75,
+      "wechselmonat": "n>=10",
+      "variant": "none",
+      "reps": 1541,
+      "recall": 0.7982
+    },
+    {
+      "condition": "bewertungen",
+      "placement": "ende",
+      "delta": 1.0,
+      "wechselmonat": "n<10",
+      "variant": "count",
+      "reps": 1459,
+      "recall": 0.8458
+    },
+    {
+      "condition": "bewertungen",
+      "placement": "ende",
+      "delta": 1.0,
+      "wechselmonat": "n<10",
+      "variant": "none",
+      "reps": 1459,
+      "recall": 0.8643
+    },
+    {
+      "condition": "bewertungen",
+      "placement": "ende",
+      "delta": 1.0,
+      "wechselmonat": "n>=10",
+      "variant": "count",
+      "reps": 1541,
+      "recall": 0.9358
+    },
+    {
+      "condition": "bewertungen",
+      "placement": "ende",
+      "delta": 1.0,
+      "wechselmonat": "n>=10",
+      "variant": "none",
+      "reps": 1541,
+      "recall": 0.9267
+    },
+    {
+      "condition": "bewertungen",
+      "placement": "mitte",
+      "delta": 0.3,
+      "wechselmonat": "n<10",
+      "variant": "count",
+      "reps": 1814,
+      "recall": 0.1946
+    },
+    {
+      "condition": "bewertungen",
+      "placement": "mitte",
+      "delta": 0.3,
+      "wechselmonat": "n<10",
+      "variant": "none",
+      "reps": 1814,
+      "recall": 0.2277
+    },
+    {
+      "condition": "bewertungen",
+      "placement": "mitte",
+      "delta": 0.3,
+      "wechselmonat": "n>=10",
+      "variant": "count",
+      "reps": 1186,
+      "recall": 0.2664
+    },
+    {
+      "condition": "bewertungen",
+      "placement": "mitte",
+      "delta": 0.3,
+      "wechselmonat": "n>=10",
+      "variant": "none",
+      "reps": 1186,
+      "recall": 0.2462
+    },
+    {
+      "condition": "bewertungen",
+      "placement": "mitte",
+      "delta": 0.5,
+      "wechselmonat": "n<10",
+      "variant": "count",
+      "reps": 1814,
+      "recall": 0.532
+    },
+    {
+      "condition": "bewertungen",
+      "placement": "mitte",
+      "delta": 0.5,
+      "wechselmonat": "n<10",
+      "variant": "none",
+      "reps": 1814,
+      "recall": 0.5325
+    },
+    {
+      "condition": "bewertungen",
+      "placement": "mitte",
+      "delta": 0.5,
+      "wechselmonat": "n>=10",
+      "variant": "count",
+      "reps": 1186,
+      "recall": 0.715
+    },
+    {
+      "condition": "bewertungen",
+      "placement": "mitte",
+      "delta": 0.5,
+      "wechselmonat": "n>=10",
+      "variant": "none",
+      "reps": 1186,
+      "recall": 0.6543
+    },
+    {
+      "condition": "bewertungen",
+      "placement": "mitte",
+      "delta": 0.75,
+      "wechselmonat": "n<10",
+      "variant": "count",
+      "reps": 1814,
+      "recall": 0.7778
+    },
+    {
+      "condition": "bewertungen",
+      "placement": "mitte",
+      "delta": 0.75,
+      "wechselmonat": "n<10",
+      "variant": "none",
+      "reps": 1814,
+      "recall": 0.7707
+    },
+    {
+      "condition": "bewertungen",
+      "placement": "mitte",
+      "delta": 0.75,
+      "wechselmonat": "n>=10",
+      "variant": "count",
+      "reps": 1186,
+      "recall": 0.9064
+    },
+    {
+      "condition": "bewertungen",
+      "placement": "mitte",
+      "delta": 0.75,
+      "wechselmonat": "n>=10",
+      "variant": "none",
+      "reps": 1186,
+      "recall": 0.8718
+    },
+    {
+      "condition": "bewertungen",
+      "placement": "mitte",
+      "delta": 1.0,
+      "wechselmonat": "n<10",
+      "variant": "count",
+      "reps": 1814,
+      "recall": 0.8914
+    },
+    {
+      "condition": "bewertungen",
+      "placement": "mitte",
+      "delta": 1.0,
+      "wechselmonat": "n<10",
+      "variant": "none",
+      "reps": 1814,
+      "recall": 0.8892
+    },
+    {
+      "condition": "bewertungen",
+      "placement": "mitte",
+      "delta": 1.0,
+      "wechselmonat": "n>=10",
+      "variant": "count",
+      "reps": 1186,
+      "recall": 0.973
+    },
+    {
+      "condition": "bewertungen",
+      "placement": "mitte",
+      "delta": 1.0,
+      "wechselmonat": "n>=10",
+      "variant": "none",
+      "reps": 1186,
+      "recall": 0.9562
+    },
+    {
+      "condition": "monate",
+      "placement": "mitte",
+      "delta": 0.3,
+      "wechselmonat": "n<10",
+      "variant": "count",
+      "reps": 1782,
+      "recall": 0.1341
+    },
+    {
+      "condition": "monate",
+      "placement": "mitte",
+      "delta": 0.3,
+      "wechselmonat": "n<10",
+      "variant": "none",
+      "reps": 1782,
+      "recall": 0.1459
+    },
+    {
+      "condition": "monate",
+      "placement": "mitte",
+      "delta": 0.3,
+      "wechselmonat": "n>=10",
+      "variant": "count",
+      "reps": 1218,
+      "recall": 0.1585
+    },
+    {
+      "condition": "monate",
+      "placement": "mitte",
+      "delta": 0.3,
+      "wechselmonat": "n>=10",
+      "variant": "none",
+      "reps": 1218,
+      "recall": 0.1486
+    },
+    {
+      "condition": "monate",
+      "placement": "mitte",
+      "delta": 0.5,
+      "wechselmonat": "n<10",
+      "variant": "count",
+      "reps": 1782,
+      "recall": 0.3996
+    },
+    {
+      "condition": "monate",
+      "placement": "mitte",
+      "delta": 0.5,
+      "wechselmonat": "n<10",
+      "variant": "none",
+      "reps": 1782,
+      "recall": 0.4018
+    },
+    {
+      "condition": "monate",
+      "placement": "mitte",
+      "delta": 0.5,
+      "wechselmonat": "n>=10",
+      "variant": "count",
+      "reps": 1218,
+      "recall": 0.4516
+    },
+    {
+      "condition": "monate",
+      "placement": "mitte",
+      "delta": 0.5,
+      "wechselmonat": "n>=10",
+      "variant": "none",
+      "reps": 1218,
+      "recall": 0.4105
+    },
+    {
+      "condition": "monate",
+      "placement": "mitte",
+      "delta": 0.75,
+      "wechselmonat": "n<10",
+      "variant": "count",
+      "reps": 1782,
+      "recall": 0.7003
+    },
+    {
+      "condition": "monate",
+      "placement": "mitte",
+      "delta": 0.75,
+      "wechselmonat": "n<10",
+      "variant": "none",
+      "reps": 1782,
+      "recall": 0.7031
+    },
+    {
+      "condition": "monate",
+      "placement": "mitte",
+      "delta": 0.75,
+      "wechselmonat": "n>=10",
+      "variant": "count",
+      "reps": 1218,
+      "recall": 0.7323
+    },
+    {
+      "condition": "monate",
+      "placement": "mitte",
+      "delta": 0.75,
+      "wechselmonat": "n>=10",
+      "variant": "none",
+      "reps": 1218,
+      "recall": 0.7151
+    },
+    {
+      "condition": "monate",
+      "placement": "mitte",
+      "delta": 1.0,
+      "wechselmonat": "n<10",
+      "variant": "count",
+      "reps": 1782,
+      "recall": 0.8535
+    },
+    {
+      "condition": "monate",
+      "placement": "mitte",
+      "delta": 1.0,
+      "wechselmonat": "n<10",
+      "variant": "none",
+      "reps": 1782,
+      "recall": 0.8642
+    },
+    {
+      "condition": "monate",
+      "placement": "mitte",
+      "delta": 1.0,
+      "wechselmonat": "n>=10",
+      "variant": "count",
+      "reps": 1218,
+      "recall": 0.8883
+    },
+    {
+      "condition": "monate",
+      "placement": "mitte",
+      "delta": 1.0,
+      "wechselmonat": "n>=10",
+      "variant": "none",
+      "reps": 1218,
+      "recall": 0.8736
+    }
+  ],
+  "aggregate": {
+    "none": [
+      {
+        "condition": "bewertungen",
+        "placement": "mitte",
+        "delta": 0.0,
+        "reps": 3000,
+        "hits": 28,
+        "recall": 0.0093,
+        "recall_wilson": [
+          0.0065,
+          0.0135
+        ],
+        "recall_tol3": 0.0163,
+        "recall_tol6": 0.028,
+        "detections_mean": 0.3573,
+        "p_any_detection": 0.1917,
+        "extras_mean": 0.348,
+        "extras_near_mean": 0.0193,
+        "p_any_extra": 0.1887,
+        "precision": 0.0261,
+        "f1": 0.0138,
+        "loc_error_mean_abs": 0.5714,
+        "delta_bias_median": null,
+        "delta_bias_quartiles": null,
+        "share_high": 0.5,
+        "outliers_mean": 0.0,
+        "share_out_of_range": 0.0,
+        "sigma_sim_median": 0.3475,
+        "recall_bootstrap": [
+          0.0047,
+          0.015
+        ],
+        "recall_series_median": 0.005,
+        "recall_series_range": [
+          0.0,
+          0.035
+        ],
+        "detections_bootstrap": [
+          0.2597,
+          0.5007
+        ],
+        "detections_series_median": 0.315,
+        "detections_per_100_months_median": 0.7727
+      },
+      {
+        "condition": "bewertungen",
+        "placement": "mitte",
+        "delta": 0.3,
+        "reps": 3000,
+        "hits": 705,
+        "recall": 0.235,
+        "recall_wilson": [
+          0.2202,
+          0.2505
+        ],
+        "recall_tol3": 0.2897,
+        "recall_tol6": 0.3653,
+        "detections_mean": 0.8153,
+        "p_any_detection": 0.5787,
+        "extras_mean": 0.5803,
+        "extras_near_mean": 0.132,
+        "p_any_extra": 0.4037,
+        "precision": 0.2882,
+        "f1": 0.2589,
+        "loc_error_mean_abs": 0.5929,
+        "delta_bias_median": 0.119,
+        "delta_bias_quartiles": [
+          0.051,
+          0.223
+        ],
+        "share_high": 0.2965,
+        "outliers_mean": 0.0,
+        "share_out_of_range": 0.0313,
+        "sigma_sim_median": 0.347,
+        "recall_bootstrap": [
+          0.194,
+          0.275
+        ],
+        "recall_series_median": 0.235,
+        "recall_series_range": [
+          0.08,
+          0.425
+        ],
+        "detections_bootstrap": [
+          0.7007,
+          0.9547
+        ],
+        "detections_series_median": 0.775,
+        "detections_per_100_months_median": 1.2125
+      },
+      {
+        "condition": "bewertungen",
+        "placement": "mitte",
+        "delta": 0.5,
+        "reps": 3000,
+        "hits": 1742,
+        "recall": 0.5807,
+        "recall_wilson": [
+          0.5629,
+          0.5982
+        ],
+        "recall_tol3": 0.6533,
+        "recall_tol6": 0.7417,
+        "detections_mean": 1.1757,
+        "p_any_detection": 0.8947,
+        "extras_mean": 0.595,
+        "extras_near_mean": 0.1643,
+        "p_any_extra": 0.4277,
+        "precision": 0.4939,
+        "f1": 0.5338,
+        "loc_error_mean_abs": 0.4552,
+        "delta_bias_median": 0.043,
+        "delta_bias_quartiles": [
+          -0.02,
+          0.1328
+        ],
+        "share_high": 0.6751,
+        "outliers_mean": 0.0,
+        "share_out_of_range": 0.133,
+        "sigma_sim_median": 0.3491,
+        "recall_bootstrap": [
+          0.498,
+          0.6573
+        ],
+        "recall_series_median": 0.605,
+        "recall_series_range": [
+          0.23,
+          0.88
+        ],
+        "detections_bootstrap": [
+          1.046,
+          1.326
+        ],
+        "detections_series_median": 1.14,
+        "detections_per_100_months_median": 2.0625
+      },
+      {
+        "condition": "bewertungen",
+        "placement": "mitte",
+        "delta": 0.75,
+        "reps": 3000,
+        "hits": 2432,
+        "recall": 0.8107,
+        "recall_wilson": [
+          0.7963,
+          0.8243
+        ],
+        "recall_tol3": 0.8583,
+        "recall_tol6": 0.909,
+        "detections_mean": 1.2763,
+        "p_any_detection": 0.9793,
+        "extras_mean": 0.4657,
+        "extras_near_mean": 0.1057,
+        "p_any_extra": 0.318,
+        "precision": 0.6352,
+        "f1": 0.7123,
+        "loc_error_mean_abs": 0.3002,
+        "delta_bias_median": 0.017,
+        "delta_bias_quartiles": [
+          -0.055,
+          0.103
+        ],
+        "share_high": 0.9827,
+        "outliers_mean": 0.0,
+        "share_out_of_range": 0.307,
+        "sigma_sim_median": 0.3522,
+        "recall_bootstrap": [
+          0.7473,
+          0.8657
+        ],
+        "recall_series_median": 0.835,
+        "recall_series_range": [
+          0.535,
+          0.965
+        ],
+        "detections_bootstrap": [
+          1.176,
+          1.4114
+        ],
+        "detections_series_median": 1.245,
+        "detections_per_100_months_median": 2.7875
+      },
+      {
+        "condition": "bewertungen",
+        "placement": "mitte",
+        "delta": 1.0,
+        "reps": 3000,
+        "hits": 2747,
+        "recall": 0.9157,
+        "recall_wilson": [
+          0.9052,
+          0.9251
+        ],
+        "recall_tol3": 0.936,
+        "recall_tol6": 0.9633,
+        "detections_mean": 1.2987,
+        "p_any_detection": 0.9963,
+        "extras_mean": 0.383,
+        "extras_near_mean": 0.0603,
+        "p_any_extra": 0.2457,
+        "precision": 0.7051,
+        "f1": 0.7967,
+        "loc_error_mean_abs": 0.1937,
+        "delta_bias_median": 0.007,
+        "delta_bias_quartiles": [
+          -0.069,
+          0.091
+        ],
+        "share_high": 0.9975,
+        "outliers_mean": 0.0,
+        "share_out_of_range": 0.438,
+        "sigma_sim_median": 0.3536,
+        "recall_bootstrap": [
+          0.881,
+          0.9463
+        ],
+        "recall_series_median": 0.93,
+        "recall_series_range": [
+          0.78,
+          0.99
+        ],
+        "detections_bootstrap": [
+          1.21,
+          1.4307
+        ],
+        "detections_series_median": 1.26,
+        "detections_per_100_months_median": 3.0
+      },
+      {
+        "condition": "bewertungen",
+        "placement": "ende",
+        "delta": 0.0,
+        "reps": 3000,
+        "hits": 40,
+        "recall": 0.0133,
+        "recall_wilson": [
+          0.0098,
+          0.0181
+        ],
+        "recall_tol3": 0.0157,
+        "recall_tol6": 0.025,
+        "detections_mean": 0.3573,
+        "p_any_detection": 0.1917,
+        "extras_mean": 0.344,
+        "extras_near_mean": 0.012,
+        "p_any_extra": 0.1863,
+        "precision": 0.0373,
+        "f1": 0.0196,
+        "loc_error_mean_abs": 0.725,
+        "delta_bias_median": null,
+        "delta_bias_quartiles": null,
+        "share_high": 0.675,
+        "outliers_mean": 0.0,
+        "share_out_of_range": 0.0,
+        "sigma_sim_median": 0.3475,
+        "recall_bootstrap": [
+          0.008,
+          0.0187
+        ],
+        "recall_series_median": 0.015,
+        "recall_series_range": [
+          0.0,
+          0.03
+        ],
+        "detections_bootstrap": [
+          0.2597,
+          0.5007
+        ],
+        "detections_series_median": 0.315,
+        "detections_per_100_months_median": 0.7727
+      },
+      {
+        "condition": "bewertungen",
+        "placement": "ende",
+        "delta": 0.3,
+        "reps": 3000,
+        "hits": 464,
+        "recall": 0.1547,
+        "recall_wilson": [
+          0.1422,
+          0.168
+        ],
+        "recall_tol3": 0.1713,
+        "recall_tol6": 0.2023,
+        "detections_mean": 0.5357,
+        "p_any_detection": 0.3343,
+        "extras_mean": 0.381,
+        "extras_near_mean": 0.0483,
+        "p_any_extra": 0.226,
+        "precision": 0.2887,
+        "f1": 0.2014,
+        "loc_error_mean_abs": 0.403,
+        "delta_bias_median": 0.2575,
+        "delta_bias_quartiles": [
+          0.127,
+          0.3873
+        ],
+        "share_high": 0.6056,
+        "outliers_mean": 0.0,
+        "share_out_of_range": 0.0123,
+        "sigma_sim_median": 0.3488,
+        "recall_bootstrap": [
+          0.1147,
+          0.2033
+        ],
+        "recall_series_median": 0.13,
+        "recall_series_range": [
+          0.045,
+          0.415
+        ],
+        "detections_bootstrap": [
+          0.416,
+          0.706
+        ],
+        "detections_series_median": 0.47,
+        "detections_per_100_months_median": 0.9848
+      },
+      {
+        "condition": "bewertungen",
+        "placement": "ende",
+        "delta": 0.5,
+        "reps": 3000,
+        "hits": 1269,
+        "recall": 0.423,
+        "recall_wilson": [
+          0.4054,
+          0.4408
+        ],
+        "recall_tol3": 0.449,
+        "recall_tol6": 0.4933,
+        "detections_mean": 0.8367,
+        "p_any_detection": 0.5843,
+        "extras_mean": 0.4137,
+        "extras_near_mean": 0.0713,
+        "p_any_extra": 0.2587,
+        "precision": 0.5056,
+        "f1": 0.4606,
+        "loc_error_mean_abs": 0.2758,
+        "delta_bias_median": 0.122,
+        "delta_bias_quartiles": [
+          0.029,
+          0.251
+        ],
+        "share_high": 0.8251,
+        "outliers_mean": 0.0,
+        "share_out_of_range": 0.0477,
+        "sigma_sim_median": 0.3502,
+        "recall_bootstrap": [
+          0.331,
+          0.5257
+        ],
+        "recall_series_median": 0.345,
+        "recall_series_range": [
+          0.18,
+          0.955
+        ],
+        "detections_bootstrap": [
+          0.678,
+          1.0553
+        ],
+        "detections_series_median": 0.77,
+        "detections_per_100_months_median": 1.3273
+      },
+      {
+        "condition": "bewertungen",
+        "placement": "ende",
+        "delta": 0.75,
+        "reps": 3000,
+        "hits": 2220,
+        "recall": 0.74,
+        "recall_wilson": [
+          0.724,
+          0.7554
+        ],
+        "recall_tol3": 0.7653,
+        "recall_tol6": 0.8067,
+        "detections_mean": 1.1307,
+        "p_any_detection": 0.8557,
+        "extras_mean": 0.3907,
+        "extras_near_mean": 0.0687,
+        "p_any_extra": 0.2457,
+        "precision": 0.6545,
+        "f1": 0.6946,
+        "loc_error_mean_abs": 0.1703,
+        "delta_bias_median": 0.053,
+        "delta_bias_quartiles": [
+          -0.051,
+          0.1713
+        ],
+        "share_high": 0.9838,
+        "outliers_mean": 0.0,
+        "share_out_of_range": 0.1367,
+        "sigma_sim_median": 0.3533,
+        "recall_bootstrap": [
+          0.6583,
+          0.8157
+        ],
+        "recall_series_median": 0.71,
+        "recall_series_range": [
+          0.44,
+          1.0
+        ],
+        "detections_bootstrap": [
+          0.9987,
+          1.303
+        ],
+        "detections_series_median": 1.095,
+        "detections_per_100_months_median": 1.9875
+      },
+      {
+        "condition": "bewertungen",
+        "placement": "ende",
+        "delta": 1.0,
+        "reps": 3000,
+        "hits": 2689,
+        "recall": 0.8963,
+        "recall_wilson": [
+          0.8849,
+          0.9067
+        ],
+        "recall_tol3": 0.911,
+        "recall_tol6": 0.9437,
+        "detections_mean": 1.2427,
+        "p_any_detection": 0.9613,
+        "extras_mean": 0.3463,
+        "extras_near_mean": 0.051,
+        "p_any_extra": 0.209,
+        "precision": 0.7213,
+        "f1": 0.7993,
+        "loc_error_mean_abs": 0.1034,
+        "delta_bias_median": 0.02,
+        "delta_bias_quartiles": [
+          -0.097,
+          0.145
+        ],
+        "share_high": 0.9985,
+        "outliers_mean": 0.0,
+        "share_out_of_range": 0.2797,
+        "sigma_sim_median": 0.3554,
+        "recall_bootstrap": [
+          0.8427,
+          0.943
+        ],
+        "recall_series_median": 0.915,
+        "recall_series_range": [
+          0.66,
+          1.0
+        ],
+        "detections_bootstrap": [
+          1.1387,
+          1.3943
+        ],
+        "detections_series_median": 1.205,
+        "detections_per_100_months_median": 2.5625
+      },
+      {
+        "condition": "monate",
+        "placement": "mitte",
+        "delta": 0.0,
+        "reps": 3000,
+        "hits": 30,
+        "recall": 0.01,
+        "recall_wilson": [
+          0.007,
+          0.0142
+        ],
+        "recall_tol3": 0.0133,
+        "recall_tol6": 0.0243,
+        "detections_mean": 0.2433,
+        "p_any_detection": 0.1413,
+        "extras_mean": 0.2333,
+        "extras_near_mean": 0.0147,
+        "p_any_extra": 0.139,
+        "precision": 0.0411,
+        "f1": 0.0161,
+        "loc_error_mean_abs": 1.0333,
+        "delta_bias_median": null,
+        "delta_bias_quartiles": null,
+        "share_high": 0.5,
+        "outliers_mean": 0.0,
+        "share_out_of_range": 0.0,
+        "sigma_sim_median": 0.4461,
+        "recall_bootstrap": [
+          0.0053,
+          0.0157
+        ],
+        "recall_series_median": 0.005,
+        "recall_series_range": [
+          0.0,
+          0.035
+        ],
+        "detections_bootstrap": [
+          0.1963,
+          0.2977
+        ],
+        "detections_series_median": 0.215,
+        "detections_per_100_months_median": 0.5735
+      },
+      {
+        "condition": "monate",
+        "placement": "mitte",
+        "delta": 0.3,
+        "reps": 3000,
+        "hits": 441,
+        "recall": 0.147,
+        "recall_wilson": [
+          0.1348,
+          0.1601
+        ],
+        "recall_tol3": 0.1953,
+        "recall_tol6": 0.262,
+        "detections_mean": 0.62,
+        "p_any_detection": 0.4707,
+        "extras_mean": 0.473,
+        "extras_near_mean": 0.1163,
+        "p_any_extra": 0.3533,
+        "precision": 0.2371,
+        "f1": 0.1815,
+        "loc_error_mean_abs": 0.6667,
+        "delta_bias_median": 0.163,
+        "delta_bias_quartiles": [
+          0.093,
+          0.309
+        ],
+        "share_high": 0.4331,
+        "outliers_mean": 0.0,
+        "share_out_of_range": 0.0483,
+        "sigma_sim_median": 0.4466,
+        "recall_bootstrap": [
+          0.121,
+          0.1767
+        ],
+        "recall_series_median": 0.135,
+        "recall_series_range": [
+          0.075,
+          0.26
+        ],
+        "detections_bootstrap": [
+          0.5487,
+          0.6947
+        ],
+        "detections_series_median": 0.63,
+        "detections_per_100_months_median": 1.2656
+      },
+      {
+        "condition": "monate",
+        "placement": "mitte",
+        "delta": 0.5,
+        "reps": 3000,
+        "hits": 1216,
+        "recall": 0.4053,
+        "recall_wilson": [
+          0.3879,
+          0.423
+        ],
+        "recall_tol3": 0.499,
+        "recall_tol6": 0.5977,
+        "detections_mean": 0.9713,
+        "p_any_detection": 0.797,
+        "extras_mean": 0.566,
+        "extras_near_mean": 0.195,
+        "p_any_extra": 0.4483,
+        "precision": 0.4173,
+        "f1": 0.4112,
+        "loc_error_mean_abs": 0.5477,
+        "delta_bias_median": 0.088,
+        "delta_bias_quartiles": [
+          0.004,
+          0.1853
+        ],
+        "share_high": 0.7623,
+        "outliers_mean": 0.0,
+        "share_out_of_range": 0.2027,
+        "sigma_sim_median": 0.4487,
+        "recall_bootstrap": [
+          0.3463,
+          0.4713
+        ],
+        "recall_series_median": 0.365,
+        "recall_series_range": [
+          0.225,
+          0.62
+        ],
+        "detections_bootstrap": [
+          0.885,
+          1.0607
+        ],
+        "detections_series_median": 1.04,
+        "detections_per_100_months_median": 2.0875
+      },
+      {
+        "condition": "monate",
+        "placement": "mitte",
+        "delta": 0.75,
+        "reps": 3000,
+        "hits": 2124,
+        "recall": 0.708,
+        "recall_wilson": [
+          0.6915,
+          0.724
+        ],
+        "recall_tol3": 0.79,
+        "recall_tol6": 0.867,
+        "detections_mean": 1.1517,
+        "p_any_detection": 0.9643,
+        "extras_mean": 0.4437,
+        "extras_near_mean": 0.1617,
+        "p_any_extra": 0.341,
+        "precision": 0.6148,
+        "f1": 0.6581,
+        "loc_error_mean_abs": 0.3724,
+        "delta_bias_median": 0.037,
+        "delta_bias_quartiles": [
+          -0.05,
+          0.136
+        ],
+        "share_high": 0.9854,
+        "outliers_mean": 0.0,
+        "share_out_of_range": 0.3567,
+        "sigma_sim_median": 0.4508,
+        "recall_bootstrap": [
+          0.65,
+          0.7693
+        ],
+        "recall_series_median": 0.67,
+        "recall_series_range": [
+          0.505,
+          0.91
+        ],
+        "detections_bootstrap": [
+          1.105,
+          1.2017
+        ],
+        "detections_series_median": 1.135,
+        "detections_per_100_months_median": 2.7
+      },
+      {
+        "condition": "monate",
+        "placement": "mitte",
+        "delta": 1.0,
+        "reps": 3000,
+        "hits": 2604,
+        "recall": 0.868,
+        "recall_wilson": [
+          0.8554,
+          0.8796
+        ],
+        "recall_tol3": 0.9193,
+        "recall_tol6": 0.9623,
+        "detections_mean": 1.19,
+        "p_any_detection": 0.9983,
+        "extras_mean": 0.322,
+        "extras_near_mean": 0.099,
+        "p_any_extra": 0.2347,
+        "precision": 0.7294,
+        "f1": 0.7927,
+        "loc_error_mean_abs": 0.273,
+        "delta_bias_median": 0.016,
+        "delta_bias_quartiles": [
+          -0.079,
+          0.1133
+        ],
+        "share_high": 0.9988,
+        "outliers_mean": 0.0,
+        "share_out_of_range": 0.505,
+        "sigma_sim_median": 0.4539,
+        "recall_bootstrap": [
+          0.826,
+          0.909
+        ],
+        "recall_series_median": 0.885,
+        "recall_series_range": [
+          0.68,
+          0.975
+        ],
+        "detections_bootstrap": [
+          1.148,
+          1.2417
+        ],
+        "detections_series_median": 1.165,
+        "detections_per_100_months_median": 3.0125
+      }
+    ],
+    "count": [
+      {
+        "condition": "bewertungen",
+        "placement": "mitte",
+        "delta": 0.0,
+        "reps": 3000,
+        "hits": 4,
+        "recall": 0.0013,
+        "recall_wilson": [
+          0.0005,
+          0.0034
+        ],
+        "recall_tol3": 0.0017,
+        "recall_tol6": 0.004,
+        "detections_mean": 0.0447,
+        "p_any_detection": 0.0367,
+        "extras_mean": 0.0433,
+        "extras_near_mean": 0.0027,
+        "p_any_extra": 0.0363,
+        "precision": 0.0299,
+        "f1": 0.0026,
+        "loc_error_mean_abs": 1.25,
+        "delta_bias_median": null,
+        "delta_bias_quartiles": null,
+        "share_high": 0.75,
+        "outliers_mean": 0.0,
+        "share_out_of_range": 0.0,
+        "sigma_sim_median": 0.3475,
+        "recall_bootstrap": [
+          0.0003,
+          0.0027
+        ],
+        "recall_series_median": 0.0,
+        "recall_series_range": [
+          0.0,
+          0.005
+        ],
+        "detections_bootstrap": [
+          0.0297,
+          0.0623
+        ],
+        "detections_series_median": 0.035,
+        "detections_per_100_months_median": 0.0921
+      },
+      {
+        "condition": "bewertungen",
+        "placement": "mitte",
+        "delta": 0.3,
+        "reps": 3000,
+        "hits": 669,
+        "recall": 0.223,
+        "recall_wilson": [
+          0.2085,
+          0.2382
+        ],
+        "recall_tol3": 0.2763,
+        "recall_tol6": 0.3417,
+        "detections_mean": 0.515,
+        "p_any_detection": 0.4853,
+        "extras_mean": 0.292,
+        "extras_near_mean": 0.1187,
+        "p_any_extra": 0.274,
+        "precision": 0.433,
+        "f1": 0.2944,
+        "loc_error_mean_abs": 0.565,
+        "delta_bias_median": 0.085,
+        "delta_bias_quartiles": [
+          0.035,
+          0.171
+        ],
+        "share_high": 0.1958,
+        "outliers_mean": 0.0,
+        "share_out_of_range": 0.0313,
+        "sigma_sim_median": 0.347,
+        "recall_bootstrap": [
+          0.1777,
+          0.266
+        ],
+        "recall_series_median": 0.225,
+        "recall_series_range": [
+          0.075,
+          0.4
+        ],
+        "detections_bootstrap": [
+          0.456,
+          0.565
+        ],
+        "detections_series_median": 0.535,
+        "detections_per_100_months_median": 0.8
+      },
+      {
+        "condition": "bewertungen",
+        "placement": "mitte",
+        "delta": 0.5,
+        "reps": 3000,
+        "hits": 1813,
+        "recall": 0.6043,
+        "recall_wilson": [
+          0.5867,
+          0.6217
+        ],
+        "recall_tol3": 0.6727,
+        "recall_tol6": 0.754,
+        "detections_mean": 0.9283,
+        "p_any_detection": 0.8927,
+        "extras_mean": 0.324,
+        "extras_near_mean": 0.15,
+        "p_any_extra": 0.308,
+        "precision": 0.651,
+        "f1": 0.6268,
+        "loc_error_mean_abs": 0.4368,
+        "delta_bias_median": 0.028,
+        "delta_bias_quartiles": [
+          -0.023,
+          0.101
+        ],
+        "share_high": 0.6431,
+        "outliers_mean": 0.0,
+        "share_out_of_range": 0.133,
+        "sigma_sim_median": 0.3491,
+        "recall_bootstrap": [
+          0.5127,
+          0.688
+        ],
+        "recall_series_median": 0.62,
+        "recall_series_range": [
+          0.25,
+          0.895
+        ],
+        "detections_bootstrap": [
+          0.8523,
+          0.987
+        ],
+        "detections_series_median": 0.99,
+        "detections_per_100_months_median": 1.7
+      },
+      {
+        "condition": "bewertungen",
+        "placement": "mitte",
+        "delta": 0.75,
+        "reps": 3000,
+        "hits": 2486,
+        "recall": 0.8287,
+        "recall_wilson": [
+          0.8148,
+          0.8417
+        ],
+        "recall_tol3": 0.8673,
+        "recall_tol6": 0.9097,
+        "detections_mean": 1.0237,
+        "p_any_detection": 0.981,
+        "extras_mean": 0.195,
+        "extras_near_mean": 0.0827,
+        "p_any_extra": 0.183,
+        "precision": 0.8095,
+        "f1": 0.819,
+        "loc_error_mean_abs": 0.2928,
+        "delta_bias_median": 0.011,
+        "delta_bias_quartiles": [
+          -0.047,
+          0.082
+        ],
+        "share_high": 0.9936,
+        "outliers_mean": 0.0,
+        "share_out_of_range": 0.307,
+        "sigma_sim_median": 0.3522,
+        "recall_bootstrap": [
+          0.7643,
+          0.8847
+        ],
+        "recall_series_median": 0.86,
+        "recall_series_range": [
+          0.535,
+          0.98
+        ],
+        "detections_bootstrap": [
+          0.9943,
+          1.0443
+        ],
+        "detections_series_median": 1.035,
+        "detections_per_100_months_median": 2.4625
+      },
+      {
+        "condition": "bewertungen",
+        "placement": "mitte",
+        "delta": 1.0,
+        "reps": 3000,
+        "hits": 2771,
+        "recall": 0.9237,
+        "recall_wilson": [
+          0.9136,
+          0.9326
+        ],
+        "recall_tol3": 0.942,
+        "recall_tol6": 0.9647,
+        "detections_mean": 1.0427,
+        "p_any_detection": 0.9963,
+        "extras_mean": 0.119,
+        "extras_near_mean": 0.044,
+        "p_any_extra": 0.109,
+        "precision": 0.8859,
+        "f1": 0.9044,
+        "loc_error_mean_abs": 0.1877,
+        "delta_bias_median": 0.004,
+        "delta_bias_quartiles": [
+          -0.059,
+          0.074
+        ],
+        "share_high": 1.0,
+        "outliers_mean": 0.0,
+        "share_out_of_range": 0.438,
+        "sigma_sim_median": 0.3536,
+        "recall_bootstrap": [
+          0.8873,
+          0.9557
+        ],
+        "recall_series_median": 0.94,
+        "recall_series_range": [
+          0.78,
+          1.0
+        ],
+        "detections_bootstrap": [
+          1.0253,
+          1.058
+        ],
+        "detections_series_median": 1.04,
+        "detections_per_100_months_median": 2.6625
+      },
+      {
+        "condition": "bewertungen",
+        "placement": "ende",
+        "delta": 0.0,
+        "reps": 3000,
+        "hits": 5,
+        "recall": 0.0017,
+        "recall_wilson": [
+          0.0007,
+          0.0039
+        ],
+        "recall_tol3": 0.0017,
+        "recall_tol6": 0.004,
+        "detections_mean": 0.0447,
+        "p_any_detection": 0.0367,
+        "extras_mean": 0.043,
+        "extras_near_mean": 0.0023,
+        "p_any_extra": 0.0353,
+        "precision": 0.0373,
+        "f1": 0.0032,
+        "loc_error_mean_abs": 0.8,
+        "delta_bias_median": null,
+        "delta_bias_quartiles": null,
+        "share_high": 0.8,
+        "outliers_mean": 0.0,
+        "share_out_of_range": 0.0,
+        "sigma_sim_median": 0.3475,
+        "recall_bootstrap": [
+          0.0003,
+          0.0033
+        ],
+        "recall_series_median": 0.0,
+        "recall_series_range": [
+          0.0,
+          0.01
+        ],
+        "detections_bootstrap": [
+          0.0297,
+          0.0623
+        ],
+        "detections_series_median": 0.035,
+        "detections_per_100_months_median": 0.0921
+      },
+      {
+        "condition": "bewertungen",
+        "placement": "ende",
+        "delta": 0.3,
+        "reps": 3000,
+        "hits": 384,
+        "recall": 0.128,
+        "recall_wilson": [
+          0.1165,
+          0.1404
+        ],
+        "recall_tol3": 0.1397,
+        "recall_tol6": 0.155,
+        "detections_mean": 0.2107,
+        "p_any_detection": 0.198,
+        "extras_mean": 0.0827,
+        "extras_near_mean": 0.027,
+        "p_any_extra": 0.0737,
+        "precision": 0.6076,
+        "f1": 0.2115,
+        "loc_error_mean_abs": 0.3594,
+        "delta_bias_median": 0.2355,
+        "delta_bias_quartiles": [
+          0.1105,
+          0.342
+        ],
+        "share_high": 0.5469,
+        "outliers_mean": 0.0,
+        "share_out_of_range": 0.0123,
+        "sigma_sim_median": 0.3488,
+        "recall_bootstrap": [
+          0.083,
+          0.188
+        ],
+        "recall_series_median": 0.1,
+        "recall_series_range": [
+          0.035,
+          0.495
+        ],
+        "detections_bootstrap": [
+          0.1613,
+          0.2693
+        ],
+        "detections_series_median": 0.175,
+        "detections_per_100_months_median": 0.4
+      },
+      {
+        "condition": "bewertungen",
+        "placement": "ende",
+        "delta": 0.5,
+        "reps": 3000,
+        "hits": 1167,
+        "recall": 0.389,
+        "recall_wilson": [
+          0.3717,
+          0.4066
+        ],
+        "recall_tol3": 0.4123,
+        "recall_tol6": 0.442,
+        "detections_mean": 0.5167,
+        "p_any_detection": 0.4943,
+        "extras_mean": 0.1277,
+        "extras_near_mean": 0.0533,
+        "p_any_extra": 0.117,
+        "precision": 0.7529,
+        "f1": 0.513,
+        "loc_error_mean_abs": 0.2605,
+        "delta_bias_median": 0.115,
+        "delta_bias_quartiles": [
+          0.0245,
+          0.2375
+        ],
+        "share_high": 0.8166,
+        "outliers_mean": 0.0,
+        "share_out_of_range": 0.0477,
+        "sigma_sim_median": 0.3502,
+        "recall_bootstrap": [
+          0.284,
+          0.4974
+        ],
+        "recall_series_median": 0.32,
+        "recall_series_range": [
+          0.12,
+          0.965
+        ],
+        "detections_bootstrap": [
+          0.4203,
+          0.6153
+        ],
+        "detections_series_median": 0.455,
+        "detections_per_100_months_median": 0.7273
+      },
+      {
+        "condition": "bewertungen",
+        "placement": "ende",
+        "delta": 0.75,
+        "reps": 3000,
+        "hits": 2185,
+        "recall": 0.7283,
+        "recall_wilson": [
+          0.7121,
+          0.744
+        ],
+        "recall_tol3": 0.7503,
+        "recall_tol6": 0.7893,
+        "detections_mean": 0.8553,
+        "p_any_detection": 0.8243,
+        "extras_mean": 0.127,
+        "extras_near_mean": 0.0613,
+        "p_any_extra": 0.1173,
+        "precision": 0.8515,
+        "f1": 0.7851,
+        "loc_error_mean_abs": 0.1689,
+        "delta_bias_median": 0.049,
+        "delta_bias_quartiles": [
+          -0.045,
+          0.163
+        ],
+        "share_high": 0.9899,
+        "outliers_mean": 0.0,
+        "share_out_of_range": 0.1367,
+        "sigma_sim_median": 0.3533,
+        "recall_bootstrap": [
+          0.6317,
+          0.8147
+        ],
+        "recall_series_median": 0.72,
+        "recall_series_range": [
+          0.355,
+          1.0
+        ],
+        "detections_bootstrap": [
+          0.7853,
+          0.9213
+        ],
+        "detections_series_median": 0.87,
+        "detections_per_100_months_median": 1.4625
+      },
+      {
+        "condition": "bewertungen",
+        "placement": "ende",
+        "delta": 1.0,
+        "reps": 3000,
+        "hits": 2676,
+        "recall": 0.892,
+        "recall_wilson": [
+          0.8804,
+          0.9026
+        ],
+        "recall_tol3": 0.9063,
+        "recall_tol6": 0.9373,
+        "detections_mean": 0.9863,
+        "p_any_detection": 0.9523,
+        "extras_mean": 0.0943,
+        "extras_near_mean": 0.0467,
+        "p_any_extra": 0.0857,
+        "precision": 0.9044,
+        "f1": 0.8981,
+        "loc_error_mean_abs": 0.099,
+        "delta_bias_median": 0.0135,
+        "delta_bias_quartiles": [
+          -0.091,
+          0.132
+        ],
+        "share_high": 1.0,
+        "outliers_mean": 0.0,
+        "share_out_of_range": 0.2797,
+        "sigma_sim_median": 0.3554,
+        "recall_bootstrap": [
+          0.8317,
+          0.941
+        ],
+        "recall_series_median": 0.91,
+        "recall_series_range": [
+          0.61,
+          1.0
+        ],
+        "detections_bootstrap": [
+          0.9533,
+          1.014
+        ],
+        "detections_series_median": 1.005,
+        "detections_per_100_months_median": 2.125
+      },
+      {
+        "condition": "monate",
+        "placement": "mitte",
+        "delta": 0.0,
+        "reps": 3000,
+        "hits": 25,
+        "recall": 0.0083,
+        "recall_wilson": [
+          0.0057,
+          0.0123
+        ],
+        "recall_tol3": 0.014,
+        "recall_tol6": 0.0233,
+        "detections_mean": 0.1953,
+        "p_any_detection": 0.1123,
+        "extras_mean": 0.187,
+        "extras_near_mean": 0.0157,
+        "p_any_extra": 0.1093,
+        "precision": 0.0427,
+        "f1": 0.0139,
+        "loc_error_mean_abs": 0.76,
+        "delta_bias_median": null,
+        "delta_bias_quartiles": null,
+        "share_high": 0.64,
+        "outliers_mean": 0.0,
+        "share_out_of_range": 0.0,
+        "sigma_sim_median": 0.4461,
+        "recall_bootstrap": [
+          0.0043,
+          0.013
+        ],
+        "recall_series_median": 0.005,
+        "recall_series_range": [
+          0.0,
+          0.025
+        ],
+        "detections_bootstrap": [
+          0.13,
+          0.275
+        ],
+        "detections_series_median": 0.145,
+        "detections_per_100_months_median": 0.25
+      },
+      {
+        "condition": "monate",
+        "placement": "mitte",
+        "delta": 0.3,
+        "reps": 3000,
+        "hits": 432,
+        "recall": 0.144,
+        "recall_wilson": [
+          0.1319,
+          0.157
+        ],
+        "recall_tol3": 0.195,
+        "recall_tol6": 0.261,
+        "detections_mean": 0.562,
+        "p_any_detection": 0.453,
+        "extras_mean": 0.418,
+        "extras_near_mean": 0.118,
+        "p_any_extra": 0.3273,
+        "precision": 0.2562,
+        "f1": 0.1844,
+        "loc_error_mean_abs": 0.6181,
+        "delta_bias_median": 0.146,
+        "delta_bias_quartiles": [
+          0.0755,
+          0.2815
+        ],
+        "share_high": 0.375,
+        "outliers_mean": 0.0,
+        "share_out_of_range": 0.0483,
+        "sigma_sim_median": 0.4466,
+        "recall_bootstrap": [
+          0.115,
+          0.1757
+        ],
+        "recall_series_median": 0.13,
+        "recall_series_range": [
+          0.065,
+          0.245
+        ],
+        "detections_bootstrap": [
+          0.4893,
+          0.641
+        ],
+        "detections_series_median": 0.575,
+        "detections_per_100_months_median": 1.225
+      },
+      {
+        "condition": "monate",
+        "placement": "mitte",
+        "delta": 0.5,
+        "reps": 3000,
+        "hits": 1262,
+        "recall": 0.4207,
+        "recall_wilson": [
+          0.4031,
+          0.4384
+        ],
+        "recall_tol3": 0.512,
+        "recall_tol6": 0.6053,
+        "detections_mean": 0.922,
+        "p_any_detection": 0.7973,
+        "extras_mean": 0.5013,
+        "extras_near_mean": 0.187,
+        "p_any_extra": 0.4137,
+        "precision": 0.4563,
+        "f1": 0.4377,
+        "loc_error_mean_abs": 0.5254,
+        "delta_bias_median": 0.073,
+        "delta_bias_quartiles": [
+          -0.002,
+          0.172
+        ],
+        "share_high": 0.7401,
+        "outliers_mean": 0.0,
+        "share_out_of_range": 0.2027,
+        "sigma_sim_median": 0.4487,
+        "recall_bootstrap": [
+          0.3527,
+          0.497
+        ],
+        "recall_series_median": 0.375,
+        "recall_series_range": [
+          0.21,
+          0.665
+        ],
+        "detections_bootstrap": [
+          0.8506,
+          0.9947
+        ],
+        "detections_series_median": 0.94,
+        "detections_per_100_months_median": 1.9375
+      },
+      {
+        "condition": "monate",
+        "placement": "mitte",
+        "delta": 0.75,
+        "reps": 3000,
+        "hits": 2140,
+        "recall": 0.7133,
+        "recall_wilson": [
+          0.6969,
+          0.7292
+        ],
+        "recall_tol3": 0.7907,
+        "recall_tol6": 0.8663,
+        "detections_mean": 1.106,
+        "p_any_detection": 0.963,
+        "extras_mean": 0.3927,
+        "extras_near_mean": 0.157,
+        "p_any_extra": 0.3117,
+        "precision": 0.645,
+        "f1": 0.6774,
+        "loc_error_mean_abs": 0.378,
+        "delta_bias_median": 0.032,
+        "delta_bias_quartiles": [
+          -0.05,
+          0.133
+        ],
+        "share_high": 0.986,
+        "outliers_mean": 0.0,
+        "share_out_of_range": 0.3567,
+        "sigma_sim_median": 0.4508,
+        "recall_bootstrap": [
+          0.6503,
+          0.7797
+        ],
+        "recall_series_median": 0.705,
+        "recall_series_range": [
+          0.47,
+          0.91
+        ],
+        "detections_bootstrap": [
+          1.0617,
+          1.1587
+        ],
+        "detections_series_median": 1.1,
+        "detections_per_100_months_median": 2.6125
+      },
+      {
+        "condition": "monate",
+        "placement": "mitte",
+        "delta": 1.0,
+        "reps": 3000,
+        "hits": 2603,
+        "recall": 0.8677,
+        "recall_wilson": [
+          0.8551,
+          0.8793
+        ],
+        "recall_tol3": 0.9177,
+        "recall_tol6": 0.9603,
+        "detections_mean": 1.1517,
+        "p_any_detection": 0.9977,
+        "extras_mean": 0.284,
+        "extras_near_mean": 0.0983,
+        "p_any_extra": 0.2113,
+        "precision": 0.7534,
+        "f1": 0.8065,
+        "loc_error_mean_abs": 0.2682,
+        "delta_bias_median": 0.014,
+        "delta_bias_quartiles": [
+          -0.074,
+          0.1125
+        ],
+        "share_high": 0.9996,
+        "outliers_mean": 0.0,
+        "share_out_of_range": 0.505,
+        "sigma_sim_median": 0.4539,
+        "recall_bootstrap": [
+          0.8243,
+          0.911
+        ],
+        "recall_series_median": 0.87,
+        "recall_series_range": [
+          0.665,
+          0.985
+        ],
+        "detections_bootstrap": [
+          1.1013,
+          1.21
+        ],
+        "detections_series_median": 1.115,
+        "detections_per_100_months_median": 2.975
+      }
+    ]
+  }
+}

@@ -91,6 +91,31 @@ def build_monthly_series(
     return series
 
 
+def review_sd(
+    rows: List[Dict[str, Any]],
+    column: str = OVERALL_DIMENSION,
+    min_reviews: int = MIN_REVIEWS_PER_MONTH,
+) -> Optional[float]:
+    by_month: Dict[str, List[float]] = {}
+    for row in rows:
+        period = month_key(row.get("datum"))
+        value = row.get(column)
+        if period is None or value is None:
+            continue
+        try:
+            by_month.setdefault(period, []).append(float(value))
+        except (TypeError, ValueError):
+            continue
+    ss, df = 0.0, 0
+    for values in by_month.values():
+        if len(values) < max(min_reviews, 2):
+            continue
+        mean = sum(values) / len(values)
+        ss += sum((v - mean) ** 2 for v in values)
+        df += len(values) - 1
+    return (ss / df) ** 0.5 if df else None
+
+
 def fetch_review_rows(
     source: str, company_id: int, column: str, status: Optional[str] = None,
 ) -> List[Dict[str, Any]]:

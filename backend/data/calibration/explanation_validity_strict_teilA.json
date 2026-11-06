@@ -1,0 +1,812 @@
+{
+  "generated_at": "2026-11-06T19:17:25+00:00",
+  "seed": 20261017,
+  "n_permutations": 20000,
+  "git": {
+    "commit": "4859a4a056d917f4632f20f50a8094ac95a6a384",
+    "dirty": true,
+    "dirty_paths": [
+      "backend/models/changepoint_detector.py",
+      "backend/services/anomaly_service.py",
+      "backend/services/rating_series_service.py",
+      "backend/data/calibration/dz1_posthoc_2026-11-06.json",
+      "backend/data/calibration/dz1_posthoc_2026-11-06.md",
+      "backend/data/calibration/gewichtung_semisynthetisch_2026-11-06.json",
+      "backend/data/calibration/gewichtung_semisynthetisch_2026-11-06.md",
+      "backend/scripts/compare_weighting.py",
+      "backend/scripts/dz1_posthoc.py",
+      "backend/tests/anomaly/test_weighted_detection.py"
+    ]
+  },
+  "note": "Beschreibende Zahlen und Tests gegen die Nullhypothese 'kein Unterschied'. Ein Unterschied oder dessen Fehlen sagt nichts über Ursachen; ein Erklärungsansatz bleibt ein möglicher Zusammenhang. Die Passungsurteile stammen von einer bewertenden Instanz (Agent oder Person), die den Bogen blind gelesen hat; die Verblindung ist unvollständig, weil Unternehmen, Monate und Richtung sichtbar sind.",
+  "validity_path": "data/calibration/explanation_validity_strict_2026-10-18.json",
+  "stage_tests": {
+    "n_windows": 100,
+    "n_complete": 100,
+    "n_skipped_clusters_windows": 0,
+    "total": {
+      "n_markers": 28,
+      "n_comparisons": 72,
+      "binary": {
+        "mit_ansatz": {
+          "label": "mindestens ein Ansatz (Stufe mindestens niedrig)",
+          "markers": {
+            "k": 14,
+            "n": 28,
+            "share": 0.5
+          },
+          "comparisons": {
+            "k": 23,
+            "n": 72,
+            "share": 0.3194
+          },
+          "diff": 0.1806,
+          "ci95": [
+            -0.0274,
+            0.3791
+          ],
+          "fisher_p": 0.1098878743,
+          "permutation": {
+            "n_clusters": 28,
+            "n_markers": 28,
+            "n_comparisons": 72,
+            "mean_markers": 0.5,
+            "mean_comparisons": 0.3194,
+            "observed_diff": 0.1806,
+            "p_value": 0.0583,
+            "n_permutations": 20000,
+            "paired": {
+              "n_pairs": 27,
+              "mean_diff": 0.179,
+              "marker_higher": 11,
+              "equal": 11,
+              "marker_lower": 5
+            }
+          },
+          "min_detectable": {
+            "above": 0.62,
+            "below": 0.098
+          }
+        },
+        "mindestens_mittel": {
+          "label": "oberste Stufe mindestens mittel",
+          "markers": {
+            "k": 14,
+            "n": 28,
+            "share": 0.5
+          },
+          "comparisons": {
+            "k": 23,
+            "n": 72,
+            "share": 0.3194
+          },
+          "diff": 0.1806,
+          "ci95": [
+            -0.0274,
+            0.3791
+          ],
+          "fisher_p": 0.1098878743,
+          "permutation": {
+            "n_clusters": 28,
+            "n_markers": 28,
+            "n_comparisons": 72,
+            "mean_markers": 0.5,
+            "mean_comparisons": 0.3194,
+            "observed_diff": 0.1806,
+            "p_value": 0.0583,
+            "n_permutations": 20000,
+            "paired": {
+              "n_pairs": 27,
+              "mean_diff": 0.179,
+              "marker_higher": 11,
+              "equal": 11,
+              "marker_lower": 5
+            }
+          },
+          "min_detectable": {
+            "above": 0.62,
+            "below": 0.098
+          }
+        },
+        "hoch": {
+          "label": "mindestens ein Bündel der Stufe hoch",
+          "markers": {
+            "k": 2,
+            "n": 28,
+            "share": 0.0714
+          },
+          "comparisons": {
+            "k": 2,
+            "n": 72,
+            "share": 0.0278
+          },
+          "diff": 0.0437,
+          "ci95": [
+            -0.0417,
+            0.2
+          ],
+          "fisher_p": 0.3117686437,
+          "permutation": {
+            "n_clusters": 28,
+            "n_markers": 28,
+            "n_comparisons": 72,
+            "mean_markers": 0.0714,
+            "mean_comparisons": 0.0278,
+            "observed_diff": 0.0437,
+            "p_value": 0.5025,
+            "n_permutations": 20000,
+            "paired": {
+              "n_pairs": 27,
+              "mean_diff": 0.0247,
+              "marker_higher": 1,
+              "equal": 26,
+              "marker_lower": 0
+            }
+          },
+          "min_detectable": {
+            "above": 0.269,
+            "below": null
+          }
+        },
+        "mit_begriffen": {
+          "label": "Fenster mit kennzeichnenden Begriffen",
+          "markers": {
+            "k": 21,
+            "n": 28,
+            "share": 0.75
+          },
+          "comparisons": {
+            "k": 54,
+            "n": 72,
+            "share": 0.75
+          },
+          "diff": 0.0,
+          "ci95": [
+            -0.2025,
+            0.1658
+          ],
+          "fisher_p": 1.0,
+          "permutation": {
+            "n_clusters": 28,
+            "n_markers": 28,
+            "n_comparisons": 72,
+            "mean_markers": 0.75,
+            "mean_comparisons": 0.75,
+            "observed_diff": 0.0,
+            "p_value": 1.0,
+            "n_permutations": 20000,
+            "paired": {
+              "n_pairs": 27,
+              "mean_diff": -0.0123,
+              "marker_higher": 3,
+              "equal": 19,
+              "marker_lower": 5
+            }
+          },
+          "min_detectable": {
+            "above": 0.941,
+            "below": 0.45
+          }
+        }
+      },
+      "ordinal": {
+        "label": "oberste Stufe (offen 0, niedrig 1, mittel 2, hoch 3)",
+        "markers": {
+          "n": 28,
+          "mean": 1.0714,
+          "distribution": {
+            "0": 14,
+            "2": 12,
+            "3": 2
+          }
+        },
+        "comparisons": {
+          "n": 72,
+          "mean": 0.6667,
+          "distribution": {
+            "0": 49,
+            "2": 21,
+            "3": 2
+          }
+        },
+        "diff": 0.4048,
+        "permutation": {
+          "n_clusters": 28,
+          "n_markers": 28,
+          "n_comparisons": 72,
+          "mean_markers": 1.0714,
+          "mean_comparisons": 0.6667,
+          "observed_diff": 0.4048,
+          "p_value": 0.0492,
+          "n_permutations": 20000,
+          "paired": {
+            "n_pairs": 27,
+            "mean_diff": 0.3827,
+            "marker_higher": 11,
+            "equal": 11,
+            "marker_lower": 5
+          }
+        }
+      }
+    },
+    "by_kind": {
+      "niveauwechsel": {
+        "n_markers": 19,
+        "n_comparisons": 48,
+        "binary": {
+          "mit_ansatz": {
+            "label": "mindestens ein Ansatz (Stufe mindestens niedrig)",
+            "markers": {
+              "k": 12,
+              "n": 19,
+              "share": 0.6316
+            },
+            "comparisons": {
+              "k": 15,
+              "n": 48,
+              "share": 0.3125
+            },
+            "diff": 0.3191,
+            "ci95": [
+              0.0569,
+              0.529
+            ],
+            "fisher_p": 0.0262587869,
+            "permutation": {
+              "n_clusters": 19,
+              "n_markers": 19,
+              "n_comparisons": 48,
+              "mean_markers": 0.6316,
+              "mean_comparisons": 0.3125,
+              "observed_diff": 0.3191,
+              "p_value": 0.0134,
+              "n_permutations": 20000,
+              "paired": {
+                "n_pairs": 18,
+                "mean_diff": 0.3333,
+                "marker_higher": 10,
+                "equal": 5,
+                "marker_lower": 3
+              }
+            },
+            "min_detectable": {
+              "above": 0.669,
+              "below": 0.066
+            }
+          },
+          "mindestens_mittel": {
+            "label": "oberste Stufe mindestens mittel",
+            "markers": {
+              "k": 12,
+              "n": 19,
+              "share": 0.6316
+            },
+            "comparisons": {
+              "k": 15,
+              "n": 48,
+              "share": 0.3125
+            },
+            "diff": 0.3191,
+            "ci95": [
+              0.0569,
+              0.529
+            ],
+            "fisher_p": 0.0262587869,
+            "permutation": {
+              "n_clusters": 19,
+              "n_markers": 19,
+              "n_comparisons": 48,
+              "mean_markers": 0.6316,
+              "mean_comparisons": 0.3125,
+              "observed_diff": 0.3191,
+              "p_value": 0.0134,
+              "n_permutations": 20000,
+              "paired": {
+                "n_pairs": 18,
+                "mean_diff": 0.3333,
+                "marker_higher": 10,
+                "equal": 5,
+                "marker_lower": 3
+              }
+            },
+            "min_detectable": {
+              "above": 0.669,
+              "below": 0.066
+            }
+          },
+          "hoch": {
+            "label": "mindestens ein Bündel der Stufe hoch",
+            "markers": {
+              "k": 2,
+              "n": 19,
+              "share": 0.1053
+            },
+            "comparisons": {
+              "k": 2,
+              "n": 48,
+              "share": 0.0417
+            },
+            "diff": 0.0636,
+            "ci95": [
+              -0.0604,
+              0.2744
+            ],
+            "fisher_p": 0.3173938002,
+            "permutation": {
+              "n_clusters": 19,
+              "n_markers": 19,
+              "n_comparisons": 48,
+              "mean_markers": 0.1053,
+              "mean_comparisons": 0.0417,
+              "observed_diff": 0.0636,
+              "p_value": 0.5027,
+              "n_permutations": 20000,
+              "paired": {
+                "n_pairs": 18,
+                "mean_diff": 0.037,
+                "marker_higher": 1,
+                "equal": 17,
+                "marker_lower": 0
+              }
+            },
+            "min_detectable": {
+              "above": 0.361,
+              "below": null
+            }
+          },
+          "mit_begriffen": {
+            "label": "Fenster mit kennzeichnenden Begriffen",
+            "markers": {
+              "k": 19,
+              "n": 19,
+              "share": 1.0
+            },
+            "comparisons": {
+              "k": 45,
+              "n": 48,
+              "share": 0.9375
+            },
+            "diff": 0.0625,
+            "ci95": [
+              -0.1106,
+              0.1684
+            ],
+            "fisher_p": 0.5526145496,
+            "permutation": {
+              "n_clusters": 19,
+              "n_markers": 19,
+              "n_comparisons": 48,
+              "mean_markers": 1.0,
+              "mean_comparisons": 0.9375,
+              "observed_diff": 0.0625,
+              "p_value": 0.505,
+              "n_permutations": 20000,
+              "paired": {
+                "n_pairs": 18,
+                "mean_diff": 0.0648,
+                "marker_higher": 2,
+                "equal": 16,
+                "marker_lower": 0
+              }
+            },
+            "min_detectable": {
+              "above": null,
+              "below": 0.608
+            }
+          }
+        },
+        "ordinal": {
+          "label": "oberste Stufe (offen 0, niedrig 1, mittel 2, hoch 3)",
+          "markers": {
+            "n": 19,
+            "mean": 1.3684,
+            "distribution": {
+              "0": 7,
+              "2": 10,
+              "3": 2
+            }
+          },
+          "comparisons": {
+            "n": 48,
+            "mean": 0.6667,
+            "distribution": {
+              "0": 33,
+              "2": 13,
+              "3": 2
+            }
+          },
+          "diff": 0.7018,
+          "permutation": {
+            "n_clusters": 19,
+            "n_markers": 19,
+            "n_comparisons": 48,
+            "mean_markers": 1.3684,
+            "mean_comparisons": 0.6667,
+            "observed_diff": 0.7018,
+            "p_value": 0.0072,
+            "n_permutations": 20000,
+            "paired": {
+              "n_pairs": 18,
+              "mean_diff": 0.7037,
+              "marker_higher": 10,
+              "equal": 5,
+              "marker_lower": 3
+            }
+          }
+        }
+      },
+      "einzelmonat": {
+        "n_markers": 9,
+        "n_comparisons": 24,
+        "binary": {
+          "mit_ansatz": {
+            "label": "mindestens ein Ansatz (Stufe mindestens niedrig)",
+            "markers": {
+              "k": 2,
+              "n": 9,
+              "share": 0.2222
+            },
+            "comparisons": {
+              "k": 8,
+              "n": 24,
+              "share": 0.3333
+            },
+            "diff": -0.1111,
+            "ci95": [
+              -0.3663,
+              0.2485
+            ],
+            "fisher_p": 0.6859074185,
+            "permutation": {
+              "n_clusters": 9,
+              "n_markers": 9,
+              "n_comparisons": 24,
+              "mean_markers": 0.2222,
+              "mean_comparisons": 0.3333,
+              "observed_diff": -0.1111,
+              "p_value": 0.5527,
+              "n_permutations": 20000,
+              "paired": {
+                "n_pairs": 9,
+                "mean_diff": -0.1296,
+                "marker_higher": 1,
+                "equal": 6,
+                "marker_lower": 2
+              }
+            },
+            "min_detectable": {
+              "above": 0.797,
+              "below": 0.025
+            }
+          },
+          "mindestens_mittel": {
+            "label": "oberste Stufe mindestens mittel",
+            "markers": {
+              "k": 2,
+              "n": 9,
+              "share": 0.2222
+            },
+            "comparisons": {
+              "k": 8,
+              "n": 24,
+              "share": 0.3333
+            },
+            "diff": -0.1111,
+            "ci95": [
+              -0.3663,
+              0.2485
+            ],
+            "fisher_p": 0.6859074185,
+            "permutation": {
+              "n_clusters": 9,
+              "n_markers": 9,
+              "n_comparisons": 24,
+              "mean_markers": 0.2222,
+              "mean_comparisons": 0.3333,
+              "observed_diff": -0.1111,
+              "p_value": 0.5527,
+              "n_permutations": 20000,
+              "paired": {
+                "n_pairs": 9,
+                "mean_diff": -0.1296,
+                "marker_higher": 1,
+                "equal": 6,
+                "marker_lower": 2
+              }
+            },
+            "min_detectable": {
+              "above": 0.797,
+              "below": 0.025
+            }
+          },
+          "hoch": {
+            "label": "mindestens ein Bündel der Stufe hoch",
+            "markers": {
+              "k": 0,
+              "n": 9,
+              "share": 0.0
+            },
+            "comparisons": {
+              "k": 0,
+              "n": 24,
+              "share": 0.0
+            },
+            "diff": 0.0,
+            "ci95": [
+              -0.138,
+              0.2991
+            ],
+            "fisher_p": 1.0,
+            "permutation": {
+              "n_clusters": 9,
+              "n_markers": 9,
+              "n_comparisons": 24,
+              "mean_markers": 0.0,
+              "mean_comparisons": 0.0,
+              "observed_diff": 0.0,
+              "p_value": 1.0,
+              "n_permutations": 20000,
+              "paired": {
+                "n_pairs": 9,
+                "mean_diff": 0.0,
+                "marker_higher": 0,
+                "equal": 9,
+                "marker_lower": 0
+              }
+            },
+            "min_detectable": {
+              "above": 0.466,
+              "below": null
+            }
+          },
+          "mit_begriffen": {
+            "label": "Fenster mit kennzeichnenden Begriffen",
+            "markers": {
+              "k": 2,
+              "n": 9,
+              "share": 0.2222
+            },
+            "comparisons": {
+              "k": 9,
+              "n": 24,
+              "share": 0.375
+            },
+            "diff": -0.1528,
+            "ci95": [
+              -0.4066,
+              0.2112
+            ],
+            "fisher_p": 0.6807863438,
+            "permutation": {
+              "n_clusters": 9,
+              "n_markers": 9,
+              "n_comparisons": 24,
+              "mean_markers": 0.2222,
+              "mean_comparisons": 0.375,
+              "observed_diff": -0.1528,
+              "p_value": 0.6543,
+              "n_permutations": 20000,
+              "paired": {
+                "n_pairs": 9,
+                "mean_diff": -0.1667,
+                "marker_higher": 1,
+                "equal": 3,
+                "marker_lower": 5
+              }
+            },
+            "min_detectable": {
+              "above": 0.826,
+              "below": 0.041
+            }
+          }
+        },
+        "ordinal": {
+          "label": "oberste Stufe (offen 0, niedrig 1, mittel 2, hoch 3)",
+          "markers": {
+            "n": 9,
+            "mean": 0.4444,
+            "distribution": {
+              "0": 7,
+              "2": 2
+            }
+          },
+          "comparisons": {
+            "n": 24,
+            "mean": 0.6667,
+            "distribution": {
+              "0": 16,
+              "2": 8
+            }
+          },
+          "diff": -0.2222,
+          "permutation": {
+            "n_clusters": 9,
+            "n_markers": 9,
+            "n_comparisons": 24,
+            "mean_markers": 0.4444,
+            "mean_comparisons": 0.6667,
+            "observed_diff": -0.2222,
+            "p_value": 0.5527,
+            "n_permutations": 20000,
+            "paired": {
+              "n_pairs": 9,
+              "mean_diff": -0.2593,
+              "marker_higher": 1,
+              "equal": 6,
+              "marker_lower": 2
+            }
+          }
+        }
+      }
+    },
+    "reference": {
+      "n_treffer": 8,
+      "n_uebrige": 20,
+      "binary": {
+        "mit_ansatz": {
+          "label": "mindestens ein Ansatz (Stufe mindestens niedrig)",
+          "treffer": {
+            "k": 5,
+            "n": 8
+          },
+          "uebrige": {
+            "k": 9,
+            "n": 20
+          },
+          "diff": 0.175,
+          "ci95": [
+            -0.206,
+            0.4808
+          ],
+          "fisher_p": 0.6776167472
+        },
+        "mindestens_mittel": {
+          "label": "oberste Stufe mindestens mittel",
+          "treffer": {
+            "k": 5,
+            "n": 8
+          },
+          "uebrige": {
+            "k": 9,
+            "n": 20
+          },
+          "diff": 0.175,
+          "ci95": [
+            -0.206,
+            0.4808
+          ],
+          "fisher_p": 0.6776167472
+        },
+        "hoch": {
+          "label": "mindestens ein Bündel der Stufe hoch",
+          "treffer": {
+            "k": 1,
+            "n": 8
+          },
+          "uebrige": {
+            "k": 1,
+            "n": 20
+          },
+          "diff": 0.075,
+          "ci95": [
+            -0.1375,
+            0.4233
+          ],
+          "fisher_p": 0.4973544974
+        },
+        "mit_begriffen": {
+          "label": "Fenster mit kennzeichnenden Begriffen",
+          "treffer": {
+            "k": 8,
+            "n": 8
+          },
+          "uebrige": {
+            "k": 13,
+            "n": 20
+          },
+          "diff": 0.35,
+          "ci95": [
+            -0.0157,
+            0.5671
+          ],
+          "fisher_p": 0.0749366575
+        }
+      }
+    },
+    "null_model": {
+      "label": "Rangkorrelation Belege je Fenster mit oberster Stufe bzw. mit 'mit Ansatz' (alle vollständigen Fenster)",
+      "items_vs_top_stage": {
+        "n": 100,
+        "rho": 0.3212,
+        "p_value": 0.0012,
+        "n_permutations": 20000
+      },
+      "items_vs_any": {
+        "n": 100,
+        "rho": 0.3219,
+        "p_value": 0.0011,
+        "n_permutations": 20000
+      },
+      "by_items_tertile": [
+        {
+          "tertile": "wenige",
+          "items_range": [
+            1,
+            21
+          ],
+          "markers": {
+            "k": 3,
+            "n": 9
+          },
+          "comparisons": {
+            "k": 2,
+            "n": 23
+          }
+        },
+        {
+          "tertile": "mittel",
+          "items_range": [
+            25,
+            58
+          ],
+          "markers": {
+            "k": 6,
+            "n": 9
+          },
+          "comparisons": {
+            "k": 8,
+            "n": 24
+          }
+        },
+        {
+          "tertile": "viele",
+          "items_range": [
+            61,
+            510
+          ],
+          "markers": {
+            "k": 5,
+            "n": 10
+          },
+          "comparisons": {
+            "k": 13,
+            "n": 25
+          }
+        }
+      ]
+    }
+  },
+  "fit_tests": null,
+  "ratings_check": null,
+  "ratings_rows": null,
+  "windows": null,
+  "validity_generated_at": "2026-10-18T10:07:52+00:00",
+  "validity_git": {
+    "commit": "f8ecf6d3b48dc2880738017a0fc881187c7b8b0d",
+    "dirty": true,
+    "dirty_paths": [
+      "backend/data/company_metadata.json",
+      "backend/routes/analytics.py",
+      "backend/scripts/rate_explanations.py",
+      "backend/scripts/report_explanation_validity.py",
+      "backend/services/evidence_service.py",
+      "backend/services/explanation_ranking.py",
+      "backend/services/explanation_service.py",
+      "backend/services/keyword_topic_service.py",
+      "backend/services/review_service.py",
+      "backend/services/review_terms.py",
+      "backend/tests/drilldown/test_reviews_route.py",
+      "backend/tests/drilldown/test_topic_highlight.py",
+      "backend/tests/explanations/test_explanation_ranking.py",
+      "backend/tests/explanations/test_explanation_validity.py",
+      "backend/tests/explanations/test_explanations_in_responses.py",
+      "backend/tests/explanations/test_rate_explanations.py",
+      "backend/tests/explanations/test_signal_labels.py",
+      "backend/tests/test_company_metadata.py",
+      "backend/data/calibration/explanation_validity_strict_2026-10-18.json",
+      "backend/data/calibration/explanation_validity_strict_2026-10-18.md",
+      "backend/tests/drilldown/test_review_topics.py",
+      "backend/tests/explanations/test_strict_selection.py"
+    ]
+  }
+}

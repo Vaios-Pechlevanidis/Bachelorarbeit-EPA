@@ -256,7 +256,7 @@ def markdown_tables(summary: Dict[str, Any]) -> str:
                      f"{_cell(y['ab 2019']['covered'], y['ab 2019']['n'])} | {_cell(c['all']['covered'], c['all']['n'])} |")
     lines.append("")
     lines.append("Ein Beleg ist eine Meldung (news) oder eine Ad-hoc-Mitteilung (adhoc); bestätigte allgemeine Ereignisse "
-                 "zählen nicht als Beleg und stehen getrennt (E20).")
+                 "zählen nicht als Beleg und stehen getrennt.")
     if summary["uncovered"]:
         lines.append("")
         lines.append("Markierungen ohne Beleg (Unternehmen, Art, Monat; fehlende Monate im Speicher):")

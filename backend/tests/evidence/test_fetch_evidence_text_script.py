@@ -193,7 +193,7 @@ class TestRun:
         out = tmp_path / "sum.json"
         assert script.main(["--eqs", "--news", "--comparison", "--quiet", "--json", str(out)]) == 0
         printed = capsys.readouterr().out
-        assert "Texte der Belege nachfüllen (E35)" in printed and "Kandidaten 2" in printed and "Kandidaten 1" in printed
+        assert "Texte der Belege nachfüllen" in printed and "Kandidaten 2" in printed and "Kandidaten 1" in printed
         data = json.loads(out.read_text(encoding="utf-8"))
         assert data["ways"] == ["eqs", "news"] and data["fetches"] == 3 and data["comparison"] is True
 

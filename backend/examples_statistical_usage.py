@@ -267,9 +267,7 @@ def run_all_examples():
     print("✅ Alle Beispiele erfolgreich ausgeführt")
     print("=" * 80)
     print("\n📚 Weitere Informationen:")
-    print("   - STATISTICAL_SAMPLE_SIZE_METHODOLOGY.md (Methodische Grundlagen)")
-    print("   - STATISTICAL_IMPLEMENTATION.md (Technische Dokumentation)")
-    print("   - test_statistical_implementation.py (Automatisierte Tests)")
+    print("   - tests/statistical/test_statistical_implementation.py (Automatisierte Tests)")
     print("\n")
 
 

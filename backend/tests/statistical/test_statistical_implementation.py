@@ -199,7 +199,6 @@ if __name__ == "__main__":
     print("\n")
     print("╔" + "═" * 78 + "╗")
     print("║" + " " * 15 + "STATISTICAL IMPLEMENTATION TEST SUITE" + " " * 26 + "║")
-    print("║" + " " * 10 + "Based on STATISTICAL_SAMPLE_SIZE_METHODOLOGY.md" + " " * 20 + "║")
     print("╚" + "═" * 78 + "╝")
     print("\n")
     

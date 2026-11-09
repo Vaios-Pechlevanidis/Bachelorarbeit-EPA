@@ -192,7 +192,7 @@ class TestReferenceSplit:
         s = script.aggregate(records, reference)
         assert s["reference"]["available"] is False and s["total"]["referenz"]["status"] == "nicht verfügbar"
         text = script.markdown_tables(s)
-        assert "**Nach Referenzzeiträumen (E5)**" in text and "nicht verfügbar: Annotationsdatei ohne Einträge" in text
+        assert "**Nach Referenzzeiträumen**" in text and "nicht verfügbar: Annotationsdatei ohne Einträge" in text
         assert "mit Referenzzeitraum" not in text
         assert script.aggregate(records)["reference"]["available"] is False
         assert script.load_reference(None)["available"] is False and script.load_reference(str(tmp_path / "fehlt.json"))["available"] is False

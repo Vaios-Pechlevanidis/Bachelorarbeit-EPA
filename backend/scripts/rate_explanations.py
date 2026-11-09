@@ -829,7 +829,7 @@ def stage_markdown(a: Dict[str, Any], source_path: str) -> List[str]:
         lines += _binary_table(blk)
         lines.append("")
     ref = a.get("reference")
-    lines.append("**Markierungen mit gegen ohne Referenzzeitraum (E5)**")
+    lines.append("**Markierungen mit gegen ohne Referenzzeitraum**")
     lines.append("")
     if ref:
         lines.append("| Merkmal | mit Referenzzeitraum | ohne | Differenz | 95 %-Intervall | p Fisher |")
@@ -935,7 +935,7 @@ def fit_markdown(b: Dict[str, Any]) -> List[str]:
     lines.append("")
     ref = b.get("reference")
     if ref:
-        lines.append(f"Referenz (E5, nur Markierungen mit Ansatz): mit Referenzzeitraum bester Ansatz passend {_pct(ref['treffer']['at_least'], ref['treffer']['n'])}, "
+        lines.append(f"Referenz (nur Markierungen mit Ansatz): mit Referenzzeitraum bester Ansatz passend {_pct(ref['treffer']['at_least'], ref['treffer']['n'])}, "
                      f"Mittel oben {_num(ref['treffer']['fit_top1_mean'])}; ohne {_pct(ref['uebrige']['at_least'], ref['uebrige']['n'])}, "
                      f"Mittel {_num(ref['uebrige']['fit_top1_mean'])}; p Fisher {_p(ref['fisher_p'])}.")
         lines.append("")
@@ -1078,7 +1078,7 @@ def cmd_auswerten(args: argparse.Namespace) -> int:
 
 
 def main(argv: Optional[List[str]] = None) -> int:
-    parser = argparse.ArgumentParser(description="Bewertung der Erklärungsansätze je Anomalie (DZ2, Ergänzung zu E23): Passung und Unterschied.", formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser = argparse.ArgumentParser(description="Bewertung der Erklärungsansätze je Anomalie (DZ2): Passung und Unterschied.", formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = parser.add_subparsers(dest="command", required=True)
 
     b = sub.add_parser("bogen", help="blinden Bewertungsbogen, Schlüssel und Vorlage erzeugen (Datenbank und Speicher)")
@@ -1088,7 +1088,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     b.add_argument("--seed", type=int, default=DEFAULT_SEED)
     b.add_argument("--window-before", type=int, default=rev.ev.DEFAULT_WINDOW_BEFORE)
     b.add_argument("--window-after", type=int, default=rev.ev.DEFAULT_WINDOW_AFTER)
-    b.add_argument("--annotations", default=rev.DEFAULT_ANNOTATIONS, help="Annotationsdatei für den Referenztreffer im Schlüssel (E5)")
+    b.add_argument("--annotations", default=rev.DEFAULT_ANNOTATIONS, help="Annotationsdatei für den Referenztreffer im Schlüssel")
     b.add_argument("--no-strict", action="store_true", help="Rangfolge ohne die strenge Auswahl der Belege (Fassung bis 2026-10-17)")
     b.add_argument("--force", action="store_true", help="vorhandenen Bogen im Zielordner überschreiben")
     b.add_argument("--quiet", action="store_true")

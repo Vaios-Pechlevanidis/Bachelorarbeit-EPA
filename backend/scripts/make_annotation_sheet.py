@@ -42,7 +42,7 @@ KURZFASSUNG_E5 = (
     "Einheit Kalendermonat; Zeitraum 1–3, höchstens 6 Monate; Randmonate mit ≥ 5 Bewertungen; "
     "Richtwert ≥ 0,5 Sterne Niveauunterschied gegenüber den bis zu sechs Vormonaten; 0–3 Zeiträume je "
     "Reihe; Toleranz beim Abgleich ±1 Monat mit Eins-zu-eins-Zuordnung und F1 als Hauptmaß; "
-    "Ereignisanker erst nach der Beurteilung aus der Reihe; Unternehmen unter der Mindestdichte aus E4 "
+    "Ereignisanker erst nach der Beurteilung aus der Reihe; Unternehmen unter der Mindestdichte "
     "ohne Einträge."
 )
 
@@ -51,7 +51,7 @@ KURZFASSUNG_BLIND = (
     "Zeitraum 1–3, höchstens 6 Monate; Randmonate mit ≥ 5 Bewertungen; Richtwert ≥ 0,5 Sterne "
     "Niveauunterschied gegenüber den bis zu sechs Vormonaten; 0–3 Zeiträume je Reihe; Toleranz beim Abgleich "
     "±1 Monat mit Eins-zu-eins-Zuordnung und F1 als Hauptmaß; Beurteilung allein aus der Reihe, ohne Suche "
-    "nach Ereignissen (blinde Fassung); Reihen unter der Mindestdichte aus E4 ohne Einträge."
+    "nach Ereignissen (blinde Fassung); Reihen unter der Mindestdichte ohne Einträge."
 )
 
 BLIND_RULES: Dict[str, str] = {
@@ -172,7 +172,7 @@ def select_companies(entries: List[Dict[str, Any]], ids: List[int]) -> List[Dict
     if missing:
         raise ValueError(
             f"Unternehmens-id(s) {', '.join(map(str, missing))} nicht im Bogen: keine Serien-CSV der Quelle "
-            "oder nicht geeignet nach E4 (dann zusätzlich --include-ineligible)."
+            "oder unter der Mindestdichte (dann zusätzlich --include-ineligible)."
         )
     return [e for e in entries if e["company_id"] in wanted]
 
@@ -415,29 +415,29 @@ def render_html(entries: List[Dict[str, Any]], source: str, protocol: Dict[str, 
     h.append(f"<title>Annotationsbogen Referenzzeiträume – {html.escape(src_label)}</title>")
     h.append(f"<style>{CSS}</style></head><body>")
     if blind:
-        h.append("<h1>Annotationsbogen für die Referenzzeiträume (DZ1, E5) – blinde Fassung</h1>")
+        h.append("<h1>Annotationsbogen für die Referenzzeiträume (DZ1) – blinde Fassung</h1>")
         h.append(
-            "<p class=\"meta\">Erzeugt aus den Monatsreihen (Monatsmittel und Anzahl je Kalendermonat, E3). "
+            "<p class=\"meta\">Erzeugt aus den Monatsreihen (Monatsmittel und Anzahl je Kalendermonat). "
             f"Quelle: {html.escape(src_label)}; Dimension: {html.escape(DIMENSION_LABEL)}; "
             f"{len(entries)} Reihen" + (" (einschließlich nicht geeigneter Reihen)" if include_ineligible else
-                                        f", nur nach E4 geeignete Reihen (mindestens {min_months} Monate mit "
+                                        f", nur nach der Mindestdichte geeignete Reihen (mindestens {min_months} Monate mit "
                                         f"mindestens {min_reviews} Bewertungen)") + ".</p>"
         )
     else:
-        h.append("<h1>Annotationsbogen für die Referenzzeiträume (DZ1, E5)</h1>")
+        h.append("<h1>Annotationsbogen für die Referenzzeiträume (DZ1)</h1>")
         h.append(
             f"<p class=\"meta\">Erzeugt am {generated.isoformat()} aus den Serien-CSVs unter "
-            f"<code>backend/data/series/</code> (Monatsmittel und Anzahl je Kalendermonat, E3). "
+            f"<code>backend/data/series/</code> (Monatsmittel und Anzahl je Kalendermonat). "
             f"Quelle: {html.escape(src_label)}; Dimension: {html.escape(DIMENSION_LABEL)}; "
             f"{len(entries)} Reihen" + (" (einschließlich nicht geeigneter Unternehmen)" if include_ineligible else
-                                        f", nur nach E4 geeignete Unternehmen (mindestens {min_months} Monate mit "
+                                        f", nur nach der Mindestdichte geeignete Unternehmen (mindestens {min_months} Monate mit "
                                         f"mindestens {min_reviews} Bewertungen)") + ".</p>"
         )
     h.append("<div class=\"kasten\"><p><strong>Dieser Bogen zeigt nur die Reihen selbst.</strong> Er enthält keine "
              "Ergebnisse einer automatischen Erkennung, keine Markierungen und keine Niveaulinien; die Beurteilung "
-             "erfolgt allein aus dem Verlauf (E5, Ersatzregel: Annotation vor der Evaluation, ohne Einsicht in "
+             "erfolgt allein aus dem Verlauf (Ersatzregel: Annotation vor der Evaluation, ohne Einsicht in "
              "Erkennungsergebnisse, Karte und Detailseite des Dashboards nicht öffnen).</p>"
-             f"<p><strong>Kurzfassung des Protokolls (E5):</strong> {html.escape(KURZFASSUNG_BLIND if blind else KURZFASSUNG_E5)}</p>")
+             f"<p><strong>Kurzfassung des Protokolls:</strong> {html.escape(KURZFASSUNG_BLIND if blind else KURZFASSUNG_E5)}</p>")
     if blind:
         h.append("<p><strong>Blinde Fassung:</strong> Die Reihen heißen „Reihe A“, „Reihe B“ … in zufälliger Reihenfolge, "
                  "die Monate M001, M002 … (fortlaufende Kalendermonate ab dem ersten Monat der jeweiligen Reihe; Monate "
@@ -464,7 +464,7 @@ def render_html(entries: List[Dict[str, Any]], source: str, protocol: Dict[str, 
              "<span><i style=\"background:#c0392b;border-radius:0;height:2px\"></i>Mindestdichte je Monat</span></p></div>")
     h.append("<nav><p><strong>Reihen im Bogen</strong></p><ul>")
     for e in entries:
-        flag = "" if e["eligible"] else " – nicht geeignet (E4)"
+        flag = "" if e["eligible"] else " – nicht geeignet"
         if blind:
             labels = e["month_labels"]
             first = labels[0] if labels else "–"
@@ -480,7 +480,7 @@ def render_html(entries: List[Dict[str, Any]], source: str, protocol: Dict[str, 
     for e in entries:
         s = e["series"]
         not_eligible = ("" if e["eligible"] else
-                        f"; <strong>nicht geeignet nach E4</strong> (unter {min_months}), keine Einträge (Regel 9)")
+                        f"; <strong>nicht geeignet</strong> (unter {min_months}), keine Einträge (Regel 9)")
         if blind:
             names = e["month_labels"]
             first = names[0] if names else "–"
@@ -547,7 +547,7 @@ def build_sheet(series_dir: str = DEFAULT_SERIES_DIR, source: str = "employee", 
     if leaks:
         raise RuntimeError("Blinde Fassung nicht geschrieben; sie enthielte: " + "; ".join(leaks))
     key = {
-        "zweck": ("Schlüssel zum blinden Annotationsbogen (DZ1, E5): Zuordnung Reihe -> Unternehmen und "
+        "zweck": ("Schlüssel zum blinden Annotationsbogen (DZ1): Zuordnung Reihe -> Unternehmen und "
                   "Mxxx -> Kalendermonat. Nur für den Autor; nicht an die annotierende Person weitergeben und "
                   "nicht einchecken (.gitignore). Rückübersetzung: scripts/blind_annotations.py."),
         "erzeugt_am": date.today().isoformat(),
@@ -566,14 +566,14 @@ def build_sheet(series_dir: str = DEFAULT_SERIES_DIR, source: str = "employee", 
 
 
 def main(argv: Optional[List[str]] = None) -> int:
-    parser = argparse.ArgumentParser(description="Annotationsbogen für die Referenzzeiträume (DZ1, E5): eine eigenständige HTML-Datei mit einem Diagramm je Reihe, erzeugt allein aus den Serien-CSVs unter ``backend/data/series/``.", formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser = argparse.ArgumentParser(description="Annotationsbogen für die Referenzzeiträume (DZ1): eine eigenständige HTML-Datei mit einem Diagramm je Reihe, erzeugt allein aus den Serien-CSVs unter ``backend/data/series/``.", formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--series-dir", default=DEFAULT_SERIES_DIR, help="Ordner der Serien-CSVs (Default: data/series)")
     parser.add_argument("--source", default="employee", choices=list(VALID_SOURCES), help="Quelle (Default: employee)")
     parser.add_argument("--out", default=None, help="Zieldatei (Default: data/annotationsbogen.html, mit --blind "
                                                      "data/annotationsbogen_blind.html; nicht eingecheckt)")
     parser.add_argument("--density", default=DEFAULT_DENSITY, help="data_density.json für die Unternehmensnamen")
     parser.add_argument("--annotations", default=DEFAULT_ANNOTATIONS, help="annotations.json für die Protokolltexte (nur lesen)")
-    parser.add_argument("--include-ineligible", action="store_true", help="auch Unternehmen unter der Mindestdichte (E4) aufnehmen")
+    parser.add_argument("--include-ineligible", action="store_true", help="auch Unternehmen unter der Mindestdichte aufnehmen")
     parser.add_argument("--companies", nargs="+", metavar="ID",
                         help="nur diese Unternehmens-ids (Teilmenge), z. B. --companies 19,24,28")
     parser.add_argument("--blind", action="store_true",

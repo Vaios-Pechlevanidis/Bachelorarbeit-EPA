@@ -100,7 +100,7 @@ class TestItems:
         result = ev.evidence_for_window(INFO, ev.window_for_outlier("2020-04", 0, 0), fetchers={"gnews": FakeRss()},
                                         store_dir=tmp_path, now=NOW, **FAST)
         assert result["counts"]["global"] == 1 and result["total"] == 1
-        assert result["coverage"] is False, "ein allgemeines Ereignis zählt nicht als Beleg (E20)"
+        assert result["coverage"] is False, "ein allgemeines Ereignis zählt nicht als Beleg"
 
 
 class TestRoute:

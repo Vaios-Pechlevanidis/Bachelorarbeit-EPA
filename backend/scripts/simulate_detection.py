@@ -435,7 +435,7 @@ def _interval(iv: Optional[List[float]], pct: bool = True) -> str:
 def format_report(report: Dict[str, Any]) -> str:
     p = report["params"]
     lines = [
-        "Semi-synthetische Prüfung der Erkennung (DZ1, E30)",
+        "Semi-synthetische Prüfung der Erkennung (DZ1)",
         f"  {len(report['series'])} Reihen ({SOURCE}/{DIMENSION}), {p['reps']} Wiederholungen je Reihe, "
         f"Seed {p['seed']}; Erkennung mit Standardparametern, Abgleich nach Regel 6.",
         "  Jede Reihe zählt gleich. Intervalle: Bootstrap über die Reihen (95 %).",
@@ -449,7 +449,7 @@ def format_report(report: Dict[str, Any]) -> str:
             continue
         lines += ["", f"  {titles[(condition, placement)]}",
                   f"  {'Delta':>6} {'Recall':>8} {'Intervall':>18} {'Spanne Reihen':>17} {'±3 Mon.':>8} "
-                  f"{'Mark./Wdh.':>11} {'P(≥1)':>7} {'nah':>5} {'Bias Δ':>7} {'deutl.':>7} {'E14':>5} {'>5/<1':>6}"]
+                  f"{'Mark./Wdh.':>11} {'P(≥1)':>7} {'nah':>5} {'Bias Δ':>7} {'deutl.':>7} {'Einz.':>5} {'>5/<1':>6}"]
         for t in rows:
             rng_ = t["recall_series_range"]
             lines.append(
@@ -473,7 +473,7 @@ def format_report(report: Dict[str, Any]) -> str:
     per = {(r["company_id"], r["condition"], r["placement"], r["delta"]): r for r in report["results"]["per_series"]}
     deltas = [d for d in p["deltas"] if d]
     lines += ["", f"  {'Reihe':<30}{'Mon.':>5}{'med n':>6}{'σ echt':>7}{'σ sim':>7}"
-              + "".join(f"{'R@' + format(d, 'g'):>8}" for d in deltas) + f"{'FP@0':>6}{'FP@0 M':>7}{'beob.':>6}{'E14@0':>6}{'beob.':>6}"]
+              + "".join(f"{'R@' + format(d, 'g'):>8}" for d in deltas) + f"{'FP@0':>6}{'FP@0 M':>7}{'beob.':>6}{'Einz@0':>6}{'beob.':>6}"]
     for s in report["series"]:
         cid = s["company_id"]
         null_b, null_m = per.get((cid, "bewertungen", "mitte", 0.0)), per.get((cid, "monate", "mitte", 0.0))
@@ -486,12 +486,12 @@ def format_report(report: Dict[str, Any]) -> str:
             + f"{s['observed_level_shifts']:>6}{_fmt(null_b['outliers_mean'] if null_b else None):>6}{s['observed_outliers']:>6}"
         )
     lines.append("  R@d: Recall (je Bewertung, Inneres); FP@0 / FP@0 M: Markierungen je Wiederholung ohne Wechsel "
-                 "(je Bewertung / Monate getauscht); beob.: auf der echten Reihe; E14@0: Einzelmonate ohne Wechsel.")
+                 "(je Bewertung / Monate getauscht); beob.: auf der echten Reihe; Einz@0: Einzelmonate ohne Wechsel.")
     return "\n".join(lines)
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Semi-synthetische Prüfung der Erkennung (DZ1, E30): Niveauwechsel bekannter Größe in echte Reihen ohne zeitliche Struktur einsetzen und messen, wie oft die Erkennung sie findet und wie oft sie ohne Wechsel anschlägt.", formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser = argparse.ArgumentParser(description="Semi-synthetische Prüfung der Erkennung (DZ1): Niveauwechsel bekannter Größe in echte Reihen ohne zeitliche Struktur einsetzen und messen, wie oft die Erkennung sie findet und wie oft sie ohne Wechsel anschlägt.", formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--reps", type=int, default=REPS, help=f"Wiederholungen je Reihe (Standard {REPS})")
     parser.add_argument("--deltas", type=float, nargs="+", default=list(DELTAS), help="Größen in Sternen; 0 = ohne Wechsel")
     parser.add_argument("--seed", type=int, default=SEED)

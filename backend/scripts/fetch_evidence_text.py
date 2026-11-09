@@ -181,7 +181,7 @@ def run(
 
 
 def format_summary(summary: Dict[str, Any]) -> str:
-    lines = ["Texte der Belege nachfüllen (E35)"]
+    lines = ["Texte der Belege nachfüllen"]
     mode = "nur zählen (--dry-run)" if summary["dry_run"] else ("Abruf erlaubt" if summary["live"] else
                                                              f"kein Abruf ({ev.LIVE_FETCH_ENV}=0), nur Speicher")
     lines.append(f"  Modus: {mode}; Fenster {summary['window_before']} Monate davor, {summary['window_after']} danach"
@@ -208,7 +208,7 @@ def format_summary(summary: Dict[str, Any]) -> str:
 
 
 def main(argv: Optional[List[str]] = None) -> int:
-    parser = argparse.ArgumentParser(description="Texte der Belege nachfüllen (Erweiterung der Erklärungsansätze um den Mitteilungs- und Artikeltext, 2026-10-23, E35).", formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser = argparse.ArgumentParser(description="Texte der Belege nachfüllen (Erweiterung der Erklärungsansätze um den Mitteilungs- und Artikeltext, 2026-10-23).", formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--eqs", action="store_true", help="alle gespeicherten EQS-Mitteilungen")
     parser.add_argument("--news", action="store_true", help="Kandidaten unter den Meldungen der Markierungsfenster")
     parser.add_argument("--comparison", action="store_true", help="mit --news auch die Vergleichsfenster")

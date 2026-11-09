@@ -114,7 +114,7 @@ def print_summary() -> int:
 
 
 def main(argv: Optional[list[str]] = None) -> int:
-    parser = argparse.ArgumentParser(description="Füllt den Zwischenspeicher der Kursdaten (Zyklus 2, Inkrement 3, E15).")
+    parser = argparse.ArgumentParser(description="Füllt den Zwischenspeicher der Kursdaten (Zyklus 2, Inkrement 3).")
     group = parser.add_mutually_exclusive_group()
     group.add_argument("--ticker", help="nur diesen Ticker (Yahoo-Notation, z. B. SAP.DE)")
     group.add_argument("--company", type=int, help="nur dieses Unternehmen (company_id)")

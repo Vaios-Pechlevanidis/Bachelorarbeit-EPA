@@ -4,6 +4,7 @@
 # nach dem Annotationsprotokoll (Abschnitt 3.6.1)
 
 import os
+import re
 import sys
 from datetime import datetime, timedelta, timezone
 
@@ -60,7 +61,7 @@ class TestRules:
         assert event["confirmed"] is True and event["id"] == "auto-2020-04"
         assert event["scope"] == me.SCOPE and "ei_bssi_m_r2" in event["url"]
         assert "abgerufen 2026-10-13" in event["note"] and "Automatisch aus Wirtschaftsdaten ermittelt" in event["note"]
-        assert "E29" not in event["note"]
+        assert not re.search(r"\bE\d+\b", event["note"])
 
     def test_hicp_rise_needs_minimum_rate(self):
         hicp = flat(1.0)

@@ -238,7 +238,7 @@ class SentimentAnalyzer:
                 sentiment = 'negative'
                 polarity = lexicon_polarity * 0.6
                 confidence = confidence * 0.6
-                logger.debug(f"Case F reversal (positive→negative): '{text[:40]}...'")
+                logger.debug(f"Lexicon reversal (positive→negative): '{text[:40]}...'")
 
             elif confidence >= 0.75:
                 logger.debug(f"Transformer high confidence ({confidence:.2f}), skipping lexicon correction.")

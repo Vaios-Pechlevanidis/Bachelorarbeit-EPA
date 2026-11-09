@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS user_events (
 CREATE INDEX IF NOT EXISTS idx_user_events_company_from ON user_events(company_id, date_from);
 
 COMMENT ON TABLE user_events IS
-    'Eigene Ereignisse der Dashboard-Nutzer je Unternehmen (E32): Zeitraum in Monaten, Titel, Vermerk. Markierung im Monatsverlauf; keine Aussage über Ursachen, kein Eingang in Erkennung oder Erklärungsansätze.';
+    'Eigene Ereignisse der Dashboard-Nutzer je Unternehmen: Zeitraum in Monaten, Titel, Vermerk. Markierung im Monatsverlauf; keine Aussage über Ursachen, kein Eingang in Erkennung oder Erklärungsansätze.';
 COMMENT ON COLUMN user_events.date_from IS 'Erster Monat des Ereignisses als JJJJ-MM.';
 COMMENT ON COLUMN user_events.date_to IS 'Letzter Monat des Ereignisses als JJJJ-MM, größer oder gleich date_from; bei einem Monat gleich date_from.';
 COMMENT ON COLUMN user_events.title IS 'Kurzer Titel (1 bis 120 Zeichen), erscheint in Liste und Tooltip.';

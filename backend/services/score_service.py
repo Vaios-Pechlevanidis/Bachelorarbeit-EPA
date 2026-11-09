@@ -127,7 +127,7 @@ def score_trend(
         "difference_ci95": None,
         "sign": None,
         "low_basis": False,
-        "low_basis_rule": {"min_reviews_per_window": min_reviews, "origin": "E12, vorläufig (T5 offen)"},
+        "low_basis_rule": {"min_reviews_per_window": min_reviews, "origin": "vorläufig (T5 offen)"},
         "insufficient_history": True,
         "overall": {"deltaPoints": None, "deltaPercent": None},
         "n_reviews": {"current": 0, "previous": 0},

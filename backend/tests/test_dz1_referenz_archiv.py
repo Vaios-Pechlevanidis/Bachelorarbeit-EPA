@@ -256,7 +256,7 @@ def test_bereinigte_fassung_nur_ersetzungen_gegen_original():
 def test_bereinigung_gegen_lokalen_belegspeicher():
     titel, dateien = pruefskript.lade_titel([BELEGSPEICHER])
     if not titel:
-        pytest.skip("Belegspeicher backend/data/context/ nicht vorhanden (nicht versioniert, E7)")
+        pytest.skip("Belegspeicher backend/data/context/ nicht vorhanden (nicht versioniert)")
     erg = pruefskript.pruefe(_text(PROTOKOLL), titel)
     assert erg["volltitel_zeilen"] == []
     assert erg["folgen_zeilen"] == []

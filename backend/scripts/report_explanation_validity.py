@@ -32,7 +32,7 @@ SOURCE = "employee"
 DIMENSION = "durchschnittsbewertung"
 DEFAULT_ANNOTATIONS = os.path.join(BACKEND_DIR, "data", "annotations.json")
 REFERENCE_NOT_AVAILABLE = "nicht verfügbar"
-REFERENCE_DEFINITION = ("Markierung trifft einen Referenzzeitraum der Annotationsdatei (E5, Regel 6): Markierungsmonat im "
+REFERENCE_DEFINITION = ("Markierung trifft einen Referenzzeitraum der Annotationsdatei (Regel 6): Markierungsmonat im "
                         "Fenster ±1 Monat um den Zeitraum, bei nicht bewertetem Nachbarmonat bis zu 3 Monate, gleiche "
                         "Richtung; jede Markierung für sich geprüft, Vergleichsfenster außen vor.")
 GROUP_MARKER = "markierung"
@@ -285,7 +285,7 @@ def markdown_tables(summary: Dict[str, Any]) -> str:
                      f"{_cell(c[GROUP_COMPARISON]['with_any'], c[GROUP_COMPARISON]['complete'])} |")
     lines.append("")
     ref = summary.get("reference") or {}
-    lines.append("**Nach Referenzzeiträumen (E5)**")
+    lines.append("**Nach Referenzzeiträumen**")
     lines.append("")
     if ref.get("available"):
         for part, title in (("treffer", "Markierungsfenster mit Referenzzeitraum"), ("uebrige", "Markierungsfenster ohne Referenzzeitraum")):
@@ -342,9 +342,9 @@ def main(argv: Optional[List[str]] = None) -> int:
     parser.add_argument("--annotations", default=DEFAULT_ANNOTATIONS,
                         help="Annotationsdatei für die Zusatzauswertung nach Referenzzeiträumen (Default: data/annotations.json)")
     parser.add_argument("--no-strict", action="store_true",
-                        help="Rangfolge ohne die strenge Auswahl der Belege (Fassung bis 2026-10-17, Läufe E23)")
+                        help="Rangfolge ohne die strenge Auswahl der Belege (Fassung bis 2026-10-17)")
     parser.add_argument("--no-text", action="store_true",
-                        help="Kontrolllauf ohne die Texte des Textspeichers (E35), sonst gleicher Code")
+                        help="Kontrolllauf ohne die Texte des Textspeichers, sonst gleicher Code")
     parser.add_argument("--quiet", action="store_true")
     args = parser.parse_args(argv)
     strict = not args.no_strict

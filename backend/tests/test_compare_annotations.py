@@ -258,7 +258,7 @@ class TestKappa:
 
 
 OLD_REPORT = (
-    "Übereinstimmung zweier Annotationsdateien (DZ1, E5) – A: a.json, B: b.json\n"
+    "Übereinstimmung zweier Annotationsdateien (DZ1) – A: a.json, B: b.json\n"
     "  Regel 6: Toleranz ±1 Monat, Lücken bis 3 Monate, gleiche Richtung, Eins-zu-eins-Zuordnung.\n"
     "  Zeiträume A: 2, B: 3; übereinstimmend 1, nur bei A 1, nur bei B 2.\n"
     "  Reihen: 5, davon beide ohne Zeitraum: 2 (40 %).\n"
@@ -277,7 +277,7 @@ OLD_REPORT = (
     "  Musterbau / employee / durchschnittsbewertung:\n"
     "    Nur bei A:       2020-03..2020-03 rise (Fenster 2020-02..2020-04)\n"
     "\n"
-    "Beschreibende Zahlen. Übereinstimmung nach E5, Regel 6 (Toleranz, Richtung, Eins-zu-eins); keine Aussage, "
+    "Beschreibende Zahlen. Übereinstimmung nach Regel 6 (Toleranz, Richtung, Eins-zu-eins); keine Aussage, "
     "welche Datei richtig liegt."
 )
 OLD_KEYS = {

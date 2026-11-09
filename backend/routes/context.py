@@ -29,7 +29,7 @@ def get_anomaly_context(
     anomaly_id: str,
     source: Optional[str] = Query(None, description="Quelle; Standard aus anomaly_id"),
     dimension: Optional[str] = Query(None, description="Dimension; Standard aus anomaly_id"),
-    status: Optional[str] = Query(None, description="Statusschlüssel der Bewertendengruppe (E13); ohne = alle"),
+    status: Optional[str] = Query(None, description="Statusschlüssel der Bewertendengruppe; ohne = alle"),
     dimension_only: bool = Query(False, description="Nur Belege zur Dimension (Schlüsselwort des Themas im Titel oder zugeordnete Ereignisart, 2026-10-23); braucht eine Einzeldimension"),
     window_before: int = Query(DEFAULT_WINDOW_BEFORE, ge=0, le=MAX_WINDOW_MONTHS, description="Monate vor dem Beginn des Übergangs (Standard 3)"),
     window_after: int = Query(DEFAULT_WINDOW_AFTER, ge=0, le=MAX_WINDOW_MONTHS, description="Monate nach dem markierten Monat (Standard 1)"),
@@ -81,7 +81,7 @@ def get_selection_context(
 
 @router.get("/global-events")
 def get_global_events(
-    all_events: bool = Query(False, alias="all", description="ohne Wirkung seit E29 (alle Ereignisse gelten als bestätigt)"),
+    all_events: bool = Query(False, alias="all", description="ohne Wirkung (alle Ereignisse gelten als bestätigt)"),
 ):
     from services import macro_events
 

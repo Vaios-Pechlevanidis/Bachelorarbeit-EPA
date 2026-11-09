@@ -134,7 +134,7 @@ class TestContent:
     def test_include_ineligible_marks_them(self, workspace):
         result, page = build(workspace, include_ineligible=True)
         assert result["n_series"] == 2
-        assert 'id="s-5-employee"' in page and "nicht geeignet nach E4" in page
+        assert 'id="s-5-employee"' in page and "<strong>nicht geeignet</strong>" in page
 
     def test_candidates_source(self, workspace):
         result, page = build(workspace, source="candidates")
@@ -189,9 +189,9 @@ class TestContent:
 
 
 GOLDEN_SHA256 = {
-    ("employee", False): "f038093e4d185bd269e67635a86912d1c6c9f7f89d00615eda8272e49e165b56",
-    ("employee", True): "910ccc4293fd0d1efdf7b2a83befcf7f53d8101f51d5f910dd02609c65e6df74",
-    ("candidates", False): "4d3c780bffb80aa072af9432e588047965834d8d0204e4d401e88c764e48621e",
+    ("employee", False): "f88d13580089363e037bcd1599b069bec50f5273d3d4e9ff8b4817168b104f53",
+    ("employee", True): "a63fc725c5ab9de91b48b86c998c069ea0fd3df0eb52fe2397d4b6772ff5ad1d",
+    ("candidates", False): "1e1e1ec19a7bb199537ad8b5e25cf7119b098da8ba0772f14e9cc1b0576aaf19",
 }
 
 

@@ -167,13 +167,13 @@ def compare(doc_a: Dict[str, Any], doc_b: Dict[str, Any], series: Optional[Dict[
             "share_matched_of_a": round(matched / n_a, 4) if n_a else None,
             "share_matched_of_b": round(matched / n_b, 4) if n_b else None,
         },
-        "note": ("Beschreibende Zahlen. Übereinstimmung nach E5, Regel 6 (Toleranz, Richtung, Eins-zu-eins); "
+        "note": ("Beschreibende Zahlen. Übereinstimmung nach Regel 6 (Toleranz, Richtung, Eins-zu-eins); "
                  "keine Aussage, welche Datei richtig liegt."),
         "kappa": {
             "overall": cohens_kappa(all_pairs),
             "categories": list(KAPPA_CATEGORIES),
             "n_series_with_months": sum(1 for r in rows if r["kappa"]["n_months"]),
-            "basis": ("Bewertete Monate (E4) der verglichenen Reihen mit Serien-CSV; Monate innerhalb eines Zeitraums "
+            "basis": ("Bewertete Monate der verglichenen Reihen mit Serien-CSV; Monate innerhalb eines Zeitraums "
                       "tragen dessen Richtung, alle übrigen 'keine'; ohne Toleranz; gesamt über alle Monate gepoolt."),
         },
     }
@@ -187,7 +187,7 @@ def format_report(report: Dict[str, Any], path_a: str = "", path_b: str = "") ->
     r = report["rules"]
     t = report["totals"]
     lines = [
-        "Übereinstimmung zweier Annotationsdateien (DZ1, E5)" + (f" – A: {path_a}, B: {path_b}" if path_a or path_b else ""),
+        "Übereinstimmung zweier Annotationsdateien (DZ1)" + (f" – A: {path_a}, B: {path_b}" if path_a or path_b else ""),
         f"  Regel 6: Toleranz ±{r['tolerance_months']} Monat, Lücken bis {r['max_shift_months']} Monate, gleiche Richtung, Eins-zu-eins-Zuordnung.",
         f"  Zeiträume A: {t['n_a']}, B: {t['n_b']}; übereinstimmend {t['matched']}, nur bei A {t['only_a']}, nur bei B {t['only_b']}.",
         f"  Reihen: {t['n_series']}, davon beide ohne Zeitraum: {t['series_both_none']} ({_pct(t['share_both_none'])}).",
@@ -291,7 +291,7 @@ def resolve_selection(spec: str, names: Dict[int, str]) -> Tuple[Optional[Set[st
 
 
 def main(argv: Optional[List[str]] = None) -> int:
-    parser = argparse.ArgumentParser(description="Abgleich zweier beliebiger Annotationsdateien (DZ1, E5): Übereinstimmung der Referenzzeiträume aus Datei A (Standard ``data/annotations.json``) mit denen aus Datei B (``--b``, Pflichtangabe). Eine zweite, unabhängige Person stand für DZ1 nicht zur Verfügung (E5, Aktualisierung 2026-10-09); das Skript bleibt für spätere Vergleiche, etwa zweier Fassungen derselben Datei.", formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser = argparse.ArgumentParser(description="Abgleich zweier beliebiger Annotationsdateien (DZ1): Übereinstimmung der Referenzzeiträume aus Datei A (Standard ``data/annotations.json``) mit denen aus Datei B (``--b``, Pflichtangabe). Eine zweite, unabhängige Person stand für DZ1 nicht zur Verfügung (Aktualisierung 2026-10-09); das Skript bleibt für spätere Vergleiche, etwa zweier Fassungen derselben Datei.", formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--a", default=DEFAULT_A, help="Annotationsdatei A (Default: data/annotations.json)")
     parser.add_argument("--b", required=True, help="Annotationsdatei B (Pflichtangabe)")
     parser.add_argument("--series-dir", default=DEFAULT_SERIES_DIR, help="Serien-CSVs (bewertete Monate, geeignete Reihen)")

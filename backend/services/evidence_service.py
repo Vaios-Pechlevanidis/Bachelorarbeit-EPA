@@ -421,7 +421,7 @@ def load_global_events(path: Optional[Path] = None, confirmed_only: bool = True,
         with open(path, "r", encoding="utf-8") as fh:
             doc = json.load(fh)
     except (OSError, ValueError) as exc:
-        logger.warning("global_events.json nicht lesbar: %s", exc)
+        logger.warning("Ereignisdatei %s nicht lesbar: %s", path, exc)
         return []
     events = []
     for raw in (doc.get("events") if isinstance(doc, dict) else []) or []:

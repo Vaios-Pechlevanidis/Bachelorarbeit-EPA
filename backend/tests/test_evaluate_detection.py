@@ -356,7 +356,7 @@ class TestSubsets:
         report = ed.evaluate(d, companies, fetch)
         report["subsets"] = ed.evaluate_subsets(d, companies, report)
         text = ed.format_report(report, "annotations.json")
-        assert "Teilauswertungen (vor dem ersten Lauf festgelegt, E5)" in text
+        assert "Teilauswertungen (vor dem ersten Lauf festgelegt)" in text
         for name in ed.SUBSETS:
             assert f"Teilmenge {name}: " in text
         assert text.count("    Variante Niveauwechsel allein") == 4

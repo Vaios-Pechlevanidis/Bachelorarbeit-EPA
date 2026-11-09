@@ -228,7 +228,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     rows = env_checks(dict(os.environ), read_env_keys(BACKEND_ENV_FILE, BACKEND_EXPECTED),
                       read_env_keys(FRONTEND_ENV_FILE, {**FRONTEND_EXPECTED, **FRONTEND_SUGGESTED}))
     companies = eligible_companies()
-    rows.append({"area": "Unternehmen", "check": "geeignet (E4)",
+    rows.append({"area": "Unternehmen", "check": "geeignet",
                  "result": f"{len(companies)}: " + ", ".join(f"{c['name']} ({c['n_anomalies']}+{c['n_outliers']})" for c in companies),
                  "status": OK if len(companies) == 15 else WARN})
     rows += store_rows(companies)

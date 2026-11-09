@@ -134,7 +134,7 @@ def unblind(blind_doc: Dict[str, Any], key: Dict[str, Any], names: Optional[Dict
     doc = {
         "version": version,
         "hinweise": {
-            "zweck": ("Referenzzeiträume einer zweiten Person aus der blinden Zweitannotation (DZ1, E5): eingetragen "
+            "zweck": ("Referenzzeiträume einer zweiten Person aus der blinden Zweitannotation (DZ1): eingetragen "
                       "ohne Kenntnis von Unternehmen und Kalenderdaten, allein aus dem blinden Annotationsbogen "
                       "(Beurteilung 'Reihe allein'), mit dem Schlüssel mechanisch in das Schema von annotations.json "
                       "übersetzt (company, source, dimension, period_from, period_to und die Monatsindizes der note). "
@@ -219,7 +219,7 @@ def template_doc(key: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
     source = (key or {}).get("source") or "employee"
     dimension = (key or {}).get("dimension") or "durchschnittsbewertung"
     hinweise: Dict[str, Any] = {
-        "zweck": ("Vorlage für die blinde Zweitannotation der Referenzzeiträume (DZ1, E5). Einträge allein aus dem "
+        "zweck": ("Vorlage für die blinde Zweitannotation der Referenzzeiträume (DZ1). Einträge allein aus dem "
                   "blinden Annotationsbogen; Unternehmen und Kalenderdaten sind dort bewusst nicht genannt. "
                   "Anleitung: docs/annotation-anleitung.md."),
         "felder": {
@@ -268,7 +268,7 @@ def _rel(path: str) -> str:
 
 
 def main(argv: Optional[List[str]] = None) -> int:
-    parser = argparse.ArgumentParser(description="Rückweg der blinden Zweitannotation (DZ1, E5): übersetzt eine Annotationsdatei aus dem blinden Annotationsbogen (``scripts/make_annotation_sheet.py --blind``) mit dessen Schlüssel in das Schema von ``data/annotations.json`` und prüft das Ergebnis mit ``scripts/validate_annotations.py`` (offline).", formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser = argparse.ArgumentParser(description="Rückweg der blinden Zweitannotation (DZ1): übersetzt eine Annotationsdatei aus dem blinden Annotationsbogen (``scripts/make_annotation_sheet.py --blind``) mit dessen Schlüssel in das Schema von ``data/annotations.json`` und prüft das Ergebnis mit ``scripts/validate_annotations.py`` (offline).", formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--key", default=DEFAULT_KEY, help="Schlüssel des blinden Bogens (Default: data/annotationsbogen_blind_schluessel.json)")
     parser.add_argument("--blind-file", default=DEFAULT_BLIND,
                         help="blinde Annotationsdatei der Person (Default: data/annotations_zweitperson_blind.json)")

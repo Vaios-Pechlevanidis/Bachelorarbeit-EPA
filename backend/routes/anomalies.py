@@ -18,7 +18,7 @@ def get_company_anomalies(
     penalty: Optional[float] = Query(None, gt=0, description="Fester PELT-Strafterm in quadrierten Sternen; schaltet auf den festen Modus"),
     penalty_factor: Optional[float] = Query(None, gt=0, description=f"Faktor des skalierten Strafterms Faktor · sigma² · ln(n) (Standard {DEFAULT_PENALTY_FACTOR})"),
     min_delta: Optional[float] = Query(None, ge=0, description=f"Mindestbetrag der Veränderung in Sternen (Standard {DEFAULT_MIN_DELTA})"),
-    status: Optional[str] = Query(None, description="Statusschlüssel der Bewertendengruppe (E13); ohne = alle"),
+    status: Optional[str] = Query(None, description="Statusschlüssel der Bewertendengruppe; ohne = alle"),
 ):
     penalty_factor = DEFAULT_PENALTY_FACTOR if penalty_factor is None else penalty_factor
     min_delta = DEFAULT_MIN_DELTA if min_delta is None else min_delta
@@ -49,8 +49,8 @@ def get_anomaly_explanations(
     anomaly_id: str,
     source: Optional[str] = Query(None, description="Quelle; Standard aus anomaly_id"),
     dimension: Optional[str] = Query(None, description="Dimension; Standard aus anomaly_id"),
-    status: Optional[str] = Query(None, description="Statusschlüssel der Bewertendengruppe (E13); ohne = alle"),
-    window_months: int = Query(DEFAULT_WINDOW_MONTHS, ge=1, le=36, description=f"Monate je Vergleichsfenster (Standard {DEFAULT_WINDOW_MONTHS}, E12)"),
+    status: Optional[str] = Query(None, description="Statusschlüssel der Bewertendengruppe; ohne = alle"),
+    window_months: int = Query(DEFAULT_WINDOW_MONTHS, ge=1, le=36, description=f"Monate je Vergleichsfenster (Standard {DEFAULT_WINDOW_MONTHS})"),
 ):
     try:
         result = explain_anomaly(
@@ -72,7 +72,7 @@ def get_period_comparison(
     to: str = Query(..., description="Letzter Monat der Auswahl (YYYY-MM, einschließlich)"),
     source: str = Query("employee", description="Quelle: employee oder candidates"),
     dimension: Optional[str] = Query(None, description="Dimension; Standard Gesamtbewertung"),
-    status: Optional[str] = Query(None, description="Statusschlüssel der Bewertendengruppe (E13); ohne = alle"),
+    status: Optional[str] = Query(None, description="Statusschlüssel der Bewertendengruppe; ohne = alle"),
 ):
     try:
         return compare_period(company_id, from_, to, source=source, dimension=dimension, status=status)

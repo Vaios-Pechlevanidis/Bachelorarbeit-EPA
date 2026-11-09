@@ -57,7 +57,6 @@ def test_ranking_thresholds_frozen():
 
 STAGE_RULES_V1 = {
     "version": 1,
-    "commit": "59f5d82",
     "run": "data/calibration/explanation_validity_2026-10-08.json",
     "stages": {
         "hoch": "topic_match >= 1.0 und time_match >= 1.0",

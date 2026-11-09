@@ -47,12 +47,12 @@ TEXT_NOTE = ("Liegt zu einer Meldung der Text vor (EQS-Mitteilungen vollständig
              "Arbeitgeberbezug und die Nennung des Unternehmens kommen weiter aus dem Titel. Meldungen ohne gespeicherten "
              "Text werden nur über den Titel bewertet.")
 CORRECTIONS = (
-    "2026-10-13: Schlüsselwort 'verdi' nur als ganzes Wort (trifft nicht mehr 'verdient', 'verdienen'; E22)",
-    "2026-10-13: Begriffe, Themen und Stimmung der Bewertungen mit den Kommentaren zu den Kategorien (E10, E11, E21)",
-    "2026-10-13: Vergleichsfenster begrenzt durch den ersten und letzten bewerteten statt datierten Monat (E18)",
+    "2026-10-13: Schlüsselwort 'verdi' nur als ganzes Wort (trifft nicht mehr 'verdient', 'verdienen')",
+    "2026-10-13: Begriffe, Themen und Stimmung der Bewertungen mit den Kommentaren zu den Kategorien",
+    "2026-10-13: Vergleichsfenster begrenzt durch den ersten und letzten bewerteten statt datierten Monat",
     "2026-10-13: 'Unternehmen im Titel genannt' erkennt Namen mit Punkt oder Ziffern (E.ON, 1&1; ohne Einfluss auf die Stufe)",
-    "2026-10-13: EQS-Mitteilungen heißen nur bei der EQS-Kategorie 'Ad-hoc' Ad-hoc-Mitteilung (E19; ohne Einfluss auf die Stufe)",
-    "2026-10-23: Stoppwörter um Funktionswörter, Adverbien und Modalverben ergänzt ('andere', 'bisher', 'deutlich', …; E35)",
+    "2026-10-13: EQS-Mitteilungen heißen nur bei der EQS-Kategorie 'Ad-hoc' Ad-hoc-Mitteilung (ohne Einfluss auf die Stufe)",
+    "2026-10-23: Stoppwörter um Funktionswörter, Adverbien und Modalverben ergänzt ('andere', 'bisher', 'deutlich', …)",
 )
 
 STAGE_HIGH, STAGE_MEDIUM, STAGE_LOW, STAGE_NONE = "hoch", "mittel", "niedrig", "keine"

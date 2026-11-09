@@ -118,7 +118,7 @@ def rolling_averages(
         "difference": None,
         "sign": None,
         "low_basis": False,
-        "low_basis_rule": {"min_reviews_per_window": min_reviews, "origin": "E12, vorläufig (T5 offen)"},
+        "low_basis_rule": {"min_reviews_per_window": min_reviews, "origin": "vorläufig (T5 offen)"},
         "history_months": 0,
         "insufficient_history": True,
     }

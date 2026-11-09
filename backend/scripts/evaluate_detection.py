@@ -154,7 +154,7 @@ def evaluate(doc: Dict[str, Any], companies: Dict[str, va.CompanyInfo], fetch: F
         elig = result.get("eligibility") or {}
         if not elig.get("eligible", False):
             skipped.append({"series": label, "n_annotations": len(anns),
-                            "reason": f"Reihe nicht geeignet (E4): {elig.get('reason') or 'unbekannt'} Einträge gehen nicht in den F1-Wert ein (Regel 9)."})
+                            "reason": f"Reihe nicht geeignet: {elig.get('reason') or 'unbekannt'} Einträge gehen nicht in den F1-Wert ein (Regel 9)."})
             continue
         evaluated = {m["period"] for m in result.get("series") or [] if m.get("evaluated")}
         entry: Dict[str, Any] = {
@@ -262,7 +262,7 @@ def _fmt_detection(det: Dict[str, Any]) -> str:
 def format_report(report: Dict[str, Any], path: str = "") -> str:
     lines: List[str] = []
     r = report["rules"]
-    lines.append("Abgleich der Erkennung mit den Referenzzeiträumen (DZ1, E5)" + (f" – {path}" if path else ""))
+    lines.append("Abgleich der Erkennung mit den Referenzzeiträumen (DZ1)" + (f" – {path}" if path else ""))
     lines.append(f"  Annotationen: {report['n_annotations']} (version {report['annotations_version']}), "
                  f"Regel 6: Toleranz ±{r['tolerance_months']} Monat, Lücken bis {r['max_shift_months']} Monate, "
                  "gleiche Richtung, Eins-zu-eins-Zuordnung; Erkennung mit Standardparametern.")
@@ -299,7 +299,7 @@ def format_report(report: Dict[str, Any], path: str = "") -> str:
                 lines.append(f"    Zusätzlich: {_fmt_detection(e)}")
     if report.get("subsets"):
         lines.append("")
-        lines.append("Teilauswertungen (vor dem ersten Lauf festgelegt, E5); Erkennungen zu Einträgen außerhalb der Teilmenge neutral")
+        lines.append("Teilauswertungen (vor dem ersten Lauf festgelegt); Erkennungen zu Einträgen außerhalb der Teilmenge neutral")
         for name, sub in report["subsets"].items():
             extra = f", nicht bestimmbar {sub['n_undetermined']}" if sub["n_undetermined"] else ""
             lines.append(f"  Teilmenge {name}: {sub['definition']} ({sub['n_annotations']} Einträge{extra})")
@@ -323,7 +323,7 @@ EMPTY_HINT = (
     "Keine Annotationen in {path}: 'annotations' ist leer.\n"
     "Hinweis: erst annotieren (Bogen: uv run python scripts/make_annotation_sheet.py), dann\n"
     "validieren (uv run python scripts/validate_annotations.py), die Datei in einem eigenen Commit\n"
-    "versionieren und erst danach auswerten (E5)."
+    "versionieren und erst danach auswerten."
 )
 
 
@@ -333,7 +333,7 @@ def _db_fetch(company_id: int, source: str, dimension: str) -> Dict[str, Any]:
 
 
 def main(argv: Optional[List[str]] = None) -> int:
-    parser = argparse.ArgumentParser(description="Abgleich der automatischen Erkennung mit den manuell annotierten Referenzzeiträumen (DZ1, E5, Protokoll-Regel 6 in ``docs/referenzzeitraeume-literatur.md``).", formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser = argparse.ArgumentParser(description="Abgleich der automatischen Erkennung mit den manuell annotierten Referenzzeiträumen (DZ1, Protokoll-Regel 6 in ``docs/referenzzeitraeume-literatur.md``).", formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--file", default=DEFAULT_FILE, help=f"Annotationsdatei (Default: {os.path.relpath(DEFAULT_FILE, BACKEND_DIR)})")
     parser.add_argument("--density", default=DEFAULT_DENSITY, help="data_density.json (Unternehmensliste, Zeiträume)")
     parser.add_argument("--offline", action="store_true", help="Unternehmensliste aus data_density.json statt aus der DB (die Erkennung liest weiterhin die DB)")

@@ -444,7 +444,7 @@ def _random_line(label: str, s: Dict[str, Any]) -> str:
 def format_report(report: Dict[str, Any]) -> str:
     p = report["params"]
     lines = [
-        "Bezugsgrößen und Unsicherheit für den DZ1-Wert (E9, E5 Regel 6) – offline, nachträglich",
+        "Bezugsgrößen und Unsicherheit für den DZ1-Wert (Regel 6) – offline, nachträglich",
         f"  Seed {p['seed']}, {p['draws']} Ziehungen Zufall, {p['bootstrap_draws']} Ziehungen Bootstrap; "
         "Abgleich mit evaluate_detection.match_series (Regel 6 unverändert).",
     ]
@@ -562,13 +562,13 @@ def load_inputs(dz1_path: str = DEFAULT_DZ1, ann_path: str = DEFAULT_ANNOTATIONS
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Bezugsgrößen und Unsicherheit für den DZ1-Wert (E9, Aktualisierung 2026-10-10; E5 Regel 6), offline und reproduzierbar.", formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser = argparse.ArgumentParser(description="Bezugsgrößen und Unsicherheit für den DZ1-Wert (Aktualisierung 2026-10-10; Regel 6), offline und reproduzierbar.", formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--seed", type=int, default=SEED)
     parser.add_argument("--draws", type=int, default=DRAWS, help=f"Ziehungen der Zufalls-Bezugsgrößen (Standard {DRAWS})")
     parser.add_argument("--bootstrap", type=int, default=BOOTSTRAP, help=f"Ziehungen des Bootstrap (Standard {BOOTSTRAP})")
     parser.add_argument("--dz1", default=DEFAULT_DZ1, help="DZ1-Ergebnis (dz1_ergebnis.json)")
     parser.add_argument("--annotations", default=DEFAULT_ANNOTATIONS, help="annotations.json")
-    parser.add_argument("--semi", default=DEFAULT_SEMI, help="Ergebnis der semi-synthetischen Prüfung (E30)")
+    parser.add_argument("--semi", default=DEFAULT_SEMI, help="Ergebnis der semi-synthetischen Prüfung")
     parser.add_argument("--series-dir", default=DEFAULT_SERIES_DIR, help="Serien-CSVs")
     parser.add_argument("--json", dest="json_out", help="Ergebnis zusätzlich als JSON-Datei schreiben")
     return parser
@@ -606,7 +606,7 @@ def main(argv: Optional[List[str]] = None) -> int:
             "rules": {"tolerance_months": ed.TOLERANCE_MONTHS, "max_shift_months": ed.MAX_SHIFT_MONTHS,
                       "same_direction": True, "one_to_one": True, "function": "evaluate_detection.match_series"},
             "scopes": {"hauptwert": "annotierte Reihen wie im DZ1-Lauf",
-                       "regelkonform": "alle geeigneten Reihen (E4); Markierungen in Reihen ohne Eintrag zählen als FP"},
+                       "regelkonform": "alle geeigneten Reihen; Markierungen in Reihen ohne Eintrag zählen als FP"},
             "random": {
                 "markers": "je Reihe so viele wie die Erkennung in der Variante",
                 "positions": {"bewertete_monate": "gleichverteilt auf die bewerteten Monate ohne Doppelung",
@@ -624,7 +624,7 @@ def main(argv: Optional[List[str]] = None) -> int:
             "percentile": "Rang ⌊q·N⌋ der aufsteigend sortierten Werte (0-basiert, ohne Interpolation)",
             "wilson_z": WILSON_Z,
             "bootstrap": "Reihen mit Zurücklegen, TP/FP/FN summiert, F1; Ziehungen ohne definierten F1 nicht gewertet",
-            "status": "nachträglich gewählt, nicht vorab festgelegt; kalibriert nichts (E5, E9, E30)",
+            "status": "nachträglich gewählt, nicht vorab festgelegt; kalibriert nichts",
         },
         "checks": checks,
         **{k: computed[k] for k in ("results", "sensitivity_wie_pelt", "series")},

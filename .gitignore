@@ -150,8 +150,7 @@ backend/data/market/
 # Claude Code
 .claude/
 
-# Docker
-docker-compose.yml
+
 # Annotationsbogen (scripts/make_annotation_sheet.py): erzeugte Datei, nicht einchecken
 backend/data/annotationsbogen*.html
 # Schlüssel zum blinden Annotationsbogen (make_annotation_sheet.py --blind): Zuordnung Reihe/Monat ->
